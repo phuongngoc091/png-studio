@@ -1,0 +1,568 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Dialogs
+import LAStudio
+import "../shared"
+import "../base"
+import "../tts"
+
+StudioShell {
+    id: root
+
+    family: null
+    families: []
+    capability: "voice-cloning"
+    selectedFamilyId: family ? family.id : ""
+    studioContext: null
+    studioReady: false
+    isSettingsOpen: true
+    showLeftPanel: true
+    isLeftPanelOpen: true
+    modalSelectionMode: true
+    showSwitcher: false
+    modalSelectionTitle: "Model + Runtime"
+    modalSelectionValue: "Select model and runtime"
+    modalSelectionDetail: ""
+    backToolTip: "Change model and runtime"
+
+    property string referenceAudioPath: ""
+    property string playingType: "none"
+    property string detectedLanguage: "en"
+    property bool outputReady: AppController.tts.lastSampleCount > 0 && AppController.tts.isCloneAction
+    property string selectedLanguageCode: "en"
+    property real mainHorizontalInset: Theme.paddingXL
+    property real promptInset: Theme.paddingSmall
+    readonly property var nonVerbalTags: {
+        if (family && family.studio && family.studio[root.capability] && family.studio[root.capability].nonVerbalTags)
+            return family.studio[root.capability].nonVerbalTags
+        return []
+    }
+
+    property var studioConfig: ({})
+    readonly property bool hasLanguageInput: studioConfig && studioConfig.inputs ? studioConfig.inputs.indexOf("language") !== -1 : true
+
+    function refreshCapabilityMetadata() {
+        root.studioConfig = AppController.tts.studioConfigForCapability("voice-cloning")
+    }
+
+    Component.onCompleted: refreshCapabilityMetadata()
+
+    Connections {
+        target: AppController.tts
+        function onFamilyConfigChanged() { root.refreshCapabilityMetadata() }
+        function onSchemaChanged() { root.refreshCapabilityMetadata() }
+    }
+
+    signal backToGallery()
+    signal reloadRequested()
+    signal ejectRequested()
+    signal modelSwitchRequested(string familyId)
+    signal runtimeSwitchRequested(string runtimeId)
+
+    onRequestBack: root.backToGallery()
+    onRequestConfigurationPicker: root.backToGallery()
+    onRequestReload: root.reloadRequested()
+    onRequestEject: root.ejectRequested()
+    onRequestModelSwitch: function(familyId) { root.modelSwitchRequested(familyId) }
+    onRequestRuntimeSwitch: function(runtimeId) { root.runtimeSwitchRequested(runtimeId) }
+
+    readonly property var defaultLanguages: [
+        { text: "English", value: "en", detail: "Language code: en" },
+        { text: "Chinese", value: "zh", detail: "Language code: zh" },
+        { text: "Japanese", value: "ja", detail: "Language code: ja" },
+        { text: "Korean", value: "ko", detail: "Language code: ko" },
+        { text: "French", value: "fr", detail: "Language code: fr" },
+        { text: "Spanish", value: "es", detail: "Language code: es" },
+        { text: "German", value: "de", detail: "Language code: de" },
+        { text: "Vietnamese", value: "vi", detail: "Language code: vi" }
+    ]
+
+    function normalizeLanguageItems(items) {
+        var result = []
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i] || {}
+            var code = item.value || item.code || ""
+            var label = item.text || item.name || code
+            if (item.name && item.code) {
+                label = item.name + " (" + item.code + ")"
+            }
+            result.push({
+                text: label,
+                value: code,
+                detail: item.detail || (code !== "" ? "Language code: " + code : "")
+            })
+        }
+        return result
+    }
+
+    readonly property var languageItems: {
+        if (family) {
+            if (family.supportedLanguageSetId) {
+                var list = AppController.catalog.languageSet(family.supportedLanguageSetId)
+                if (list && list.length > 0) {
+                    return normalizeLanguageItems(list)
+                }
+            }
+            if (family.supportedLanguages && family.supportedLanguages.length > 0) {
+                return normalizeLanguageItems(family.supportedLanguages)
+            }
+            if (family.featuredLanguages && family.featuredLanguages.length > 0) {
+                return normalizeLanguageItems(family.featuredLanguages)
+            }
+        }
+        return normalizeLanguageItems(defaultLanguages)
+    }
+
+    function outputDurationText() {
+        if (!root.outputReady || AppController.tts.sampleRate <= 0) return "--"
+        var seconds = AppController.tts.lastSampleCount / AppController.tts.sampleRate
+        if (seconds < 60) return seconds.toFixed(1) + "s"
+        var minutes = Math.floor(seconds / 60)
+        var remain = Math.floor(seconds % 60)
+        return minutes + ":" + (remain < 10 ? "0" + remain : remain)
+    }
+
+    function sampleCountText() {
+        var count = AppController.tts.lastSampleCount
+        if (count >= 1000000) return (count / 1000000).toFixed(1) + "M samples"
+        if (count >= 1000) return (count / 1000).toFixed(1) + "k samples"
+        return count + " samples"
+    }
+
+    Connections {
+        target: AppController.player
+        function onPlayingChanged() {
+            if (!AppController.player.playing) root.playingType = "none"
+        }
+    }
+
+    Connections {
+        target: AppController.tts
+        function onSynthesisFinished(pcm16, sampleRate) {
+            if (AppController.tts.lastGenerationMode !== "voice-cloning") return;
+            var text = inputText.text.trim()
+            var modelName = root.family ? root.family.title : "Cloned Voice"
+            var voiceName = "Clone"
+            AppController.history.addTtsHistoryItem(text, modelName, voiceName)
+        }
+    }
+
+    Timer {
+        id: languageDetectTimer
+        interval: 250
+        repeat: false
+        onTriggered: root.detectedLanguage = VoiceCloningUtils.detectLanguageCode(inputText.text)
+    }
+
+    leftPanelContent: [
+        TtsHistoryPanel {
+            id: historyPanel
+            anchors.fill: parent
+            onCloseRequested: root.isLeftPanelOpen = false
+            onLoadPromptRequested: function(text) {
+                inputText.text = text
+            }
+        }
+    ]
+
+    mainContent: [
+        StackLayout {
+            anchors.fill: parent
+            currentIndex: root.studioReady ? 1 : 0
+
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    width: Math.max(320, Math.min(520, parent.width - Theme.paddingXL * 2))
+                    spacing: Theme.paddingLarge
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        radius: Theme.radiusSmall
+                        color: Theme.surface
+                        border.color: Qt.rgba(1, 1, 1, 0.07)
+                        border.width: 1
+                        implicitHeight: 180
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: Theme.paddingLarge
+                            spacing: Theme.paddingMedium
+
+                            LineIcon {
+                                name: "gallery"
+                                color: Theme.accent
+                                Layout.alignment: Qt.AlignHCenter
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                text: "Select a Voice Cloning model"
+                                color: Theme.textPrimary
+                                font.pixelSize: Theme.fontLarge
+                                font.bold: true
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                text: "The studio stays lightweight until you choose a compatible configuration."
+                                color: Theme.textSecondary
+                                font.pixelSize: Theme.fontSmall
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+                    }
+
+                    PrimaryButton {
+                        Layout.fillWidth: true
+                        text: "Choose model and runtime"
+                        iconName: "gallery"
+                        onClicked: root.backToGallery()
+                    }
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.leftMargin: root.mainHorizontalInset
+                Layout.rightMargin: root.mainHorizontalInset
+                Layout.topMargin: Theme.paddingLarge
+                Layout.bottomMargin: Theme.paddingLarge
+                spacing: Theme.paddingMedium
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    radius: Theme.radiusSmall
+                    color: Theme.surface
+                    border.color: Qt.rgba(1, 1, 1, 0.07)
+                    border.width: 1
+                    clip: true
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Theme.paddingLarge
+                        spacing: Theme.paddingLarge
+
+                        Rectangle {
+                            Layout.preferredWidth: 420
+                            Layout.fillHeight: true
+                            radius: Theme.radiusSmall
+                            color: Qt.rgba(1, 1, 1, 0.02)
+                            border.color: Qt.rgba(1, 1, 1, 0.07)
+                            border.width: 1
+                            clip: true
+
+                            ScrollView {
+                                anchors.fill: parent
+                                anchors.margins: Theme.paddingMedium
+                                clip: true
+                                contentWidth: availableWidth
+
+                                ReferenceInputBox {
+                                    id: referenceBox
+                                    width: parent.width
+                                    showTips: true
+                                    showHeader: true
+                                    isPlaying: root.playingType === "reference"
+                                    onAudioPathChanged: {
+                                        root.referenceAudioPath = referenceBox.audioPath
+                                    }
+                                    onPlayClicked: {
+                                        root.playingType = "reference"
+                                        AppController.player.playFile(root.referenceAudioPath)
+                                    }
+                                    onStopClicked: AppController.player.stop()
+                                }
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            spacing: Theme.paddingMedium
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                radius: Theme.radiusSmall
+                                color: Qt.rgba(1, 1, 1, 0.02)
+                                border.color: Qt.rgba(1, 1, 1, 0.07)
+                                border.width: 1
+                                clip: true
+
+                                ScrollView {
+                                    anchors.fill: parent
+                                    anchors.margins: Theme.paddingMedium
+                                    clip: true
+                                    contentWidth: availableWidth
+
+                                    ColumnLayout {
+                                        width: parent.width
+                                        spacing: Theme.paddingLarge
+
+                                        RowLayout {
+                                            Layout.fillWidth: true
+                                            spacing: Theme.paddingSmall
+                                            visible: root.hasLanguageInput
+
+                                            LineIcon {
+                                                name: "globe"
+                                                color: Theme.textSecondary
+                                                Layout.preferredWidth: 16
+                                                Layout.preferredHeight: 16
+                                            }
+
+                                            Text {
+                                                text: "Target Language"
+                                                color: Theme.textPrimary
+                                                font.pixelSize: Theme.fontSmall
+                                                font.bold: true
+                                                Layout.fillWidth: true
+                                            }
+
+                                            AppComboBox {
+                                                id: langCombo
+                                                Layout.preferredWidth: 220
+                                                model: root.languageItems
+                                                textRole: "text"
+                                                currentIndex: 0
+                                                searchable: model.length > 15
+                                                onCurrentIndexChanged: root.selectedLanguageCode = model[currentIndex].value
+                                            }
+                                        }
+
+                                        ColumnLayout {
+                                            Layout.fillWidth: true
+                                            spacing: Theme.paddingSmall
+
+                                            RowLayout {
+                                                Layout.fillWidth: true
+                                                spacing: Theme.paddingSmall
+
+                                                LineIcon {
+                                                    name: "file"
+                                                    color: Theme.textSecondary
+                                                    Layout.preferredWidth: 16
+                                                    Layout.preferredHeight: 16
+                                                }
+
+                                                Text {
+                                                    text: "Target Prompt"
+                                                    color: Theme.textPrimary
+                                                    font.pixelSize: Theme.fontSmall
+                                                    font.bold: true
+                                                    Layout.fillWidth: true
+                                                }
+
+                                                PrimaryButton {
+                                                    text: "Import .txt"
+                                                    iconName: "folder"
+                                                    quiet: true
+                                                    implicitHeight: 28
+                                                    implicitWidth: 105
+                                                    onClicked: promptFileDialogLoader.active = true
+                                                }
+
+                                                Text {
+                                                    text: inputText.text.length + " chars"
+                                                    color: Theme.textSecondary
+                                                    font.pixelSize: Theme.fontSmall
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                Layout.fillWidth: true
+                                                Layout.preferredHeight: 260
+                                                color: Theme.surface
+                                                border.color: Theme.surfaceAlt
+                                                border.width: 1
+                                                radius: Theme.radiusSmall
+
+                                                ColumnLayout {
+                                                    anchors.fill: parent
+                                                    anchors.margins: Theme.paddingSmall
+                                                    spacing: Theme.paddingSmall
+
+                                                    AppTextArea {
+                                                        id: inputText
+                                                        Layout.fillWidth: true
+                                                        Layout.fillHeight: true
+                                                        placeholderText: "Enter the text you want the cloned voice to say..."
+                                                        font.pixelSize: Theme.fontMedium
+                                                        background: Rectangle { color: "transparent" }
+                                                        onTextChanged: languageDetectTimer.restart()
+                                                    }
+
+                                                    PromptTagPicker {
+                                                        Layout.fillWidth: true
+                                                        tags: root.nonVerbalTags
+                                                        targetEditor: inputText
+                                                        visible: root.nonVerbalTags.length > 0
+                                                    }
+
+                                                    Text {
+                                                        Layout.fillWidth: true
+                                                        text: "⚠️ VieNeu-TTS Turbo may be less stable with phrases under 5 words."
+                                                        color: Theme.warning
+                                                        font.pixelSize: 11
+                                                        wrapMode: Text.WordWrap
+                                                        visible: {
+                                                            var words = inputText.text.trim().split(/\s+/).filter(function(w) { return w.length > 0; }).length;
+                                                            return words > 0 && words < 5 && root.family && root.family.id === "vieneu-tts-v2-turbo";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        GeneratedAudioOutput {
+                                            Layout.fillWidth: true
+                                            outputReady: root.outputReady
+                                            samples: AppController.tts.lastSamplePreview
+                                            durationText: root.outputDurationText()
+                                            sampleRate: AppController.tts.sampleRate
+                                            sampleCountText: root.sampleCountText()
+                                            isPlaying: root.playingType === "tts" && AppController.player.playing
+                                            processing: AppController.tts.processing
+                                            onPlayClicked: {
+                                                if (root.playingType === "tts" && AppController.player.playing) {
+                                                    AppController.player.stop()
+                                                } else {
+                                                    root.playingType = "tts"
+                                                    AppController.preview.playLastTts()
+                                                }
+                                            }
+                                            onSaveClicked: saveDialog.open()
+                                        }
+                                    }
+                                }
+                            }
+
+                            PrimaryButton {
+                                text: "Clone Voice"
+                                iconName: "spark"
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 42
+                                loading: AppController.tts.processing
+                                enabled: {
+                                    var isQwen3 = root.family && root.family.id && root.family.id.indexOf("qwen3") !== -1
+                                    var baseEnabled = (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0 && root.referenceAudioPath !== ""
+                                    if (isQwen3) {
+                                        return baseEnabled && referenceBox.referenceText.trim().length > 0
+                                    }
+                                    return baseEnabled
+                                }
+                                onClicked: {
+                                    var settings = settingsPanel.getSettingsObject(root.selectedLanguageCode, inputText.text, referenceBox.referenceText)
+                                    AppController.tts.cloneVoice(VoiceCloningUtils.normalizeText(inputText.text), root.referenceAudioPath, settings)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+
+    settingsContent: [
+        StackLayout {
+            anchors.fill: parent
+            currentIndex: root.studioReady ? 1 : 0
+
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    width: Math.min(300, parent.width)
+                    spacing: Theme.paddingMedium
+
+                    LineIcon {
+                        name: "sliders"
+                        color: Theme.textSecondary
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: 22
+                        Layout.preferredHeight: 22
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: "Choose a model to unlock settings"
+                        color: Theme.textPrimary
+                        font.pixelSize: Theme.fontMedium
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: "Model parameters and audio controls appear after the configuration is loaded."
+                        color: Theme.textSecondary
+                        font.pixelSize: Theme.fontSmall
+                        wrapMode: Text.WordWrap
+                    }
+
+                    PrimaryButton {
+                        Layout.fillWidth: true
+                        text: "Open model gallery"
+                        iconName: "gallery"
+                        quiet: true
+                        onClicked: root.backToGallery()
+                    }
+                }
+            }
+
+            VoiceSettingsPanel {
+                id: settingsPanel
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                family: root.family
+                onCloseRequested: root.isSettingsOpen = false
+            }
+        }
+    ]
+
+    FileDialog {
+        id: saveDialog
+        title: "Save Audio File"
+        fileMode: FileDialog.SaveFile
+        nameFilters: ["WAV files (*.wav)"]
+        onAccepted: AppController.preview.saveWav(selectedFile.toString())
+    }
+
+    Loader {
+        id: promptFileDialogLoader
+        active: false
+        sourceComponent: promptFileDialogComponent
+    }
+
+    Component {
+        id: promptFileDialogComponent
+        FileDialog {
+            title: "Select Target Prompt"
+            nameFilters: ["Text files (*.txt)", "All files (*)"]
+
+            Component.onCompleted: open()
+
+            onAccepted: {
+                var path = AppController.files.urlToLocalPath(selectedFile.toString())
+                var content = AppController.files.readTextFile(path)
+                inputText.text = content
+                promptFileDialogLoader.active = false
+            }
+            onRejected: promptFileDialogLoader.active = false
+        }
+    }
+}
