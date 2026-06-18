@@ -45,29 +45,32 @@ The app brings together local speech-to-text, text-to-speech, voice cloning, voi
 
 ## Screenshots
 
-Add product screenshots to `docs/screenshots/` and keep filenames descriptive for GitHub readability and search indexing. Use full-feature screenshots instead of cropped fragments when possible.
+| Home | Models Gallery |
+| --- | --- |
+| ![LA Studio offline AI audio desktop app home screen](docs/screenshots/la-studio-home.PNG) | ![LA Studio model gallery for local AI audio models](docs/screenshots/la-studio-models-gallery.PNG) |
 
-Recommended screenshot set:
+| Speech-to-Text | Text-to-Speech |
+| --- | --- |
+| ![LA Studio local speech-to-text transcription workflow](docs/screenshots/la-studio-speech-to-text.PNG) | ![LA Studio local text-to-speech generation workflow](docs/screenshots/la-studio-text-to-speech.PNG) |
 
-| App area | Suggested file | Suggested alt text |
-| --- | --- | --- |
-| Home / Welcome | `docs/screenshots/la-studio-home.png` | LA Studio offline AI audio desktop app home screen |
-| Models Gallery | `docs/screenshots/la-studio-models-gallery.png` | LA Studio model gallery for local AI audio models |
-| Speech-to-Text Studio | `docs/screenshots/la-studio-speech-to-text.png` | LA Studio local speech-to-text transcription workflow |
-| Text-to-Speech Studio | `docs/screenshots/la-studio-text-to-speech.png` | LA Studio local text-to-speech generation workflow |
-| Voice Cloning | `docs/screenshots/la-studio-voice-cloning.png` | LA Studio voice cloning workflow with reference audio |
-| Settings / Runtimes | `docs/screenshots/la-studio-runtime-settings.png` | LA Studio runtime and hardware settings |
+| Voice Cloning | Voice Design |
+| --- | --- |
+| ![LA Studio voice cloning workflow with reference audio](docs/screenshots/la-studio-voice-cloning.PNG) | ![LA Studio voice design workflow for local AI speech models](docs/screenshots/la-studio-voice-design.PNG) |
 
-When screenshots are ready, replace this block with real image embeds:
+| Runtime Settings | System Logs |
+| --- | --- |
+| ![LA Studio runtime and hardware settings](docs/screenshots/la-studio-runtime-settings.PNG) | ![LA Studio system logs and diagnostics screen](docs/screenshots/la-studio-system-logs.PNG) |
 
-```markdown
-![LA Studio offline AI audio desktop app home screen](docs/screenshots/la-studio-home.png)
-![LA Studio model gallery for local AI audio models](docs/screenshots/la-studio-models-gallery.png)
-![LA Studio local speech-to-text transcription workflow](docs/screenshots/la-studio-speech-to-text.png)
-![LA Studio local text-to-speech generation workflow](docs/screenshots/la-studio-text-to-speech.png)
-![LA Studio voice cloning workflow with reference audio](docs/screenshots/la-studio-voice-cloning.png)
-![LA Studio runtime and hardware settings](docs/screenshots/la-studio-runtime-settings.png)
-```
+Expected screenshot filenames:
+
+- `docs/screenshots/la-studio-home.PNG`
+- `docs/screenshots/la-studio-models-gallery.PNG`
+- `docs/screenshots/la-studio-speech-to-text.PNG`
+- `docs/screenshots/la-studio-text-to-speech.PNG`
+- `docs/screenshots/la-studio-voice-cloning.PNG`
+- `docs/screenshots/la-studio-voice-design.PNG`
+- `docs/screenshots/la-studio-runtime-settings.PNG`
+- `docs/screenshots/la-studio-system-logs.PNG`
 
 ## Use Cases
 
@@ -258,7 +261,7 @@ Before changing architecture-heavy code, review the public docs in `docs/` and k
 
 ## License
 
-LA Studio is released under the MIT License.
+LA Studio is released under the **GNU General Public License v3.0**. Check out `LICENSE` for more details.0 license.
 
 ---
 
