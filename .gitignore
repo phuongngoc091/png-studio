@@ -104,6 +104,7 @@ scripts/__pycache__/
 
 ref-projects/
 .github/
+LA-Studio/
 
 # Speckit / specify artifacts: ignore generated spec kit files but keep constitution
 **/*speckit*
