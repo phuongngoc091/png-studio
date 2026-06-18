@@ -261,7 +261,7 @@ Before changing architecture-heavy code, review the public docs in `docs/` and k
 
 ## License
 
-LA Studio is released under the **GNU General Public License v3.0**. Check out `LICENSE` for more details.0 license.
+LA Studio is released under the **GNU General Public License v3.0**. Check out `LICENSE` for more details.
 
 ---
 
