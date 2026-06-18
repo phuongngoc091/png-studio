@@ -104,6 +104,11 @@ scripts/__pycache__/
 
 ref-projects/
 .github/
+!.github/
+.github/*
+!.github/workflows/
+.github/workflows/*
+!.github/workflows/windows-release.yml
 LA-Studio/
 
 # Speckit / specify artifacts: ignore generated spec kit files but keep constitution

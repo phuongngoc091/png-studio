@@ -51,6 +51,33 @@ static QString deriveVariant(const QString &id, const QString &engineFamily)
     return id;
 }
 
+static QString normalizedDirectoryPath(const QString &path)
+{
+    QString normalized = QDir(path).canonicalPath();
+    if (normalized.isEmpty()) {
+        normalized = QDir(path).absolutePath();
+    }
+    normalized = QDir::cleanPath(normalized);
+#ifdef Q_OS_WIN
+    normalized = normalized.toCaseFolded();
+#endif
+    return normalized;
+}
+
+static bool isDirectoryInsideDirectory(const QString &directory, const QString &parentDirectory)
+{
+    const QString normalizedDirectory = normalizedDirectoryPath(directory);
+    const QString normalizedParent = normalizedDirectoryPath(parentDirectory);
+    if (normalizedDirectory.isEmpty() || normalizedParent.isEmpty() || normalizedDirectory == normalizedParent) {
+        return false;
+    }
+
+    const QString parentRoot = normalizedParent.endsWith(u'/')
+        ? normalizedParent
+        : normalizedParent + u'/';
+    return normalizedDirectory.startsWith(parentRoot);
+}
+
 // ---------------------------------------------------------------------------
 // Migrate legacy flat runtime folders into hierarchical structure.
 // Legacy: backends/crispasr-win-x86_64-cpu-v0.6.8/
@@ -570,11 +597,7 @@ bool RuntimeManager::removeRuntimeVersion(const QString &id, const QString &vers
         // Unload dynamically loaded engines if we are removing the active version
         emit runtimeVersionAboutToBeRemoved(id, version);
 
-        const QString backendsPath = QDir(PathUtils::backendsDir()).canonicalPath();
-        const QString runtimePath = QDir(info.directory).canonicalPath();
-        const QString backendsRoot = QDir::cleanPath(backendsPath) + QDir::separator();
-        const QString runtimeRoot = QDir::cleanPath(runtimePath) + QDir::separator();
-        if (backendsPath.isEmpty() || runtimePath.isEmpty() || !runtimeRoot.startsWith(backendsRoot)) {
+        if (!isDirectoryInsideDirectory(info.directory, PathUtils::backendsDir())) {
             Logger::error("RuntimeManager", "Refusing to remove runtime outside backends path: " + info.directory);
             return false;
         }

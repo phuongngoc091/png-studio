@@ -56,17 +56,11 @@ public:
         QString dir = QDir::toNativeSeparators(fi.absolutePath());
 
         QByteArray oldPath = qgetenv("PATH");
-        QStringList pathEntries = QString::fromLocal8Bit(oldPath).split(QDir::listSeparator(), Qt::SkipEmptyParts);
-        if (!pathEntries.contains(dir, Qt::CaseInsensitive)) {
-            pathEntries.prepend(dir);
-        }
-        const QString ggmlDir = QDir::toNativeSeparators(QDir::cleanPath(fi.absolutePath() + "/../ggml/bin"));
-        if (QDir(ggmlDir).exists() && !pathEntries.contains(ggmlDir, Qt::CaseInsensitive)) {
-            pathEntries.prepend(ggmlDir);
-        }
-        qputenv("PATH", pathEntries.join(QDir::listSeparator()).toLocal8Bit());
+        const QStringList runtimeDirs = crispRuntimeDependencyDirs(cleanLibPath);
+        crispPrependRuntimeDirsToPath(runtimeDirs);
 
 #ifdef Q_OS_WIN
+        QVector<HMODULE> preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
         SetDllDirectoryW((LPCWSTR)dir.utf16());
 #endif
 
@@ -75,6 +69,7 @@ public:
         bool ok = m_lib.load();
 
 #ifdef Q_OS_WIN
+        crispReleasePreloadedRuntimeDlls(preloadedDlls);
         SetDllDirectoryW(NULL);
 #endif
 

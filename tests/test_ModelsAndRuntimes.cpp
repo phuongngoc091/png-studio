@@ -14,6 +14,7 @@
 #include <QDir>
 #include <QFile>
 #include <QScopeGuard>
+#include <QSet>
 #include <QTemporaryDir>
 
 namespace LAStudio {
@@ -120,8 +121,17 @@ void TestModelsAndRuntimes::testVoiceDesignFamiliesExposeRuntimeOptions()
     for (const QString &familyId : expectedFamilyIds) {
         const QVariantMap modelItem = familyModel.itemForFamily(familyId);
         QVERIFY2(!modelItem.isEmpty(), qPrintable(QStringLiteral("CapabilityFamilyModel should expose ") + familyId));
-        QVERIFY2(!modelItem.value(QStringLiteral("runtimeOptions")).toList().isEmpty(),
+        const QVariantList runtimeOptions = modelItem.value(QStringLiteral("runtimeOptions")).toList();
+        QVERIFY2(!runtimeOptions.isEmpty(),
                  qPrintable(familyId + QStringLiteral(" should have runtime options to render for user selection")));
+
+        QSet<QString> runtimeIds;
+        for (const QVariant &runtimeValue : runtimeOptions) {
+            const QString runtimeId = runtimeValue.toMap().value(QStringLiteral("id")).toString();
+            QVERIFY2(!runtimeIds.contains(runtimeId),
+                     qPrintable(familyId + QStringLiteral(" should expose one runtime row per runtime id")));
+            runtimeIds.insert(runtimeId);
+        }
     }
 }
 

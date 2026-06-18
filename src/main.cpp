@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     app.setApplicationName(QStringLiteral("LA Studio"));
     app.setApplicationVersion(QStringLiteral("0.1.0"));
     // Set application window icon from the embedded .ico resource.
-    app.setWindowIcon(QIcon(QStringLiteral(":/icons/app_icon.ico")));
+    app.setWindowIcon(QIcon(QStringLiteral(":/LAStudio/icons/app_icon.ico")));
 
     LAStudio::Logger::init();
     LAStudio::Logger::info("App", "Application starting...");

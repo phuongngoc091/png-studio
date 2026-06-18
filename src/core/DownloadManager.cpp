@@ -41,6 +41,7 @@ QVariantList DownloadManager::activeDownloads() const
             m[QStringLiteral("filename")]       = it->filename;
             m[QStringLiteral("bytesReceived")]  = it->bytesReceived;
             m[QStringLiteral("bytesTotal")]     = it->bytesTotal;
+            m[QStringLiteral("metadata")]       = it->metadata;
             list.append(m);
         }
     }

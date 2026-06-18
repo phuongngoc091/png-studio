@@ -107,16 +107,20 @@ Rectangle {
         return familyItem && familyItem.selectedFiles ? familyItem.selectedFiles : ({})
     }
 
-    function activeDownload(fileName) {
+    function activeDownload(fileName, runtimeId, version) {
         var downloads = AppController.downloads.activeDownloads
         for (var i = 0; i < downloads.length; i++) {
-            if (downloads[i].filename === fileName) return downloads[i]
+            if (downloads[i].filename !== fileName) continue
+            if (runtimeId && version && downloads[i].metadata) {
+                if (downloads[i].metadata.id !== runtimeId || downloads[i].metadata.version !== version) continue
+            }
+            return downloads[i]
         }
         return null
     }
 
-    function downloadProgressText(fileName) {
-        var item = activeDownload(fileName)
+    function downloadProgressText(fileName, runtimeId, version) {
+        var item = activeDownload(fileName, runtimeId, version)
         if (!item) return ""
         if (item.bytesTotal <= 0) return "Starting..."
         var pct = Math.round((item.bytesReceived / item.bytesTotal) * 100)
@@ -140,7 +144,8 @@ Rectangle {
         runtimeVersionDialog.engineFamily = runtime.engineFamily || ""
         runtimeVersionDialog.assetName = runtime.asset || ""
         runtimeVersionDialog.sourceUrl = runtime.source || ""
-        runtimeVersionDialog.defaultVersion = runtime.version || ""
+        runtimeVersionDialog.defaultVersion = runtime.latestVersion || runtime.defaultVersion || runtime.version || ""
+        runtimeVersionDialog.availableVersions = runtime.availableVersions || []
         runtimeVersionDialog.engineType = detailPanel.f && detailPanel.f.familyCapability === "stt" ? "stt" : "tts"
         runtimeVersionDialog.accentColor = detailPanel.f ? (detailPanel.f.accent || Theme.accent) : Theme.accent
         runtimeVersionDialog.open()
@@ -1245,7 +1250,7 @@ Rectangle {
                                 return 0;
                             }
                             property bool selected: modelData.id === root.pendingRuntimeId && installState === 3
-                            property var download: root.activeDownload(modelData.asset)
+                            property var download: root.activeDownload(modelData.asset, modelData.id, modelData.version)
 
                             RowLayout {
                                 id: runtimeLayout
@@ -1348,7 +1353,7 @@ Rectangle {
                                 PrimaryButton {
                                     text: {
                                         if (installState === 3) return runtimeRow.selected ? "Selected" : "Use";
-                                        if (installState === 1) return root.downloadProgressText(modelData.asset);
+                                        if (installState === 1) return root.downloadProgressText(modelData.asset, modelData.id, modelData.version);
                                         if (installState === 2) return "Installing...";
                                         return "Download";
                                     }

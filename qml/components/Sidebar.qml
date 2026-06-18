@@ -33,7 +33,7 @@ Rectangle {
 
             Image {
                 anchors.centerIn: parent
-                source: "qrc:/icons/app_icon_32.png"
+                source: "qrc:/LAStudio/icons/app_icon_32.png"
                 width: 24
                 height: 24
                 fillMode: Image.PreserveAspectFit

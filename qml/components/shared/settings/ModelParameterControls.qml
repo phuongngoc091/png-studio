@@ -151,7 +151,7 @@ ColumnLayout {
                 checked: root.dynamicSettings[item.id] !== undefined
                          ? !!root.dynamicSettings[item.id]
                          : !!item.default
-                onCheckedChanged: {
+                onClicked: {
                     if (root.dynamicSettings[item.id] === checked)
                         return
                     root.updateParameter(item.id, checked)

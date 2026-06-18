@@ -156,6 +156,43 @@ function Ensure-MsvcEnvironment {
     }
 }
 
+function Test-CatalogRequiresWebp {
+    $catalogPath = Join-Path $RepoRoot "data\catalog.json"
+    if (-not (Test-Path -LiteralPath $catalogPath)) {
+        return $false
+    }
+    return [bool](Select-String -LiteralPath $catalogPath -Pattern '"mimeType"\s*:\s*"image/webp"' -Quiet)
+}
+
+function Ensure-WebpImageFormatPlugin {
+    param(
+        [string] $QtPrefixPath,
+        [string] $DeployRoot
+    )
+
+    if (-not (Test-CatalogRequiresWebp)) {
+        return
+    }
+
+    $pluginName = "qwebp.dll"
+    $sourcePlugin = Join-Path $QtPrefixPath "plugins\imageformats\$pluginName"
+    $targetDir = Join-Path $DeployRoot "imageformats"
+    $targetPlugin = Join-Path $targetDir $pluginName
+
+    if (-not (Test-Path -LiteralPath $targetPlugin)) {
+        if (-not (Test-Path -LiteralPath $sourcePlugin)) {
+            throw "Catalog contains WebP thumbnails, but Qt WebP image plugin was not found at '$sourcePlugin'. Install the Qt Image Formats module (qtimageformats) for this Qt kit."
+        }
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+        Copy-Item -LiteralPath $sourcePlugin -Destination $targetPlugin -Force
+        Write-Host ">> Deployed Qt WebP image plugin: $targetPlugin" -ForegroundColor Cyan
+    }
+
+    if (-not (Test-Path -LiteralPath $targetPlugin)) {
+        throw "Catalog contains WebP thumbnails, but '$targetPlugin' was not deployed."
+    }
+}
+
 Ensure-Command -Name "cmake" -FallbackPaths @(
     "C:\Qt\Tools\CMake_64\bin",
     "C:\Program Files\CMake\bin"
@@ -245,6 +282,7 @@ if (-not $SkipDeploy) {
         Write-Host ">> Running windeployqt" -ForegroundColor Cyan
         & $windeployqt --verbose 0 --qmldir qml --no-translations --compiler-runtime $exePath
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        Ensure-WebpImageFormatPlugin -QtPrefixPath $qtPrefixPath -DeployRoot $buildDir
     } else {
         Write-Warning "windeployqt not found at $windeployqt. Skipping deployment."
     }

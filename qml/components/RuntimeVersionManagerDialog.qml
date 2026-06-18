@@ -14,6 +14,7 @@ Dialog {
     property string engineType: "tts"
     property string sourceUrl: ""
     property string defaultVersion: ""
+    property var availableVersions: []
     property color accentColor: Theme.accent
 
     signal versionSelected(string runtimeId, string version)
@@ -40,6 +41,15 @@ Dialog {
     }
 
     function knownVersions() {
+        if (availableVersions && availableVersions.length > 0) {
+            var catalogVersions = []
+            for (var i = 0; i < availableVersions.length; i++) {
+                var value = availableVersions[i]
+                var version = typeof value === "string" ? value : (value.version || "")
+                if (version !== "") catalogVersions.push({ version: version })
+            }
+            if (catalogVersions.length > 0) return catalogVersions
+        }
         if (engineId.indexOf("vibevoice") !== -1) return [
             { version: "v0.1.0" }
         ]
@@ -50,6 +60,7 @@ Dialog {
             { version: "v0.1.0" }
         ]
         if (engineId.indexOf("crispasr") !== -1) return [
+            { version: "v0.7.2" },
             { version: "v0.7.1" }
         ]
         if (engineId.indexOf("whisper") !== -1) return [
@@ -86,7 +97,11 @@ Dialog {
         var downloads = AppController.downloads.activeDownloads
         var asset = assetName !== "" ? assetName : fallbackAsset()
         for (var i = 0; i < downloads.length; i++) {
-            if (downloads[i].filename === asset) return downloads[i]
+            if (downloads[i].filename !== asset) continue
+            if (downloads[i].metadata) {
+                if (downloads[i].metadata.id !== engineId || downloads[i].metadata.version !== version) continue
+            }
+            return downloads[i]
         }
         return null
     }
@@ -221,8 +236,8 @@ Dialog {
                         selected: (root.engineType === "tts" && AppController.settings.selectedTtsRuntime === root.engineId && AppController.settings.selectedTtsRuntimeVersion === modelData.version) ||
                                   (root.engineType === "stt" && AppController.settings.selectedSttRuntime === root.engineId && AppController.settings.selectedSttRuntimeVersion === modelData.version)
                         accentColor: root.accentColor
-                        onSelectRequested: root.selectVersion(version)
-                        onRemoveRequested: {
+                        onSelectRequested: function(version) { root.selectVersion(version) }
+                        onRemoveRequested: function(version) {
                             AppController.runtimes.removeRuntimeVersion(root.engineId, version)
                             if (root.engineType === "tts" && AppController.settings.selectedTtsRuntimeVersion === version) {
                                 AppController.settings.selectedTtsRuntimeVersion = ""
@@ -251,7 +266,7 @@ Dialog {
                         accentColor: root.accentColor
                         downloadLabel: root.downloadText(modelData.version)
                         downloading: root.activeDownload(modelData.version) !== null
-                        onDownloadRequested: root.enqueueVersion(version)
+                        onDownloadRequested: function(version) { root.enqueueVersion(version) }
                     }
                 }
 
@@ -307,14 +322,19 @@ Dialog {
     component EmptyState: Rectangle {
         id: emptyState
         property string text: ""
-        width: parent ? parent.width : 0
-        height: 52
+        Layout.fillWidth: true
+        implicitHeight: 52
         color: "transparent"
         Text {
-            anchors.centerIn: parent
+            anchors.fill: parent
+            anchors.leftMargin: Theme.paddingLarge
+            anchors.rightMargin: Theme.paddingLarge
             text: emptyState.text
             color: Theme.textSecondary
             font.pixelSize: Theme.fontSmall
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
         }
     }
 

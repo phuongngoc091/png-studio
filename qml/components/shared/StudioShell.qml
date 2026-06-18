@@ -96,9 +96,17 @@ RowLayout {
         var fam = activeFamily()
         if (!fam || !fam.runtimes) return []
         var out = []
+        var seen = ({})
         for (var i = 0; i < fam.runtimes.length; i++) {
-            if (runtimeInstalled(fam.runtimes[i].id))
-                out.push(fam.runtimes[i])
+            var runtime = fam.runtimes[i]
+            if (!runtime.id || seen[runtime.id] || !runtimeInstalled(runtime.id)) continue
+            seen[runtime.id] = true
+            var item = Object.assign({}, runtime)
+            var versions = AppController.runtimes.runtimeVersions(runtime.id)
+            var currentVersion = studioContext ? studioContext.runtimeVersion : ""
+            item.version = currentVersion
+            if (item.version === "" && versions.length > 0) item.version = versions[0].version || ""
+            out.push(item)
         }
         return out
     }

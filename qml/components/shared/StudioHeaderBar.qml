@@ -43,7 +43,7 @@ Rectangle {
         }
 
         Image {
-            source: "qrc:/icons/app_icon_32.png"
+            source: "qrc:/LAStudio/icons/app_icon_32.png"
             Layout.preferredWidth: 36
             Layout.preferredHeight: 36
             fillMode: Image.PreserveAspectFit

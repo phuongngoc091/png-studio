@@ -36,8 +36,6 @@ LA Studio, short for Local Audio Studio, is an offline AI audio workstation for 
 
 The app brings together local speech-to-text, text-to-speech, voice cloning, voice design, model discovery, Hugging Face downloads, runtime installation, hardware checks, and audio preview tools behind a modern desktop interface. It is built with C++17, Qt 6/QML, CMake, and native AI runtime adapters for fast local inference.
 
-**SEO keywords:** offline AI audio studio, local text to speech app, speech to text desktop app, voice cloning software, voice design tool, Whisper desktop app, Qwen3 ASR, Kokoro TTS, VoxCPM2, OmniVoice, Hugging Face model downloader, C++ Qt AI app.
-
 ## Features
 
 | Feature | What it does | Local AI / Runtime focus |
@@ -68,17 +66,6 @@ The app brings together local speech-to-text, text-to-speech, voice cloning, voi
 | Runtime Settings | System Logs |
 | --- | --- |
 | ![LA Studio runtime and hardware settings](docs/screenshots/la-studio-runtime-settings.PNG) | ![LA Studio system logs and diagnostics screen](docs/screenshots/la-studio-system-logs.PNG) |
-
-Expected screenshot filenames:
-
-- `docs/screenshots/la-studio-home.PNG`
-- `docs/screenshots/la-studio-models-gallery.PNG`
-- `docs/screenshots/la-studio-speech-to-text.PNG`
-- `docs/screenshots/la-studio-text-to-speech.PNG`
-- `docs/screenshots/la-studio-voice-cloning.PNG`
-- `docs/screenshots/la-studio-voice-design.PNG`
-- `docs/screenshots/la-studio-runtime-settings.PNG`
-- `docs/screenshots/la-studio-system-logs.PNG`
 
 ## Use Cases
 

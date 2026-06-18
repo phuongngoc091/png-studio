@@ -687,7 +687,18 @@ int DownloadInstallService::runtimeState(const QString &runtimeId, const QString
     if (m_downloads && !assetName.isEmpty()) {
         QVariantList active = m_downloads->activeDownloads();
         for (const QVariant &val : active) {
-            if (val.toMap().value(QStringLiteral("filename")).toString() == assetName) {
+            const QVariantMap activeDownload = val.toMap();
+            if (activeDownload.value(QStringLiteral("filename")).toString() != assetName) {
+                continue;
+            }
+            const QVariantMap metadata = activeDownload.value(QStringLiteral("metadata")).toMap();
+            const QString activeRuntimeId = metadata.value(QStringLiteral("id")).toString();
+            const QString activeVersion = metadata.value(QStringLiteral("version")).toString();
+            if ((!activeRuntimeId.isEmpty() || !activeVersion.isEmpty()) &&
+                (activeRuntimeId != runtimeId || activeVersion != version)) {
+                continue;
+            }
+            if (activeRuntimeId.isEmpty() || activeRuntimeId == runtimeId) {
                 return Downloading;
             }
         }

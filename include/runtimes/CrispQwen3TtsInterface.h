@@ -63,8 +63,12 @@ public:
 
         QFileInfo fi(cleanLibPath);
         QString dir = QDir::toNativeSeparators(fi.absolutePath());
+        QByteArray oldPath = qgetenv("PATH");
+        const QStringList runtimeDirs = crispRuntimeDependencyDirs(cleanLibPath);
+        crispPrependRuntimeDirsToPath(runtimeDirs);
 
 #ifdef Q_OS_WIN
+        QVector<HMODULE> preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
         SetDllDirectoryW((LPCWSTR)dir.utf16());
 #endif
 
@@ -73,12 +77,14 @@ public:
         bool ok = m_lib.load();
 
 #ifdef Q_OS_WIN
+        crispReleasePreloadedRuntimeDlls(preloadedDlls);
         SetDllDirectoryW(NULL);
 #endif
 
         if (!ok) {
             m_errorString = m_lib.errorString();
             Logger::error("CrispQwen3Tts", "Failed to load library: " + m_errorString);
+            qputenv("PATH", oldPath);
             return false;
         }
 

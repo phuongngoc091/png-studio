@@ -110,6 +110,15 @@ laStudio:
       label: CPU
       name: CPU CrispASR (x64)
       asset: libcrispasr-windows-x86_64.tar.gz
+      version: v0.7.2
+      source: https://github.com/CrispStrobe/CrispASR/releases/download/
+      library: bin/crispasr.dll
+      backend: qwen3-tts
+    - id: crispasr-win-x86_64-cpu
+      engineFamily: crispasr
+      label: CPU
+      name: CPU CrispASR (x64)
+      asset: libcrispasr-windows-x86_64.tar.gz
       version: v0.7.1
       source: https://github.com/CrispStrobe/CrispASR/releases/download/
       library: bin/crispasr.dll
@@ -119,7 +128,25 @@ laStudio:
       label: CUDA
       name: CUDA CrispASR (x64)
       asset: libcrispasr-windows-x86_64-cuda.tar.gz
+      version: v0.7.2
+      source: https://github.com/CrispStrobe/CrispASR/releases/download/
+      library: bin/crispasr.dll
+      backend: qwen3-tts
+    - id: crispasr-win-x86_64-cuda
+      engineFamily: crispasr
+      label: CUDA
+      name: CUDA CrispASR (x64)
+      asset: libcrispasr-windows-x86_64-cuda.tar.gz
       version: v0.7.1
+      source: https://github.com/CrispStrobe/CrispASR/releases/download/
+      library: bin/crispasr.dll
+      backend: qwen3-tts
+    - id: crispasr-win-x86_64-vulkan
+      engineFamily: crispasr
+      label: Vulkan
+      name: Vulkan CrispASR (x64)
+      asset: libcrispasr-windows-x86_64-vulkan.tar.gz
+      version: v0.7.2
       source: https://github.com/CrispStrobe/CrispASR/releases/download/
       library: bin/crispasr.dll
       backend: qwen3-tts

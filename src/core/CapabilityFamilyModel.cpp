@@ -15,6 +15,7 @@
 #include <QRegularExpression>
 #include <QSet>
 #include <QLocale>
+#include <QVersionNumber>
 
 namespace LAStudio {
 
@@ -361,6 +362,41 @@ QPair<QString, QString> preferredRuntime(const QVariantList &runtimeOptions)
         }
     }
     return {fallbackId, fallbackVersion};
+}
+
+QVersionNumber parsedRuntimeVersion(QString version)
+{
+    version = version.trimmed();
+    if (version.startsWith(QLatin1Char('v'), Qt::CaseInsensitive))
+        version.remove(0, 1);
+    return QVersionNumber::fromString(version);
+}
+
+int compareRuntimeVersions(const QString &left, const QString &right)
+{
+    const QVersionNumber leftVersion = parsedRuntimeVersion(left);
+    const QVersionNumber rightVersion = parsedRuntimeVersion(right);
+    if (!leftVersion.isNull() && !rightVersion.isNull())
+        return QVersionNumber::compare(leftVersion, rightVersion);
+    return QString::compare(left, right, Qt::CaseInsensitive);
+}
+
+bool runtimeVersionGreater(const QString &left, const QString &right)
+{
+    if (right.isEmpty())
+        return !left.isEmpty();
+    return compareRuntimeVersions(left, right) > 0;
+}
+
+bool installedRuntimeVersion(const QVariantList &installedVersions, const QString &version)
+{
+    if (version.isEmpty())
+        return !installedVersions.isEmpty();
+    for (const QVariant &installed : installedVersions) {
+        if (installed.toMap().value(QStringLiteral("version")).toString() == version)
+            return true;
+    }
+    return false;
 }
 
 QString statusKind(bool ready, const QString &statusReason)
@@ -967,55 +1003,129 @@ void CapabilityFamilyModel::updateItems()
         bool hasCompatibleRuntime = false;
         bool hasInstalledCompatibleRuntime = false;
         QVariantList options;
+        QHash<QString, QVariantList> runtimesById;
+        QStringList runtimeIdOrder;
 
         for (const QVariant &rtVal : runtimes) {
             QVariantMap rt = rtVal.toMap();
-            QVariantMap comp = HardwareManager::instance()->runtimeCompatibility(rt);
-            bool isComp = comp.value(QStringLiteral("compatible")).toBool();
-
             QString runtimeId = rt.value(QStringLiteral("id")).toString();
-            QVariantList installedVers = m_runtimes->runtimeVersions(runtimeId);
-            QString reqVer = rt.value(QStringLiteral("version")).toString();
+            if (runtimeId.isEmpty())
+                continue;
+            if (!runtimesById.contains(runtimeId)) {
+                runtimeIdOrder.append(runtimeId);
+            }
+            runtimesById[runtimeId].append(rt);
+        }
 
+        const QString savedRuntimeId = activeCap == QStringLiteral("stt")
+            ? (m_settings ? m_settings->selectedSttRuntime() : QString())
+            : (m_settings ? m_settings->selectedTtsRuntime() : QString());
+        const QString savedRuntimeVersion = activeCap == QStringLiteral("stt")
+            ? (m_settings ? m_settings->selectedSttRuntimeVersion() : QString())
+            : (m_settings ? m_settings->selectedTtsRuntimeVersion() : QString());
+
+        for (const QString &runtimeId : runtimeIdOrder) {
+            const QVariantList runtimeEntries = runtimesById.value(runtimeId);
+            if (runtimeEntries.isEmpty())
+                continue;
+
+            QVariantList installedVers = m_runtimes->runtimeVersions(runtimeId);
+            QString latestVersion;
+            QVariantMap latestRuntime;
+            QVariantList availableVersions;
+            QVariantList versionOptions;
+            QString selectedInstalledVersion;
+            QString highestInstalledVersion;
+            bool hasInstalling = false;
+            bool hasDownloading = false;
+            int latestInstallState = 0;
             bool installed = false;
-            if (activeCap == QStringLiteral("stt")) {
-                // STT only checks id existence in legacy, or matching version if required
-                installed = !installedVers.isEmpty();
-            } else {
-                if (reqVer.isEmpty()) {
-                    installed = !installedVers.isEmpty();
-                } else {
-                    for (const QVariant &inst : installedVers) {
-                        if (inst.toMap().value(QStringLiteral("version")).toString() == reqVer) {
-                            installed = true;
-                            break;
-                        }
+
+            for (const QVariant &entryVal : runtimeEntries) {
+                QVariantMap rt = entryVal.toMap();
+                const QString reqVer = rt.value(QStringLiteral("version")).toString();
+                availableVersions.append(reqVer);
+                versionOptions.append(rt);
+
+                if (runtimeVersionGreater(reqVer, latestVersion)) {
+                    latestVersion = reqVer;
+                    latestRuntime = rt;
+                }
+
+                // Filesystem fallback:
+                // Runtime extraction + manifest write can complete before runtime registry refresh
+                // propagates to this model. If runtimeVersions() is temporarily empty but the
+                // expected runtime library already exists in backends/, treat it as installed.
+                QString libraryPath;
+                const QString runtimeLibrary = rt.value(QStringLiteral("library")).toString();
+                const QString engineFamily = rt.value(QStringLiteral("engineFamily")).toString();
+                if (!runtimeLibrary.isEmpty() && !engineFamily.isEmpty() && runtimeId.startsWith(engineFamily + QStringLiteral("-"))) {
+                    const QString variant = runtimeId.mid(engineFamily.length() + 1);
+                    const QString versionSuffix = reqVer.isEmpty() ? QString() : (QStringLiteral("-") + reqVer);
+                    const QString runtimeDir = PathUtils::backendsDir()
+                        + QStringLiteral("/") + engineFamily
+                        + QStringLiteral("/") + variant + versionSuffix;
+                    libraryPath = runtimeDir + QStringLiteral("/") + runtimeLibrary;
+                }
+
+                int versionInstallState = 0; // NotInstalled
+                AppController *appInstance = AppController::instance();
+                if (appInstance && appInstance->downloadInstall()) {
+                    versionInstallState = appInstance->downloadInstall()->runtimeState(
+                        runtimeId,
+                        reqVer,
+                        libraryPath,
+                        rt.value(QStringLiteral("asset")).toString());
+                }
+                if (reqVer == latestVersion)
+                    latestInstallState = versionInstallState;
+                if (versionInstallState == 2)
+                    hasInstalling = true;
+                if (versionInstallState == 1)
+                    hasDownloading = true;
+                if (versionInstallState == 3 || installedRuntimeVersion(installedVers, reqVer)) {
+                    installed = true;
+                    if (runtimeId == savedRuntimeId && reqVer == savedRuntimeVersion) {
+                        selectedInstalledVersion = reqVer;
+                    }
+                    if (runtimeVersionGreater(reqVer, highestInstalledVersion)) {
+                        highestInstalledVersion = reqVer;
                     }
                 }
             }
 
-            // Filesystem fallback:
-            // Runtime extraction + manifest write can complete before runtime registry refresh
-            // propagates to this model. If runtimeVersions() is temporarily empty but the
-            // expected runtime library already exists in backends/, treat it as installed.
-            QString libraryPath;
-            const QString runtimeLibrary = rt.value(QStringLiteral("library")).toString();
-            const QString engineFamily = rt.value(QStringLiteral("engineFamily")).toString();
-            if (!runtimeLibrary.isEmpty() && !engineFamily.isEmpty() && runtimeId.startsWith(engineFamily + QStringLiteral("-"))) {
-                const QString variant = runtimeId.mid(engineFamily.length() + 1);
-                const QString versionSuffix = reqVer.isEmpty() ? QString() : (QStringLiteral("-") + reqVer);
-                const QString runtimeDir = PathUtils::backendsDir()
-                    + QStringLiteral("/") + engineFamily
-                    + QStringLiteral("/") + variant + versionSuffix;
-                libraryPath = runtimeDir + QStringLiteral("/") + runtimeLibrary;
+            if (latestRuntime.isEmpty())
+                latestRuntime = runtimeEntries.first().toMap();
+
+            const QString selectedVersion = !selectedInstalledVersion.isEmpty()
+                ? selectedInstalledVersion
+                : highestInstalledVersion;
+
+            QString resolvedSelectedVersion = selectedVersion;
+            if (!installed && !installedVers.isEmpty()) {
+                installed = true;
+                for (const QVariant &installedVal : installedVers) {
+                    const QString installedVersion = installedVal.toMap().value(QStringLiteral("version")).toString();
+                    if (runtimeId == savedRuntimeId && installedVersion == savedRuntimeVersion) {
+                        resolvedSelectedVersion = installedVersion;
+                        break;
+                    }
+                    if (runtimeVersionGreater(installedVersion, resolvedSelectedVersion)) {
+                        resolvedSelectedVersion = installedVersion;
+                    }
+                }
             }
 
-            int installState = 0; // NotInstalled
-            AppController *appInstance = AppController::instance();
-            if (appInstance && appInstance->downloadInstall()) {
-                installState = appInstance->downloadInstall()->runtimeState(runtimeId, reqVer, libraryPath, rt.value(QStringLiteral("asset")).toString());
+            int installState = installed ? 3 : latestInstallState;
+            if (!installed && installState == 0) {
+                if (hasInstalling)
+                    installState = 2;
+                else if (hasDownloading)
+                    installState = 1;
             }
-            installed = (installState == 3); // Installed
+
+            QVariantMap comp = HardwareManager::instance()->runtimeCompatibility(latestRuntime);
+            bool isComp = comp.value(QStringLiteral("compatible")).toBool();
 
             if (isComp) {
                 hasCompatibleRuntime = true;
@@ -1024,7 +1134,12 @@ void CapabilityFamilyModel::updateItems()
                 }
             }
 
-            QVariantMap opt = rt;
+            QVariantMap opt = latestRuntime;
+            opt[QStringLiteral("version")] = installed ? resolvedSelectedVersion : latestVersion;
+            opt[QStringLiteral("latestVersion")] = latestVersion;
+            opt[QStringLiteral("defaultVersion")] = latestVersion;
+            opt[QStringLiteral("availableVersions")] = availableVersions;
+            opt[QStringLiteral("versionOptions")] = versionOptions;
             opt[QStringLiteral("compatible")] = isComp;
             opt[QStringLiteral("installed")] = installed;
             opt[QStringLiteral("installState")] = installState;

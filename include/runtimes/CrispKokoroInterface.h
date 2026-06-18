@@ -179,23 +179,22 @@ public:
         }
 
         QByteArray oldPath = qgetenv("PATH");
-        QStringList pathEntries = QString::fromLocal8Bit(oldPath).split(QDir::listSeparator(), Qt::SkipEmptyParts);
-        if (!pathEntries.contains(dir, Qt::CaseInsensitive)) {
-            pathEntries.prepend(dir);
-        }
-        if (QDir(ggmlDir).exists() && !pathEntries.contains(ggmlDir, Qt::CaseInsensitive)) {
-            pathEntries.prepend(ggmlDir);
-        }
-        qputenv("PATH", pathEntries.join(QDir::listSeparator()).toLocal8Bit());
+        const QStringList runtimeDirs = crispRuntimeDependencyDirs(cleanLibPath);
+        crispPrependRuntimeDirsToPath(runtimeDirs);
         configureKokoroPhonemizer(cleanLibPath);
 
         #ifdef Q_OS_WIN
+        QVector<HMODULE> preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
         SetDllDirectoryW((LPCWSTR)dir.utf16());
         #endif
 
         m_lib.setFileName(cleanLibPath);
         m_lib.setLoadHints(QLibrary::ExportExternalSymbolsHint);
         bool ok = m_lib.load();
+
+        #ifdef Q_OS_WIN
+        crispReleasePreloadedRuntimeDlls(preloadedDlls);
+        #endif
 
         if (!ok) {
             m_errorString = m_lib.errorString();
