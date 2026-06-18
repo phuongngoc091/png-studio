@@ -1,14 +1,14 @@
-﻿# LA Studio - Offline AI Audio Studio for Speech-to-Text, Text-to-Speech, Voice Cloning, and Voice Design
+﻿<div align="center">
 
-<div align="center">
+<img src="icons/app_icon_256.png" alt="LA Studio app logo" width="128" height="128">
 
-[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![C++ Standard](https://img.shields.io/badge/C%2B%2B-17-orange.svg)](https://en.cppreference.com/w/cpp/compiler_support/17)
-[![Qt Version](https://img.shields.io/badge/Qt-6.5%2B-green.svg)](https://www.qt.io/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
-[![Privacy](https://img.shields.io/badge/Privacy-Offline%20AI-success.svg)]()
+<h1>LA Studio</h1>
 
-**LA Studio is a privacy-first desktop app for running AI audio models locally: speech recognition, text-to-speech, voice cloning, voice design, model downloads, and runtime management in one native C++/Qt application.**
+<p><strong>Offline AI Audio Studio for Speech-to-Text, Text-to-Speech, Voice Cloning, and Voice Design</strong></p>
+
+<p>
+Run private AI audio workflows locally: speech recognition, voice generation, voice cloning, voice design, model downloads, and runtime management in one native C++/Qt desktop app.
+</p>
 
 [Features](#features) |
 [Screenshots](#screenshots) |
@@ -17,6 +17,14 @@
 [Build](#build-from-source) |
 [Architecture](#architecture) |
 [Roadmap](#roadmap)
+
+<br>
+
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![C++ Standard](https://img.shields.io/badge/C%2B%2B-17-orange.svg)](https://en.cppreference.com/w/cpp/compiler_support/17)
+[![Qt Version](https://img.shields.io/badge/Qt-6.5%2B-green.svg)](https://www.qt.io/)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
+[![Privacy](https://img.shields.io/badge/Privacy-Offline%20AI-success.svg)]()
 
 </div>
 
