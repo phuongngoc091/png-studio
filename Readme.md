@@ -16,7 +16,8 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 [Supported Models](#supported-models-and-runtimes) |
 [Build](#build-from-source) |
 [Architecture](#architecture) |
-[Roadmap](#roadmap)
+[Roadmap](#roadmap) |
+[Acknowledgements](#acknowledgements)
 
 <br>
 
@@ -253,6 +254,18 @@ LA Studio is designed for local inference. Audio recordings, prompts, generated 
 Contributions are welcome. Good first areas include UI polish, catalog metadata, runtime adapters, tests, documentation, packaging, and model compatibility validation.
 
 Before changing architecture-heavy code, review the public docs in `docs/` and keep implementation changes aligned with the existing controller, service, and runtime boundaries.
+
+## Acknowledgements
+
+LA Studio exists because of the open-source runtime, tooling, and model ecosystems around local speech AI. Thank you to the maintainers and contributors of these projects:
+
+- [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and [OpenAI Whisper](https://github.com/openai/whisper) for local Whisper speech recognition support.
+- [CrispASR](https://github.com/CrispStrobe/CrispASR) for GGUF runtime packages used by Qwen3-ASR, Qwen3-TTS, Kokoro, VoxCPM2, and VibeVoice workflows in LA Studio.
+- [omnivoice.cpp](https://github.com/dduongtrandai/omnivoice.cpp) and the [k2-fsa / sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) ecosystem for OmniVoice runtime integration.
+- [speech-lm-tts.cpp](https://github.com/dduongtrandai/speech-lm-tts.cpp) for VieNeu-TTS runtime integration.
+- The model authors and communities behind [Kokoro](https://github.com/hexgrad/kokoro), [Qwen speech models](https://github.com/QwenLM), [VoxCPM2](https://huggingface.co/openbmb/VoxCPM2), [VibeVoice](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B), [OmniVoice](https://huggingface.co/k2-fsa/OmniVoice), and [VieNeu-TTS](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2-Turbo).
+
+Runtime packages and model files may have their own licenses, terms, and attribution requirements. Please review the upstream project and model licenses before redistributing any bundled runtime or model assets.
 
 ## License
 
