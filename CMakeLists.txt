@@ -49,6 +49,7 @@ set(LASTUDIO_SOURCES
     src/stt/backends/SttBackendFactory.cpp
     src/stt/backends/WhisperSttBackend.cpp
     src/stt/backends/QwenSttBackend.cpp
+    src/stt/backends/NemotronSttBackend.cpp
     src/tts/TtsEngine.cpp
     src/tts/TtsWorker.cpp
     src/tts/TtsRequestValidator.cpp
@@ -94,6 +95,7 @@ set(LASTUDIO_HEADERS
     include/runtimes/CrispVibeVoiceInterface.h
     include/runtimes/SpeechLmTtsInterface.h
     include/runtimes/CrispQwen3SttInterface.h
+    include/runtimes/CrispNemotronSttInterface.h
     src/core/RuntimeManager.h
     src/core/HardwareManager.h
     src/core/QmlLogger.h
@@ -113,6 +115,7 @@ set(LASTUDIO_HEADERS
     src/stt/backends/SttBackendFactory.h
     src/stt/backends/WhisperSttBackend.h
     src/stt/backends/QwenSttBackend.h
+    src/stt/backends/NemotronSttBackend.h
     src/tts/TtsEngine.h
     src/tts/TtsWorker.h
     src/tts/TtsRequestValidator.h
@@ -233,6 +236,7 @@ qt_add_qml_module(LAStudio
         data/registry_schema.sql
         data/language-sets/omnivoice-v1.json
         data/language-sets/whisper-v1.json
+        data/language-sets/nemotron-3.5-v1.json
         data/language-sets/default.json
         icons/app_icon.ico
         icons/app_icon_16.png

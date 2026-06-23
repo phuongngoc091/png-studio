@@ -62,6 +62,11 @@
       "familyId": "qwen3-asr-1.7b",
       "modelId": "Qwen/Qwen3-ASR-1.7B",
       "reason": "Medium offline speech-to-text and audio Q&A model."
+    },
+    {
+      "familyId": "nemotron-3.5-asr-streaming-0.6b",
+      "modelId": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+      "reason": "Streaming-native multilingual ASR with a compact 0.6B local GGUF model."
     }
   ]
 }

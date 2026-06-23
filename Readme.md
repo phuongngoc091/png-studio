@@ -31,6 +31,10 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 
 ---
 
+## Update â€” 23 June 2026
+
+LA Studio now supports NVIDIA **Nemotron-3.5 ASR Streaming 0.6B** for local multilingual speech-to-text through CrispASR. The Model Gallery can download the Q4_K or F16 GGUF model and compatible CrispASR v0.8.0 CPU, CUDA, or Vulkan runtime packages.
+
 ## Overview
 
 LA Studio, short for Local Audio Studio, is an offline AI audio workstation for creators, developers, researchers, and teams that need local speech AI without sending audio files, prompts, or generated voices to cloud APIs.

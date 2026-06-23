@@ -173,8 +173,14 @@ void SttModelSession::performLoad(const SessionConfiguration &config)
     auto resolved = StudioConfigurationResolver::resolve(config.selection);
     QString modelPath = resolved.resolvedPaths.value(QStringLiteral("model")).toString();
 
-    Logger::info(QStringLiteral("SttModelSession"), QStringLiteral("performLoad modelPath: %1, runtimePath: %2").arg(modelPath, config.runtimePath));
-    m_engine->loadModel(modelPath, false, config.runtimePath);
+    const QString runtimeId = config.selection.runtimeId;
+    const bool useGpu = runtimeId.contains(QStringLiteral("cuda"), Qt::CaseInsensitive) ||
+                        runtimeId.contains(QStringLiteral("vulkan"), Qt::CaseInsensitive);
+    Logger::info(QStringLiteral("SttModelSession"),
+                 QStringLiteral("performLoad modelPath: %1, runtimePath: %2, useGpu: %3")
+                     .arg(modelPath, config.runtimePath)
+                     .arg(useGpu));
+    m_engine->loadModel(modelPath, useGpu, config.runtimePath);
 }
 
 void SttModelSession::performUnload()

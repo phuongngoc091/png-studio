@@ -1107,23 +1107,28 @@ Rectangle {
                                         Layout.fillWidth: true
                                         spacing: 2
                                         Text {
+                                            Layout.fillWidth: true
                                             text: modelData.name
                                             color: Theme.textPrimary
                                             font.pixelSize: Theme.fontSmall
                                             font.bold: true
+                                            elide: Text.ElideRight
                                         }
                                         Text {
+                                            Layout.fillWidth: true
                                             text: modelData.purpose + " - " + modelData.selectedFile + (modelData.selectedSize ? " - " + modelData.selectedSize : "")
                                             color: Theme.textSecondary
                                             font.pixelSize: 10
+                                            elide: Text.ElideRight
                                         }
                                     }
 
                                     AppComboBox {
                                         visible: modelData.candidates !== undefined && modelData.candidates.length > 0
                                         Layout.fillWidth: root.modalMode
-                                        Layout.preferredWidth: root.modalMode ? 0 : 320
-                                        Layout.minimumWidth: root.modalMode ? 260 : 0
+                                        Layout.preferredWidth: root.modalMode ? 0 : 240
+                                        Layout.minimumWidth: root.modalMode ? 220 : 160
+                                        Layout.maximumWidth: root.modalMode ? 360 : 280
                                         Layout.preferredHeight: 34
                                         model: modelData.candidates ? modelData.candidates : []
                                         currentIndex: model.indexOf(modelData.selectedFile)
@@ -1143,10 +1148,12 @@ Rectangle {
                                     }
 
                                     Text {
+                                        Layout.minimumWidth: 76
                                         text: installState === 3 ? "Installed" : (installState === 1 ? root.downloadProgressText(selectedFile) : "Not installed")
                                         color: installState === 3 ? Theme.success : (installState === 1 ? Theme.warning : Theme.textSecondary)
                                         font.pixelSize: Theme.fontSmall
                                         font.bold: installState === 3
+                                        elide: Text.ElideRight
                                     }
 
                                     PrimaryButton {
@@ -1156,6 +1163,7 @@ Rectangle {
                                         visible: installState === 0 || installState === 1
                                         implicitWidth: 100
                                         implicitHeight: 32
+                                        Layout.minimumWidth: 100
                                         quiet: true
                                         onClicked: {
                                             if (installState === 1) {

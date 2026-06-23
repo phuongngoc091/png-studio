@@ -66,6 +66,11 @@
           "familyId": "qwen3-asr-1.7b",
           "modelId": "Qwen/Qwen3-ASR-1.7B",
           "reason": "Medium offline speech-to-text and audio Q&A model."
+        },
+        {
+          "familyId": "nemotron-3.5-asr-streaming-0.6b",
+          "modelId": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+          "reason": "Streaming-native multilingual ASR with a compact 0.6B local GGUF model."
         }
       ]
     }
@@ -5261,6 +5266,235 @@
     }
   ],
   "sttFamilies": [
+    {
+      "id": "nemotron-3.5-asr-streaming-0.6b",
+      "localDir": "nemotron-3.5-asr-streaming-0.6b",
+      "shortName": "N35",
+      "title": "Nemotron-3.5 ASR Streaming 0.6B",
+      "subtitle": "Cache-aware multilingual streaming ASR",
+      "description": "NVIDIA's 0.6B FastConformer RNN-T ASR model, run locally through CrispASR v0.8.0 or later.",
+      "accent": "#76b900",
+      "capabilities": [
+        "stt"
+      ],
+      "supportsStt": true,
+      "tags": [
+        "GGUF",
+        "Offline",
+        "Multilingual",
+        "Streaming",
+        "0.6B",
+        "RNN-T"
+      ],
+      "supportedLanguageSetId": "nemotron-3.5-v1",
+      "supportedLanguageCount": 35,
+      "parameterDefinitions": {
+        "beam_size": {
+          "name": "Beam Size",
+          "type": "int",
+          "min": 1,
+          "max": 20,
+          "default": 1,
+          "description": "Number of RNN-T decoding beams. 1 uses greedy decoding.",
+          "advanced": true
+        }
+      },
+      "runtimes": [
+        {
+          "id": "crispasr-win-x86_64-cpu",
+          "engineFamily": "crispasr",
+          "label": "CPU",
+          "name": "CPU CrispASR (x64)",
+          "asset": "libcrispasr-windows-x86_64.tar.gz",
+          "version": "v0.8.0",
+          "source": "https://github.com/CrispStrobe/CrispASR/releases/download/",
+          "library": "bin/crispasr.dll",
+          "backend": "nemotron"
+        },
+        {
+          "id": "crispasr-win-x86_64-cuda",
+          "engineFamily": "crispasr",
+          "label": "CUDA",
+          "name": "CUDA CrispASR (x64)",
+          "asset": "libcrispasr-windows-x86_64-cuda.tar.gz",
+          "version": "v0.8.0",
+          "source": "https://github.com/CrispStrobe/CrispASR/releases/download/",
+          "library": "bin/crispasr.dll",
+          "backend": "nemotron"
+        },
+        {
+          "id": "crispasr-win-x86_64-vulkan",
+          "engineFamily": "crispasr",
+          "label": "Vulkan",
+          "name": "Vulkan CrispASR (x64)",
+          "asset": "libcrispasr-windows-x86_64-vulkan.tar.gz",
+          "version": "v0.8.0",
+          "source": "https://github.com/CrispStrobe/CrispASR/releases/download/",
+          "library": "bin/crispasr.dll",
+          "backend": "nemotron"
+        }
+      ],
+      "studio": {
+        "stt": {
+          "layout": "stt",
+          "action": "transcribe",
+          "inputs": [
+            "audio",
+            "language"
+          ],
+          "parameters": [
+            "beam_size"
+          ]
+        }
+      },
+      "modelId": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+      "requiredFiles": [
+        {
+          "role": "model",
+          "name": "Nemotron-3.5 ASR Streaming Model",
+          "purpose": "Core 0.6B cache-aware FastConformer RNN-T ASR model in GGUF format",
+          "file": "nemotron-3.5-asr-streaming-0.6b-q4_k.gguf",
+          "candidates": [
+            "nemotron-3.5-asr-streaming-0.6b-q4_k.gguf",
+            "nemotron-3.5-asr-streaming-0.6b-f16.gguf"
+          ],
+          "modelKey": "cstr/nemotron-3.5-asr-streaming-0.6b-gguf",
+          "modelId": "cstr/nemotron-3.5-asr-streaming-0.6b-GGUF",
+          "size": "479 MB",
+          "variants": [
+            {
+              "name": "nemotron-3.5-asr-streaming-0.6b-q4_k.gguf",
+              "size": "479 MB",
+              "quant": "Q4_K"
+            },
+            {
+              "name": "nemotron-3.5-asr-streaming-0.6b-f16.gguf",
+              "size": "1.3 GB",
+              "quant": "F16"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "cstr",
+              "repo": "nemotron-3.5-asr-streaming-0.6b-GGUF",
+              "files": [
+                {
+                  "name": "nemotron-3.5-asr-streaming-0.6b-q4_k.gguf",
+                  "size": "479 MB",
+                  "quant": "Q4_K"
+                },
+                {
+                  "name": "nemotron-3.5-asr-streaming-0.6b-f16.gguf",
+                  "size": "1.3 GB",
+                  "quant": "F16"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metadataOverrides": {
+        "domain": "stt",
+        "architectures": [
+          "nemotron-streaming"
+        ],
+        "compatibilityTypes": [
+          "gguf"
+        ],
+        "paramsStrings": [
+          "0.6B"
+        ],
+        "capabilities": [
+          "stt"
+        ],
+        "vision": false
+      },
+      "modelYaml": {
+        "model": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+        "base": [
+          {
+            "key": "cstr/nemotron-3.5-asr-streaming-0.6b-gguf",
+            "role": "model",
+            "name": "Nemotron-3.5 ASR Streaming Model",
+            "purpose": "Core 0.6B cache-aware FastConformer RNN-T ASR model in GGUF format",
+            "defaultFile": "nemotron-3.5-asr-streaming-0.6b-q4_k.gguf",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "cstr",
+                "repo": "nemotron-3.5-asr-streaming-0.6b-GGUF",
+                "files": [
+                  {
+                    "name": "nemotron-3.5-asr-streaming-0.6b-q4_k.gguf",
+                    "size": "479 MB",
+                    "quant": "Q4_K"
+                  },
+                  {
+                    "name": "nemotron-3.5-asr-streaming-0.6b-f16.gguf",
+                    "size": "1.3 GB",
+                    "quant": "F16"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metadataOverrides": {
+          "domain": "stt",
+          "architectures": [
+            "nemotron-streaming"
+          ],
+          "compatibilityTypes": [
+            "gguf"
+          ],
+          "paramsStrings": [
+            "0.6B"
+          ],
+          "capabilities": [
+            "stt"
+          ],
+          "vision": false
+        }
+      },
+      "stats": {
+        "upstreamModelId": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+        "likesModelId": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+        "downloadModelIds": [
+          "nvidia/nemotron-3.5-asr-streaming-0.6b"
+        ],
+        "policy": {
+          "downloads": "upstream-hf-model",
+          "likes": "upstream-hf-model"
+        }
+      },
+      "hubFiles": {
+        "manifest": {
+          "schemaVersion": "1.0.0",
+          "id": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+          "publisher": "nvidia",
+          "name": "nemotron-3.5-asr-streaming-0.6b",
+          "title": "Nemotron-3.5 ASR Streaming 0.6B",
+          "task": "speech-to-text",
+          "source": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
+          "license": "openmdw-1.1",
+          "runtimeFormat": "gguf",
+          "downloadSources": [
+            "cstr/nemotron-3.5-asr-streaming-0.6b-GGUF"
+          ]
+        },
+        "readme": {
+          "filename": "README.md",
+          "content": "# Nemotron-3.5 ASR Streaming 0.6B\n\nNemotron-3.5 ASR Streaming 0.6B is NVIDIA's multilingual, cache-aware streaming automatic-speech-recognition model. It uses a FastConformer encoder and RNN-T decoder.\n\n## Links\n\n- Upstream model card: https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b\n- CrispASR backend: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.0\n\n## Model Facts\n\n- **Task:** Speech-to-Text\n- **Parameters:** 0.6B\n- **License:** OpenMDW-1.1\n- **Languages:** 35 languages, including Vietnamese\n- **Architecture:** Cache-aware FastConformer RNN-T\n\n## LA Studio Notes\n\nLA Studio runs this model locally with the `nemotron` backend in CrispASR v0.8.0 or later. The app downloads GGUF artifacts from `cstr/nemotron-3.5-asr-streaming-0.6b-GGUF`:\n\n- `nemotron-3.5-asr-streaming-0.6b-q4_k.gguf` (recommended, 479 MB)\n- `nemotron-3.5-asr-streaming-0.6b-f16.gguf` (1.3 GB)\n\nThe model is streaming-native. LA Studio's current STT workflow transcribes selected or recorded audio as a completed job; live incremental transcript delivery requires a future CrispASR session-stream API for Nemotron.\n"
+        },
+        "thumbnail": {
+          "filename": "thumbnail.webp",
+          "mimeType": "image/webp",
+          "base64": "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"
+        }
+      },
+      "modelPath": "nvidia/nemotron-3.5-asr-streaming-0.6b"
+    },
     {
       "id": "whisper.cpp",
       "localDir": "whisper",

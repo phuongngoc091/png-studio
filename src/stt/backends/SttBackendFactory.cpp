@@ -1,6 +1,7 @@
 #include "SttBackendFactory.h"
 #include "WhisperSttBackend.h"
 #include "QwenSttBackend.h"
+#include "NemotronSttBackend.h"
 
 namespace LAStudio {
 
@@ -17,6 +18,9 @@ std::unique_ptr<SttBackend> SttBackendFactory::create(const QVariantMap &config)
         if (backend.contains(QStringLiteral("qwen3")) || backend.contains(QStringLiteral("crispasr"))) {
             return std::make_unique<QwenSttBackend>();
         }
+        if (backend.contains(QStringLiteral("nemotron"))) {
+            return std::make_unique<NemotronSttBackend>();
+        }
         return nullptr;
     }
 
@@ -26,6 +30,11 @@ std::unique_ptr<SttBackend> SttBackendFactory::create(const QVariantMap &config)
 
     if (isWhisper) {
         return std::make_unique<WhisperSttBackend>();
+    }
+
+    const bool isNemotron = modelPath.contains(QStringLiteral("nemotron"), Qt::CaseInsensitive);
+    if (isNemotron) {
+        return std::make_unique<NemotronSttBackend>();
     }
 
     const bool isQwen = runtimePath.contains(QStringLiteral("crispasr"), Qt::CaseInsensitive) ||

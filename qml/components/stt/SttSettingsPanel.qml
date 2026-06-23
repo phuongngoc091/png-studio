@@ -103,6 +103,9 @@ Rectangle {
         }
         function onLanguageChanged() {
             if (langSelector.language !== sttSession.language) langSelector.language = sttSession.language
+            if (root.dynamicSettings["language"] !== sttSession.language) {
+                root.updateDynamicSetting("language", sttSession.language)
+            }
         }
     }
 
