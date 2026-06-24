@@ -56,7 +56,7 @@ ScrollView {
 
                 SettingsRow {
                     label: qsTr("Installed")
-                    valueText: "LA Studio v0.1.0"
+                    valueText: "LA Studio v0.1.1"
                 }
 
                 ThinDivider {}

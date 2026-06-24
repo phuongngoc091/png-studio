@@ -9,7 +9,7 @@ Rectangle {
 
     property var window
     property string appName: "LA Studio"
-    property string appVersion: "0.1.0"
+    property string appVersion: "0.1.1"
     readonly property bool maximized: window && window.visibility === Window.Maximized
 
     Layout.fillWidth: true

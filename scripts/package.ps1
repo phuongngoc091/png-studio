@@ -172,6 +172,37 @@ function Ensure-WebpImageFormatPlugin {
     }
 }
 
+function Copy-VcpkgRuntimeLibraries {
+    param(
+        [string] $BuildDirectory,
+        [string] $Triplet,
+        [string] $DeployDirectory
+    )
+
+    # vcpkg manifest mode places dynamic runtime dependencies in the build tree.
+    # windeployqt deploys Qt libraries only, so these DLLs must be staged explicitly.
+    $vcpkgBinDirectory = Join-Path $BuildDirectory "vcpkg_installed\\$Triplet\\bin"
+    if (-not (Test-Path -LiteralPath $vcpkgBinDirectory)) {
+        throw "vcpkg runtime directory was not found: $vcpkgBinDirectory"
+    }
+
+    $runtimeLibraries = Get-ChildItem -LiteralPath $vcpkgBinDirectory -Filter "*.dll" -File
+    if ($runtimeLibraries.Count -eq 0) {
+        throw "No vcpkg runtime DLLs were found in: $vcpkgBinDirectory"
+    }
+
+    foreach ($library in $runtimeLibraries) {
+        Copy-Item -LiteralPath $library.FullName -Destination (Join-Path $DeployDirectory $library.Name) -Force
+    }
+
+    foreach ($requiredLibrary in @("libcurl.dll", "zlib1.dll")) {
+        $stagedLibrary = Join-Path $DeployDirectory $requiredLibrary
+        if (-not (Test-Path -LiteralPath $stagedLibrary)) {
+            throw "Required runtime DLL was not staged: $stagedLibrary"
+        }
+    }
+}
+
 Ensure-Command -Name "cmake" -FallbackPaths @(
     "C:\Qt\Tools\CMake_64\bin",
     "C:\Program Files\CMake\bin"
@@ -223,10 +254,11 @@ $cmakeArgs = @(
     "-DVCPKG_ROOT=$($VcpkgRoot.Replace('\', '/'))"
 )
 if ($Preset -like "*mingw*") {
-    $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic"
+    $vcpkgTriplet = "x64-mingw-dynamic"
 } else {
-    $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=x64-windows"
+    $vcpkgTriplet = "x64-windows"
 }
+$cmakeArgs += "-DVCPKG_TARGET_TRIPLET=$vcpkgTriplet"
 
 $env:VCPKG_ROOT = $VcpkgRoot
 & cmake @cmakeArgs
@@ -251,6 +283,8 @@ Write-Host ">> Running windeployqt to deploy runtime dependencies..." -Foregroun
 & $windeployqt --verbose 0 --qmldir qml --no-translations --compiler-runtime $stagedExe
 if ($LASTEXITCODE -ne 0) { throw "windeployqt failed." }
 Ensure-WebpImageFormatPlugin -QtPrefixPath $qtPrefixPath -DeployRoot (Split-Path -Parent $stagedExe)
+Write-Host ">> Deploying vcpkg runtime DLLs..." -ForegroundColor Cyan
+Copy-VcpkgRuntimeLibraries -BuildDirectory $buildDir -Triplet $vcpkgTriplet -DeployDirectory (Split-Path -Parent $stagedExe)
 
 # 5. Build installer using Inno Setup
 if ($SkipInstaller) {

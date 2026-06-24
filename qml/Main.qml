@@ -13,7 +13,7 @@ ApplicationWindow {
     visibility: ApplicationWindow.Maximized
     flags: Qt.Window | Qt.FramelessWindowHint
     readonly property string appName: Qt.application.name && Qt.application.name.length > 0 ? Qt.application.name : "LA Studio"
-    readonly property string appVersion: Qt.application.version && Qt.application.version.length > 0 ? Qt.application.version : "0.1.0"
+    readonly property string appVersion: Qt.application.version && Qt.application.version.length > 0 ? Qt.application.version : "0.1.1"
     title: appName + " - " + appVersion
     color: Theme.background
 

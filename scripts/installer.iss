@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=LA Studio
-AppVersion=0.1.0
+AppVersion=0.1.1
 AppPublisher=Trần Đại Dương
 AppPublisherURL=https://github.com/dduongtrandai/LA-Studio
 AppSupportURL=https://github.com/dduongtrandai/LA-Studio/issues
