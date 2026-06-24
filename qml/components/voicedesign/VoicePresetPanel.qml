@@ -49,7 +49,7 @@ Item {
             spacing: Theme.paddingMedium
 
             Text {
-                text: "Voice Description Presets"
+                text: qsTr("Voice Description Presets")
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontMedium
                 font.bold: true
@@ -83,7 +83,7 @@ Item {
                     root.isEditing = true
                 }
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
-                AppToolTip { text: "Create new voice description preset" }
+                AppToolTip { text: qsTr("Create new voice description preset") }
             }
         }
 
@@ -104,7 +104,7 @@ Item {
                 spacing: Theme.paddingSmall
 
                 Text {
-                    text: root.editPresetId === "" ? "New Preset" : "Edit Preset"
+                    text: root.editPresetId === "" ? qsTr("New Preset") : qsTr("Edit Preset")
                     color: Theme.accentLight
                     font.pixelSize: Theme.fontSmall
                     font.bold: true
@@ -113,7 +113,7 @@ Item {
                 TextField {
                     id: nameField
                     Layout.fillWidth: true
-                    placeholderText: "Preset Name (e.g. Energetic Narrator)"
+                    placeholderText: qsTr("Preset Name (e.g. Energetic Narrator)")
                     text: root.editName
                     color: Theme.textPrimary
                     placeholderTextColor: Theme.textSecondary
@@ -129,7 +129,7 @@ Item {
                 AppTextArea {
                     id: descField
                     Layout.fillWidth: true
-                    placeholderText: "Voice Description (e.g. A clear, friendly male voice speaking with high energy and confidence.)"
+                    placeholderText: qsTr("Voice Description (e.g. A clear, friendly male voice speaking with high energy and confidence.)")
                     text: root.editDescription
                     background: Rectangle {
                         color: Qt.rgba(1, 1, 1, 0.03)
@@ -270,7 +270,7 @@ Item {
                                         root.isEditing = true
                                     }
                                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                                    AppToolTip { text: "Edit preset" }
+                                    AppToolTip { text: qsTr("Edit preset") }
                                 }
 
                                 Button {
@@ -288,7 +288,7 @@ Item {
                                     }
                                     onClicked: AppController.voiceDesignPresets.deletePreset(modelData.id)
                                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                                    AppToolTip { text: "Delete preset" }
+                                    AppToolTip { text: qsTr("Delete preset") }
                                 }
                             }
                         }
@@ -315,7 +315,7 @@ Item {
             }
 
             Text {
-                text: "No presets created yet."
+                text: qsTr("No presets created yet.")
                 color: Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
                 Layout.alignment: Qt.AlignHCenter

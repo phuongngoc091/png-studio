@@ -38,7 +38,7 @@ ApplicationWindow {
             spacing: Theme.paddingMedium
 
             Text {
-                text: "Error"
+                text: qsTr("Error")
                 color: Theme.danger
                 font.pixelSize: Theme.fontLarge
                 font.bold: true
@@ -51,7 +51,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
             }
             PrimaryButton {
-                text: "Dismiss"
+                text: qsTr("Dismiss")
                 Layout.alignment: Qt.AlignRight
                 onClicked: {
                     AppController.clearError()

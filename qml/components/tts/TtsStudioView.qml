@@ -20,10 +20,10 @@ StudioShell {
     isLeftPanelOpen: true
     modalSelectionMode: true
     showSwitcher: false
-    modalSelectionTitle: "Model + Runtime"
-    modalSelectionValue: "Select model and runtime"
+    modalSelectionTitle: qsTr("Model + Runtime")
+    modalSelectionValue: qsTr("Select model and runtime")
     modalSelectionDetail: ""
-    backToolTip: "Change model and runtime"
+    backToolTip: qsTr("Change model and runtime")
 
     property string playingType: "none"
     property string detectedLanguage: "en"
@@ -181,7 +181,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "Select a TTS model and runtime"
+                                text: qsTr("Select a TTS model and runtime")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontLarge
                                 font.bold: true
@@ -191,7 +191,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "The studio stays lightweight until you choose a compatible TTS configuration."
+                                text: qsTr("The studio stays lightweight until you choose a compatible TTS configuration.")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 wrapMode: Text.WordWrap
@@ -201,7 +201,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Choose model and runtime"
+                        text: qsTr("Choose model and runtime")
                         iconName: "gallery"
                         onClicked: root.backToGallery()
                     }
@@ -243,14 +243,14 @@ StudioShell {
 
                         Text {
                             Layout.fillWidth: true
-                            text: "Select model and runtime to enable generation"
+                            text: qsTr("Select model and runtime to enable generation")
                             color: Theme.textSecondary
                             font.pixelSize: Theme.fontSmall
                             elide: Text.ElideRight
                         }
 
                         Button {
-                            text: "Choose"
+                            text: qsTr("Choose")
                             flat: true
                             onClicked: root.backToGallery()
                         }
@@ -289,14 +289,14 @@ StudioShell {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: "Prompt"
+                                text: qsTr("Prompt")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontSmall
                                 font.bold: true
                             }
 
                             Text {
-                                text: inputText.text.length + " chars"
+                                text: qsTr("%1 chars").arg(inputText.text.length)
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 Layout.minimumWidth: 64
@@ -313,7 +313,7 @@ StudioShell {
 
                             AppTextArea {
                                 id: inputText
-                                placeholderText: "Enter text to synthesize..."
+                                placeholderText: qsTr("Enter text to synthesize...")
                                 font.pixelSize: Theme.fontMedium
                                 background: Rectangle { color: "transparent" }
                                 enabled: root.studioReady
@@ -343,7 +343,7 @@ StudioShell {
                             Layout.leftMargin: Theme.paddingMedium
                             Layout.rightMargin: Theme.paddingMedium
                             Layout.bottomMargin: Theme.paddingSmall
-                            text: "⚠️ VieNeu-TTS Turbo may be less stable with phrases under 5 words."
+                            text: qsTr("⚠️ VieNeu-TTS Turbo may be less stable with phrases under 5 words.")
                             color: Theme.warning
                             font.pixelSize: 11
                             wrapMode: Text.WordWrap
@@ -365,7 +365,7 @@ StudioShell {
                     Item { Layout.fillWidth: true }
 
                     PrimaryButton {
-                        text: "Generate"
+                        text: qsTr("Generate")
                         iconName: "spark"
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 42
@@ -434,7 +434,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Choose a model to unlock TTS settings"
+                        text: qsTr("Choose a model to unlock TTS settings")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true
@@ -444,7 +444,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Model parameters and audio controls appear after the TTS configuration is loaded."
+                        text: qsTr("Model parameters and audio controls appear after the TTS configuration is loaded.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         wrapMode: Text.WordWrap
@@ -452,7 +452,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Open model gallery"
+                        text: qsTr("Open model gallery")
                         iconName: "gallery"
                         quiet: true
                         onClicked: root.backToGallery()

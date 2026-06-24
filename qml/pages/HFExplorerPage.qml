@@ -39,7 +39,7 @@ Rectangle {
                 SearchBar {
                     id: searchBar
                     Layout.fillWidth: true
-                    placeholderText: "Search models..."
+                    placeholderText: qsTr("Search models...")
                     onAccepted: doSearch()
                 }
 
@@ -49,7 +49,7 @@ Rectangle {
 
                     CheckBox {
                         id: whisperOnlyCheck
-                        text: "Whisper.cpp compatible only"
+                        text: qsTr("Whisper.cpp compatible only")
                         checked: false
                         onCheckedChanged: doSearch()
                         
@@ -66,7 +66,7 @@ Rectangle {
 
                     ComboBox {
                         id: taskFilter
-                        model: ["All Tasks", "automatic-speech-recognition", "text-to-speech",
+                        model: [qsTr("All Tasks"), "automatic-speech-recognition", "text-to-speech",
                                 "text-to-audio", "audio-to-audio"]
                         implicitWidth: 150
                         implicitHeight: 30
@@ -82,7 +82,7 @@ Rectangle {
                 RowLayout {
                     Layout.fillWidth: true
                     Text {
-                        text: searchResults.length + " models"
+                        text: qsTr("%1 models").arg(searchResults.length)
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                     }
@@ -115,7 +115,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         visible: !AppController.hub.searching && searchResults.length === 0
-                        text: "Enter a search query to find models"
+                        text: qsTr("Enter a search query to find models")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontMedium
                     }

@@ -9,8 +9,8 @@ ColumnLayout {
 
     property var tags: []
     property Item targetEditor: null
-    property string title: "Non-verbal tags"
-    property string helperText: "Click a tag to insert it at the cursor."
+    property string title: qsTr("Non-verbal tags")
+    property string helperText: qsTr("Click a tag to insert it at the cursor.")
 
     signal tagInserted(string tag)
 

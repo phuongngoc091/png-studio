@@ -322,14 +322,14 @@ Rectangle {
             spacing: 4
 
             Text {
-                text: familyName() + " Setup"
+                text: qsTr("%1 Setup").arg(familyName())
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontLarge
                 font.bold: true
             }
 
             Text {
-                text: root.ready ? "All required components are installed. Loading studio..." : "Install the required model files and one compatible runtime to unlock the studio."
+                text: root.ready ? qsTr("All required components are installed. Loading studio...") : qsTr("Install the required model files and one compatible runtime to unlock the studio.")
                 color: Theme.textSecondary
                 font.pixelSize: Theme.fontMedium
                 Layout.fillWidth: true
@@ -420,14 +420,14 @@ Rectangle {
                         }
 
                         Text {
-                            text: installed ? "Installed" : (download ? root.downloadProgressText(selectedFile) : "Not installed")
+                            text: installed ? qsTr("Installed") : (download ? root.downloadProgressText(selectedFile) : qsTr("Not installed"))
                             color: installed ? Theme.success : (download ? Theme.warning : Theme.textSecondary)
                             font.pixelSize: Theme.fontSmall
                             font.bold: installed
                         }
 
                         PrimaryButton {
-                            text: download ? "Downloading" : "Download"
+                            text: download ? qsTr("Downloading") : qsTr("Download")
                             enabled: !installed
                             implicitWidth: 112
                             implicitHeight: 34
@@ -491,7 +491,7 @@ Rectangle {
 
                         Text {
                             Layout.fillWidth: true
-                            text: "Compatible Inference Runtime"
+                            text: qsTr("Compatible Inference Runtime")
                             color: Theme.textPrimary
                             font.pixelSize: Theme.fontMedium
                             font.bold: true
@@ -500,7 +500,7 @@ Rectangle {
 
                         Text {
                             Layout.fillWidth: true
-                            text: runtimeItem.installed ? root.compatibleRuntimeName() : "CPU, CUDA, or Vulkan build for " + root.familyName()
+                            text: runtimeItem.installed ? root.compatibleRuntimeName() : qsTr("CPU, CUDA, or Vulkan build for %1").arg(root.familyName())
                             color: Theme.textSecondary
                             font.pixelSize: Theme.fontSmall
                             elide: Text.ElideRight
@@ -508,7 +508,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: runtimeItem.installed ? "Installed" : "Not installed"
+                        text: runtimeItem.installed ? qsTr("Installed") : qsTr("Not installed")
                         color: runtimeItem.installed ? Theme.success : Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         font.bold: runtimeItem.installed
@@ -526,7 +526,7 @@ Rectangle {
                             property bool installed: root.runtimeVersionInstalled(modelData)
                             property bool downloading: root.activeDownload(modelData.asset) !== null
 
-                            text: installed ? modelData.label + " Installed" : (downloading ? "Downloading " + modelData.label : "Download " + modelData.label)
+                            text: installed ? qsTr("%1 Installed").arg(modelData.label) : (downloading ? qsTr("Downloading %1").arg(modelData.label) : qsTr("Download %1").arg(modelData.label))
                             enabled: !installed
                             implicitHeight: 32
                             implicitWidth: Math.max(138, contentItem.implicitWidth + 28)

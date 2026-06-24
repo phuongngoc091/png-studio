@@ -18,10 +18,10 @@ RowLayout {
     property bool isSettingsOpen: true
     property string studioTitle: ""
     property bool showSwitcher: true
-    property string backToolTip: "Back"
+    property string backToolTip: qsTr("Back")
     property bool modalSelectionMode: false
-    property string modalSelectionTitle: "Model + Runtime"
-    property string modalSelectionValue: "Select model and runtime"
+    property string modalSelectionTitle: qsTr("Model + Runtime")
+    property string modalSelectionValue: qsTr("Select model and runtime")
     property string modalSelectionDetail: ""
     property var studioController: null
     
@@ -64,11 +64,17 @@ RowLayout {
     }
 
     function statusText() {
-        return studioController ? studioController.statusText : (root.studioReady ? "Ready" : "Setup required")
+        var raw = studioController ? studioController.statusText : (root.studioReady ? "Ready" : "Setup required")
+        if (raw === "Ready") return qsTr("Ready")
+        if (raw === "Setup required") return qsTr("Setup required")
+        if (raw === "Processing") return qsTr("Processing")
+        if (raw === "Loading") return qsTr("Loading")
+        if (raw === "Error") return qsTr("Error")
+        return raw
     }
 
     function statusColor() {
-        var stText = statusText()
+        var stText = studioController ? studioController.statusText : (root.studioReady ? "Ready" : "Setup required")
         if (stText === "Ready" || stText === "Processing") return Theme.success
         if (stText === "Loading") return Theme.warning
         if (stText === "Error") return Theme.danger
@@ -149,7 +155,7 @@ RowLayout {
             flat: true
 
             AppToolTip {
-                text: "Show history"
+                text: qsTr("Show history")
                 visible: parent.hovered
             }
 
@@ -314,7 +320,7 @@ RowLayout {
                     }
 
                     Text {
-                        text: "Runtime"
+                        text: qsTr("Runtime")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                     }
@@ -386,7 +392,7 @@ RowLayout {
             flat: true
 
             AppToolTip {
-                text: "Show settings"
+                text: qsTr("Show settings")
                 visible: parent.hovered
             }
 

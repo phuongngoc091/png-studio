@@ -40,7 +40,7 @@ ColumnLayout {
             flat: true
 
             AppToolTip {
-                text: "Hide history"
+                text: qsTr("Hide history")
                 visible: parent.hovered
             }
 
@@ -69,7 +69,7 @@ ColumnLayout {
         }
 
         Text {
-            text: "Synthesis History"
+            text: qsTr("Synthesis History")
             color: Theme.textPrimary
             font.pixelSize: Theme.fontMedium
             font.bold: true
@@ -84,7 +84,7 @@ ColumnLayout {
             flat: true
 
             contentItem: Text {
-                text: "Clear All"
+                text: qsTr("Clear All")
                 color: clearAllBtn.hovered ? Theme.danger : Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
                 horizontalAlignment: Text.AlignHCenter
@@ -125,7 +125,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                text: "No history yet"
+                text: qsTr("No history yet")
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontMedium
                 font.bold: true
@@ -134,7 +134,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                text: "Your generated audio clips will appear here."
+                text: qsTr("Your generated audio clips will appear here.")
                 color: Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
                 wrapMode: Text.WordWrap

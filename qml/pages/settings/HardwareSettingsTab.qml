@@ -22,9 +22,9 @@ ScrollView {
 
     function gpuSummary(count) {
         if (count === 0) {
-            return "No GPU detected"
+            return qsTr("No GPU detected")
         }
-        return count + (count === 1 ? " GPU detected" : " GPUs detected")
+        return count === 1 ? qsTr("1 GPU detected") : qsTr("%1 GPUs detected").arg(count)
     }
 
     ColumnLayout {
@@ -46,16 +46,16 @@ ScrollView {
                 spacing: Theme.paddingSmall
 
                 SectionHeader {
-                    title: "CPU"
-                    trailing: "Compatible"
+                    title: qsTr("CPU")
+                    trailing: qsTr("Compatible")
                     trailingColor: Theme.success
                     showCheck: true
                 }
 
                 InfoPanel {
                     KeyValueRow {
-                        label: "Name"
-                        value: HardwareManager.cpuName === "" ? "Unknown" : HardwareManager.cpuName
+                        label: qsTr("Name")
+                        value: HardwareManager.cpuName === "" ? qsTr("Unknown") : HardwareManager.cpuName
                     }
 
                     RowLayout {
@@ -63,7 +63,7 @@ ScrollView {
                         spacing: Theme.paddingMedium
 
                         Text {
-                            text: "Architecture"
+                            text: qsTr("Architecture")
                             color: Theme.textPrimary
                             font.pixelSize: Theme.fontSmall
                             Layout.preferredWidth: 92
@@ -74,7 +74,7 @@ ScrollView {
                             spacing: 6
 
                             Chip {
-                                text: HardwareManager.cpuArchitecture === "" ? "Unknown" : HardwareManager.cpuArchitecture
+                                text: HardwareManager.cpuArchitecture === "" ? qsTr("Unknown") : HardwareManager.cpuArchitecture
                                 highlighted: true
                             }
 
@@ -95,16 +95,16 @@ ScrollView {
                 Layout.alignment: Qt.AlignTop
                 spacing: Theme.paddingSmall
 
-                SectionHeader { title: "Memory Capacity" }
+                SectionHeader { title: qsTr("Memory Capacity") }
 
                 InfoPanel {
                     KeyValueRow {
-                        label: "RAM"
+                        label: qsTr("RAM")
                         value: root.gb(HardwareManager.ramTotal, 2)
                     }
 
                     KeyValueRow {
-                        label: "VRAM"
+                        label: qsTr("VRAM")
                         value: root.gb(HardwareManager.vramTotal, 2)
                     }
                 }
@@ -115,7 +115,7 @@ ScrollView {
             Layout.fillWidth: true
             spacing: Theme.paddingSmall
 
-            SectionHeader { title: "GPUs" }
+            SectionHeader { title: qsTr("GPUs") }
 
             InfoPanel {
                 spacing: Theme.paddingMedium
@@ -139,7 +139,7 @@ ScrollView {
                     Text {
                         anchors.fill: parent
                         anchors.margins: Theme.paddingMedium
-                        text: "CPU runtimes remain available."
+                        text: qsTr("CPU runtimes remain available.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         verticalAlignment: Text.AlignVCenter
@@ -180,7 +180,7 @@ ScrollView {
                                 spacing: 2
 
                                 Text {
-                                    text: modelData.name || "Unknown GPU"
+                                    text: modelData.name || qsTr("Unknown GPU")
                                     color: Theme.textPrimary
                                     font.pixelSize: Theme.fontMedium
                                     wrapMode: Text.WordWrap
@@ -188,7 +188,7 @@ ScrollView {
                                 }
 
                                 Text {
-                                    text: "VRAM Capacity: " + root.gb(modelData.vram || 0, 2) + " - deviceId: " + index
+                                    text: qsTr("VRAM Capacity: %1 - deviceId: %2").arg(root.gb(modelData.vram || 0, 2)).arg(index)
                                     color: Theme.textSecondary
                                     font.pixelSize: Theme.fontSmall
                                     wrapMode: Text.WordWrap
@@ -210,7 +210,7 @@ ScrollView {
                         spacing: 2
 
                         Text {
-                            text: "Offload KV Cache to GPU Memory"
+                            text: qsTr("Offload KV Cache to GPU Memory")
                             color: Theme.textPrimary
                             font.pixelSize: Theme.fontSmall
                             wrapMode: Text.WordWrap
@@ -219,8 +219,8 @@ ScrollView {
 
                         Text {
                             text: AppController.settings.offloadKvCache
-                                ? "ON: Runtime may place compatible cache memory on detected GPU memory."
-                                : "OFF: KV cache remains on system memory when the runtime allows it."
+                                ? qsTr("ON: Runtime may place compatible cache memory on detected GPU memory.")
+                                : qsTr("OFF: KV cache remains on system memory when the runtime allows it.")
                             color: Theme.textSecondary
                             font.pixelSize: Theme.fontSmall
                             wrapMode: Text.WordWrap
@@ -243,7 +243,7 @@ ScrollView {
             Layout.fillWidth: true
             spacing: Theme.paddingSmall
 
-            SectionHeader { title: "Resource Monitor" }
+            SectionHeader { title: qsTr("Resource Monitor") }
 
             GridLayout {
                 Layout.fillWidth: true
@@ -252,15 +252,15 @@ ScrollView {
                 rowSpacing: Theme.paddingMedium
 
                 MetricPanel {
-                    title: "RAM + VRAM"
+                    title: qsTr("RAM + VRAM")
                     value: root.gb(HardwareManager.ramUsed + HardwareManager.vramUsed, 1)
-                    detail: "of " + root.gb(HardwareManager.ramTotal + HardwareManager.vramTotal, 1)
+                    detail: qsTr("of %1").arg(root.gb(HardwareManager.ramTotal + HardwareManager.vramTotal, 1))
                 }
 
                 MetricPanel {
-                    title: "CPU"
+                    title: qsTr("CPU")
                     value: Number(HardwareManager.cpuUsage).toFixed(2) + "%"
-                    detail: "current system usage"
+                    detail: qsTr("current system usage")
                 }
             }
         }
@@ -269,13 +269,13 @@ ScrollView {
             Layout.fillWidth: true
             spacing: Theme.paddingSmall
 
-            SectionHeader { title: "Guardrails" }
+            SectionHeader { title: qsTr("Guardrails") }
 
             InfoPanel {
                 spacing: Theme.paddingSmall
 
                 Text {
-                    text: "Model loading guardrails"
+                    text: qsTr("Model loading guardrails")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontSmall
                     Layout.fillWidth: true
@@ -285,11 +285,11 @@ ScrollView {
 
                 Repeater {
                     model: [
-                        { label: "OFF (Not Recommended)", desc: "No precautions against system overload", value: 0 },
-                        { label: "Relaxed", desc: "Warn only when memory risk is high", value: 1 },
-                        { label: "Balanced", desc: "Recommended bounds for most local models", value: 2 },
-                        { label: "Strict", desc: "Block loads likely to exhaust RAM or VRAM", value: 3 },
-                        { label: "Custom", desc: "Use manual memory limits", value: 4 }
+                        { label: qsTr("OFF (Not Recommended)"), desc: qsTr("No precautions against system overload"), value: 0 },
+                        { label: qsTr("Relaxed"), desc: qsTr("Warn only when memory risk is high"), value: 1 },
+                        { label: qsTr("Balanced"), desc: qsTr("Recommended bounds for most local models"), value: 2 },
+                        { label: qsTr("Strict"), desc: qsTr("Block loads likely to exhaust RAM or VRAM"), value: 3 },
+                        { label: qsTr("Custom"), desc: qsTr("Use manual memory limits"), value: 4 }
                     ]
 
                     delegate: Rectangle {

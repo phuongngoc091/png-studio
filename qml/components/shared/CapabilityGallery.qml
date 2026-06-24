@@ -140,7 +140,7 @@ Rectangle {
     function openRuntimeVersionManager(runtime) {
         if (!runtime) return
         runtimeVersionDialog.engineId = runtime.id || ""
-        runtimeVersionDialog.engineName = runtime.name || "Runtime"
+        runtimeVersionDialog.engineName = runtime.name || qsTr("Runtime")
         runtimeVersionDialog.engineFamily = runtime.engineFamily || ""
         runtimeVersionDialog.assetName = runtime.asset || ""
         runtimeVersionDialog.sourceUrl = runtime.source || ""
@@ -166,8 +166,13 @@ Rectangle {
 
     function selectedStatus() {
         var item = selectedFamilyItem()
-        if (!item) return { kind: "setup", title: "Setup Required" }
-        return { kind: item.statusKind || "setup", title: item.statusReason || "Setup Required" }
+        if (!item) return { kind: "setup", title: qsTr("Setup Required") }
+        var rawTitle = item.statusReason || "Setup Required"
+        var translatedTitle = rawTitle
+        if (rawTitle === "Ready") translatedTitle = qsTr("Ready")
+        else if (rawTitle === "Setup Required") translatedTitle = qsTr("Setup Required")
+        else if (rawTitle === "Incompatible") translatedTitle = qsTr("Incompatible")
+        return { kind: item.statusKind || "setup", title: translatedTitle }
     }
 
     function badgeFill(tone) {
@@ -215,7 +220,7 @@ Rectangle {
     function languageOptionCountText() {
         if (!root.activeModel || !root.activeModel.availableLanguages) return ""
         var count = Math.max(0, root.activeModel.availableLanguages.length - 1)
-        return count + " languages"
+        return qsTr("%1 languages").arg(count)
     }
 
     function selectedLanguageItem() {
@@ -224,7 +229,7 @@ Rectangle {
         for (var i = 0; i < items.length; ++i) {
             if (items[i].value === currentFilter) return items[i]
         }
-        return items.length > 0 ? items[0] : { text: "All languages", value: "all" }
+        return items.length > 0 ? items[0] : { text: qsTr("All languages"), value: "all" }
     }
 
     function selectLanguageFilter(value) {
@@ -295,7 +300,7 @@ Rectangle {
                             id: searchField
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            placeholderText: "Search models..."
+                            placeholderText: qsTr("Search models...")
                             color: Theme.textPrimary
                             placeholderTextColor: Theme.textSecondary
                             padding: 0
@@ -353,7 +358,7 @@ Rectangle {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: "Language"
+                                text: qsTr("Language")
                                 color: Theme.textSecondary
                                 font.pixelSize: 10
                                 font.bold: true
@@ -366,7 +371,7 @@ Rectangle {
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: root.selectedLanguageItem().value === "all" ? "All languages" : root.selectedLanguageItem().text
+                                    text: root.selectedLanguageItem().value === "all" ? qsTr("All languages") : root.selectedLanguageItem().text
                                     color: Theme.textPrimary
                                     font.pixelSize: Theme.fontSmall
                                     font.bold: root.languageFilterActive
@@ -474,7 +479,7 @@ Rectangle {
                                     TextField {
                                         id: languageSearchField
                                         Layout.fillWidth: true
-                                        placeholderText: "Search languages..."
+                                        placeholderText: qsTr("Search languages...")
                                         text: root.languageFilterSearch
                                         color: Theme.textPrimary
                                         placeholderTextColor: Theme.textSecondary
@@ -527,7 +532,7 @@ Rectangle {
 
                                         Text {
                                             Layout.fillWidth: true
-                                            text: modelData.value === "all" ? "All languages" : modelData.text
+                                            text: modelData.value === "all" ? qsTr("All languages") : modelData.text
                                             color: languageDelegate.selected ? Theme.textPrimary : Theme.textPrimary
                                             font.pixelSize: Theme.fontSmall
                                             font.bold: languageDelegate.selected
@@ -685,7 +690,7 @@ Rectangle {
 
                                             AppToolTip {
                                                 visible: listPickHover.hovered
-                                                text: model.pickReason || "LA Studio Pick"
+                                                text: model.pickReason || qsTr("LA Studio Pick")
                                             }
                                         }
                                     }
@@ -712,7 +717,12 @@ Rectangle {
                                             }
 
                                             Text {
-                                                text: model.statusReason
+                                                text: {
+                                                    if (model.statusReason === "Ready") return qsTr("Ready")
+                                                    if (model.statusReason === "Setup Required") return qsTr("Setup Required")
+                                                    if (model.statusReason === "Incompatible") return qsTr("Incompatible")
+                                                    return model.statusReason || ""
+                                                }
                                                 color: model.ready ? Theme.success : (model.statusReason === "Incompatible" ? Theme.danger : Theme.warning)
                                                 font.pixelSize: 9
                                                 font.bold: true
@@ -860,7 +870,7 @@ Rectangle {
 
                                     AppToolTip {
                                         visible: detailPickHover.hovered
-                                        text: detailPanel.f ? (detailPanel.f.pickReason || "LA Studio Pick") : ""
+                                        text: detailPanel.f ? (detailPanel.f.pickReason || qsTr("LA Studio Pick")) : ""
                                     }
                                 }
                             }
@@ -921,7 +931,7 @@ Rectangle {
                         }
 
                         PrimaryButton {
-                            text: detailPanel.f && detailPanel.f.isLastudioPick ? "LA Studio Pick" : "Model Card"
+                            text: detailPanel.f && detailPanel.f.isLastudioPick ? qsTr("LA Studio Pick") : qsTr("Model Card")
                             iconName: detailPanel.f && detailPanel.f.isLastudioPick ? "external-link" : "file"
                             quiet: true
                             implicitWidth: detailPanel.f && detailPanel.f.isLastudioPick ? 148 : 122
@@ -1022,7 +1032,7 @@ Rectangle {
                             Text {
                                 height: 22
                                 verticalAlignment: Text.AlignVCenter
-                                text: "Capabilities:"
+                                text: qsTr("Capabilities:")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 font.bold: true
@@ -1061,7 +1071,7 @@ Rectangle {
 
                     // Required files
                     Text {
-                        text: "Required Files"
+                        text: qsTr("Required Files")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true
@@ -1149,7 +1159,7 @@ Rectangle {
 
                                     Text {
                                         Layout.minimumWidth: 76
-                                        text: installState === 3 ? "Installed" : (installState === 1 ? root.downloadProgressText(selectedFile) : "Not installed")
+                                        text: installState === 3 ? qsTr("Installed") : (installState === 1 ? root.downloadProgressText(selectedFile) : qsTr("Not installed"))
                                         color: installState === 3 ? Theme.success : (installState === 1 ? Theme.warning : Theme.textSecondary)
                                         font.pixelSize: Theme.fontSmall
                                         font.bold: installState === 3
@@ -1157,7 +1167,7 @@ Rectangle {
                                     }
 
                                     PrimaryButton {
-                                        text: installState === 1 ? "Downloading" : "Download"
+                                        text: installState === 1 ? qsTr("Downloading") : qsTr("Download")
                                         iconName: installState === 1 ? "" : "download"
                                         enabled: installState === 0 || installState === 1
                                         visible: installState === 0 || installState === 1
@@ -1200,13 +1210,13 @@ Rectangle {
                             Layout.fillWidth: true
                             spacing: 2
                             Text {
-                                text: "Runtime"
+                                text: qsTr("Runtime")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontMedium
                                 font.bold: true
                             }
                             Text {
-                                text: "Compatibility is evaluated from detected CPU and GPU capabilities."
+                                text: qsTr("Compatibility is evaluated from detected CPU and GPU capabilities.")
                                 color: Theme.textSecondary
                                 font.pixelSize: 11
                             }
@@ -1230,7 +1240,7 @@ Rectangle {
                                     Layout.preferredHeight: 13
                                 }
                                 Text {
-                                    text: HardwareManager.gpus.length > 0 ? HardwareManager.gpus.length + " GPU detected" : "CPU only"
+                                    text: HardwareManager.gpus.length > 0 ? qsTr("%1 GPU detected").arg(HardwareManager.gpus.length) : qsTr("CPU only")
                                     color: Theme.textSecondary
                                     font.pixelSize: Theme.fontSmall
                                     font.bold: true
@@ -1342,7 +1352,7 @@ Rectangle {
                                             Layout.preferredHeight: 12
                                         }
                                         Text {
-                                            text: modelData.compatibilityTitle || (modelData.compatible ? "Compatible" : "Unavailable")
+                                            text: modelData.compatibilityTitle || (modelData.compatible ? qsTr("Compatible") : qsTr("Unavailable"))
                                             color: modelData.compatible ? Theme.success : Theme.warning
                                             font.pixelSize: 11
                                             font.bold: true
@@ -1360,10 +1370,10 @@ Rectangle {
 
                                 PrimaryButton {
                                     text: {
-                                        if (installState === 3) return runtimeRow.selected ? "Selected" : "Use";
+                                        if (installState === 3) return runtimeRow.selected ? qsTr("Selected") : qsTr("Use");
                                         if (installState === 1) return root.downloadProgressText(modelData.asset, modelData.id, modelData.version);
-                                        if (installState === 2) return "Installing...";
-                                        return "Download";
+                                        if (installState === 2) return qsTr("Installing...");
+                                        return qsTr("Download");
                                     }
                                     iconName: {
                                         if (installState === 3) return "check";
@@ -1414,7 +1424,7 @@ Rectangle {
                         Layout.fillWidth: true
                         Item { Layout.fillWidth: true }
                         PrimaryButton {
-                            text: root.modalMode ? "Use & Load" : "Open Studio"
+                            text: root.modalMode ? qsTr("Use & Load") : qsTr("Open Studio")
                             iconName: root.modalMode ? "check" : "chevron-right"
                             enabled: detailPanel.f ? detailPanel.f.ready : false
                             implicitWidth: 140
@@ -1469,12 +1479,12 @@ Rectangle {
                                     }
 
                                     Text {
-                                        text: "README"
-                                        color: Theme.textPrimary
-                                        font.pixelSize: Theme.fontMedium
-                                        font.bold: true
-                                        Layout.fillWidth: true
-                                    }
+                                         text: qsTr("README")
+                                         color: Theme.textPrimary
+                                         font.pixelSize: Theme.fontMedium
+                                         font.bold: true
+                                         Layout.fillWidth: true
+                                     }
                                 }
                             }
 
@@ -1505,9 +1515,9 @@ Rectangle {
         property var currentRuntime: null
 
         items: [
-            { text: "Installed version details", subText: "View installed runtime information", iconName: "file", enabled: function() { return runtimeMenu.currentRuntime ? root.runtimeInstalled(runtimeMenu.currentRuntime.id) : false }, action: function() {} },
+            { text: qsTr("Installed version details"), subText: qsTr("View installed runtime information"), iconName: "file", enabled: function() { return runtimeMenu.currentRuntime ? root.runtimeInstalled(runtimeMenu.currentRuntime.id) : false }, action: function() {} },
             { type: "separator" },
-            { text: "Manage versions", subText: "Install or select runtime versions", iconName: "settings", action: function() { root.openRuntimeVersionManager(runtimeMenu.currentRuntime) } }
+            { text: qsTr("Manage versions"), subText: qsTr("Install or select runtime versions"), iconName: "settings", action: function() { root.openRuntimeVersionManager(runtimeMenu.currentRuntime) } }
         ]
     }
 

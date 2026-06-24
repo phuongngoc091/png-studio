@@ -78,6 +78,7 @@ set(LASTUDIO_SOURCES
     src/controllers/StudioConfigurationResolver.cpp
     src/controllers/SttSessionController.cpp
     src/controllers/SttAudioDecoder.cpp
+    src/core/LocalizationManager.cpp
 )
 
 set(LASTUDIO_HEADERS
@@ -147,9 +148,16 @@ set(LASTUDIO_HEADERS
     src/controllers/StudioConfigurationResolver.h
     src/controllers/SttSessionController.h
     src/controllers/SttAudioDecoder.h
+    src/core/LocalizationManager.h
 )
 
 qt_add_executable(LAStudio ${LASTUDIO_SOURCES} ${LASTUDIO_HEADERS})
+
+qt_add_translations(LAStudio
+    TS_FILES
+        i18n/lastudio_en.ts
+        i18n/lastudio_vi.ts
+)
 
 set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(qml/components/shared/StudioRouteRegistry.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)

@@ -28,6 +28,7 @@ AppController::AppController(QObject *parent)
     PathUtils::ensureDirsExist();
 
     m_settings  = new Settings(this);
+    m_localization = new LocalizationManager(m_settings, this);
     m_hub       = new HFHubClient(this);
     m_downloads = new DownloadManager(m_hub, this);
     m_models    = new ModelManager(this);

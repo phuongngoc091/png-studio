@@ -62,7 +62,7 @@ Rectangle {
 
         Text {
             visible: root.author.length > 0
-            text: "by " + root.author
+            text: qsTr("by %1").arg(root.author)
             color: Theme.textSecondary
             font.pixelSize: Theme.fontSmall
         }

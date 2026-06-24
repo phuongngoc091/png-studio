@@ -21,7 +21,7 @@ Rectangle {
     property string estimatedVramUsage: ""
     property bool studioReady: false
     property string studioTitle: ""
-    property string backToolTip: "Back"
+    property string backToolTip: qsTr("Back")
     property string runtimeDisplayText: ""
     property bool runtimeClickable: false
 
@@ -57,7 +57,7 @@ Rectangle {
 
             Text {
                 Layout.fillWidth: true
-                text: root.studioTitle !== "" ? root.studioTitle : (root.family ? root.family.title + " Studio" : "Studio")
+                text: root.studioTitle !== "" ? root.studioTitle : (root.family ? qsTr("%1 Studio").arg(root.family.title) : qsTr("Studio"))
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontLarge
                 font.bold: true
@@ -175,7 +175,7 @@ Rectangle {
 
                 Text {
                     Layout.fillWidth: true
-                    text: root.currentRuntimeItem ? (root.currentRuntimeItem.name + (root.currentRuntimeItem.version ? "  " + root.currentRuntimeItem.version : "")) : (root.runtimeDisplayText !== "" ? root.runtimeDisplayText : "No runtime installed")
+                    text: root.currentRuntimeItem ? (root.currentRuntimeItem.name + (root.currentRuntimeItem.version ? "  " + root.currentRuntimeItem.version : "")) : (root.runtimeDisplayText !== "" ? root.runtimeDisplayText : qsTr("No runtime installed"))
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontSmall
                     font.bold: true
@@ -209,7 +209,7 @@ Rectangle {
 
                 HeaderActionButton {
                     iconName: "power"
-                    toolTip: "Unload model from memory"
+                    toolTip: qsTr("Unload model from memory")
                     enabled: root.modelLoaded
                     onClicked: root.ejectRequested()
                 }
@@ -223,7 +223,7 @@ Rectangle {
 
                 HeaderActionButton {
                     iconName: "refresh"
-                    toolTip: root.modelLoaded ? "Reload current model" : "Load current model"
+                    toolTip: root.modelLoaded ? qsTr("Reload current model") : qsTr("Load current model")
                     enabled: (root.studioReady || !root.modelLoaded) && !root.processing
                     onClicked: root.reloadRequested()
                 }

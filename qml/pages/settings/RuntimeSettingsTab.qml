@@ -106,13 +106,13 @@ ScrollView {
 
         // Default runtime selection card
         SettingsCard {
-            title: "Default Model Engine"
-            description: "Manage default execution engines for Whisper speech processing and audio cloning."
+            title: qsTr("Default Model Engine")
+            description: qsTr("Manage default execution engines for Whisper speech processing and audio cloning.")
             iconName: "spark"
 
             SettingRow {
-                label: "Speech-to-Text Runtime"
-                description: "Select active Whisper backend runtime. Downloaded engines will appear in the list."
+                label: qsTr("Speech-to-Text Runtime")
+                description: qsTr("Select active Whisper backend runtime. Downloaded engines will appear in the list.")
 
                 AppComboBox {
                     id: sttRuntimeCombo
@@ -150,8 +150,8 @@ ScrollView {
 
         // Engines & Frameworks card
         SettingsCard {
-            title: "Model Acceleration Engines"
-            description: "Download and register local neural network engine acceleration runtimes."
+            title: qsTr("Model Acceleration Engines")
+            description: qsTr("Download and register local neural network engine acceleration runtimes.")
             iconName: "sliders"
 
             RowLayout {
@@ -163,7 +163,7 @@ ScrollView {
                 TextField {
                     id: searchField
                     Layout.fillWidth: true
-                    placeholderText: "Filter engines by name..."
+                    placeholderText: qsTr("Filter engines by name...")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontMedium
                     leftPadding: Theme.paddingMedium
@@ -180,7 +180,7 @@ ScrollView {
                 
                 AppComboBox {
                     id: typeFilterCombo
-                    model: ["Compatible only", "All types"]
+                    model: [qsTr("Compatible only"), qsTr("All types")]
                     implicitWidth: 160
                 }
             }
@@ -228,7 +228,7 @@ ScrollView {
                                 Layout.fillWidth: true
                                 spacing: 1
                                 Text {
-                                    text: groupDelegate.modelData.name + " Engine"
+                                    text: qsTr("%1 Engine").arg(groupDelegate.modelData.name)
                                     color: Theme.textPrimary
                                     font.pixelSize: Theme.fontMedium
                                     font.bold: true
@@ -339,7 +339,7 @@ ScrollView {
                                                 Text { text: "✓"; color: Theme.success; font.bold: true; font.pixelSize: 10 }
                                                 Text {
                                                     id: statusPillText
-                                                    text: root.getRuntimeVersion(itemDelegate.modelData.id) || "Latest"
+                                                    text: root.getRuntimeVersion(itemDelegate.modelData.id) || qsTr("Latest")
                                                     color: Theme.success
                                                     font.pixelSize: 10
                                                     font.bold: true
@@ -351,9 +351,9 @@ ScrollView {
                                             visible: !statusCol.isDownloaded && itemDelegate.modelData.status !== "latest"
                                             anchors.verticalCenter: parent.verticalCenter
                                             anchors.right: parent.right
-                                            text: "Download"
-                                            implicitWidth: 90
-                                            implicitHeight: 28
+                                             text: qsTr("Download")
+                                             implicitWidth: 90
+                                             implicitHeight: 28
                                             onClicked: {
                                                 manageVersionsDialog.engineId = itemDelegate.modelData.id;
                                                 manageVersionsDialog.engineName = itemDelegate.modelData.name;
@@ -438,9 +438,9 @@ ScrollView {
         property string currentType: "stt"
 
         items: [
-            { text: "Installed version details", subText: "View installed version information", iconName: "file", action: function() { /* implement if needed */ } },
+            { text: qsTr("Installed version details"), subText: qsTr("View installed version information"), iconName: "file", action: function() { /* implement if needed */ } },
             { type: "separator" },
-            { text: "Manage versions", subText: "Install, remove or select runtime versions", iconName: "settings", action: function() {
+            { text: qsTr("Manage versions"), subText: qsTr("Install, remove or select runtime versions"), iconName: "settings", action: function() {
                     manageVersionsDialog.engineId = engineMenu.currentId;
                     manageVersionsDialog.engineName = engineMenu.currentEngine;
                     manageVersionsDialog.assetName = engineMenu.currentAsset;

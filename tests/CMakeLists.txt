@@ -42,6 +42,7 @@ set(TEST_SOURCES
     ../src/core/StudioCapabilityRegistry.cpp
     ../src/core/StudioSelectionRepository.cpp
     ../src/core/Settings.cpp
+    ../src/core/LocalizationManager.cpp
     ../src/core/ModelManager.cpp
     ../src/core/CatalogManager.cpp
     ../src/core/RegistryManager.cpp

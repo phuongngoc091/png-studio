@@ -129,6 +129,7 @@ Settings::Settings(QObject *parent)
     m_device = m_settings.value(QStringLiteral("engine/device"), QStringLiteral("cpu")).toString();
     m_threads = m_settings.value(QStringLiteral("engine/threads"), 4).toInt();
     m_language = m_settings.value(QStringLiteral("engine/language"), QStringLiteral("en")).toString();
+    m_uiLanguage = m_settings.value(QStringLiteral("ui/language"), QStringLiteral("en")).toString();
     const QString qSettingsModelsPath = m_settings.value(QStringLiteral("storage/modelsPath"), PathUtils::modelsDir()).toString();
     m_modelsPath = discoverExistingModelsPath(qSettingsModelsPath);
     m_settings.setValue(QStringLiteral("storage/modelsPath"), m_modelsPath);
@@ -195,6 +196,21 @@ void Settings::setLanguage(const QString &v)
         m_settings.setValue(QStringLiteral("engine/language"), v);
         m_settings.sync();
         emit languageChanged();
+    }
+}
+
+QString Settings::uiLanguage() const
+{
+    return m_uiLanguage;
+}
+
+void Settings::setUiLanguage(const QString &v)
+{
+    if (m_uiLanguage != v) {
+        m_uiLanguage = v;
+        m_settings.setValue(QStringLiteral("ui/language"), v);
+        m_settings.sync();
+        emit uiLanguageChanged();
     }
 }
 

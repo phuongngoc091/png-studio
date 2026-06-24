@@ -97,7 +97,7 @@ Popup {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Downloads"
+                    text: qsTr("Downloads")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontLarge
                     font.bold: true
@@ -137,7 +137,7 @@ Popup {
             TextField {
                 id: filterInput
                 anchors.fill: parent
-                placeholderText: "Filter downloads..."
+                placeholderText: qsTr("Filter downloads...")
                 color: Theme.textPrimary
                 placeholderTextColor: Theme.textSecondary
                 font.pixelSize: Theme.fontMedium
@@ -174,7 +174,7 @@ Popup {
                     visible: activeItems.length > 0
 
                     Text {
-                        text: "Downloading"
+                        text: qsTr("Downloading")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         font.bold: true
@@ -231,9 +231,9 @@ Popup {
                                         Layout.fillWidth: true
                                         Text {
                                             text: {
-                                                if (modelData.bytesTotal <= 0) return "Starting...";
+                                                if (modelData.bytesTotal <= 0) return qsTr("Starting...");
                                                 var pct = ((modelData.bytesReceived / modelData.bytesTotal) * 100).toFixed(1);
-                                                return "Download • " + formatBytes(modelData.bytesReceived) + " of " + formatBytes(modelData.bytesTotal) + " (" + pct + "%)";
+                                                return qsTr("Download • %1 of %2 (%3%)").arg(formatBytes(modelData.bytesReceived)).arg(formatBytes(modelData.bytesTotal)).arg(pct);
                                             }
                                             color: Theme.textSecondary
                                             font.pixelSize: 11
@@ -271,7 +271,7 @@ Popup {
                         Layout.bottomMargin: 4
 
                         Text {
-                            text: "Completed"
+                            text: qsTr("Completed")
                             color: Theme.textSecondary
                             font.pixelSize: Theme.fontSmall
                             font.bold: true
@@ -285,7 +285,7 @@ Popup {
                             implicitWidth: 46
                             implicitHeight: 22
                             contentItem: Text {
-                                text: "Clear"
+                                text: qsTr("Clear")
                                 color: clearBtn.hovered ? Theme.accentLight : Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 horizontalAlignment: Text.AlignRight
@@ -345,9 +345,9 @@ Popup {
                                     Text {
                                         text: {
                                             if (modelData.status === "failed") {
-                                                return "Failed • " + (modelData.errorMsg || "Unknown error");
+                                                return qsTr("Failed • %1").arg(modelData.errorMsg || qsTr("Unknown error"));
                                             }
-                                            return "Download • " + formatBytes(modelData.bytesTotal);
+                                            return qsTr("Download • %1").arg(formatBytes(modelData.bytesTotal));
                                         }
                                         color: modelData.status === "failed" ? Theme.danger : Theme.textSecondary
                                         font.pixelSize: 11
@@ -397,14 +397,14 @@ Popup {
 
                                         itemMenu.items = [
                                             {
-                                                text: "Clear",
+                                                text: qsTr("Clear"),
                                                 iconName: "trash",
                                                 action: function() {
                                                     AppController.downloads.removeDownload(modelData.identifier, modelData.filename);
                                                 }
                                             },
                                             {
-                                                text: "Copy local path",
+                                                text: qsTr("Copy local path"),
                                                 iconName: "copy",
                                                 enabled: !!path,
                                                 action: function() {
@@ -455,7 +455,7 @@ Popup {
                 }
 
                 Text {
-                    text: allItems.length === 0 ? "No downloads yet" : "No downloads found"
+                    text: allItems.length === 0 ? qsTr("No downloads yet") : qsTr("No downloads found")
                     color: Theme.textSecondary
                     font.pixelSize: Theme.fontSmall
                     Layout.alignment: Qt.AlignHCenter
@@ -496,7 +496,7 @@ Popup {
                     contentItem: RowLayout {
                         spacing: 6
                         Text {
-                            text: "Open downloads directory"
+                            text: qsTr("Open downloads directory")
                             color: openFolderLink.hovered ? Theme.accentLight : Theme.textSecondary
                             font.pixelSize: Theme.fontSmall
                             font.underline: openFolderLink.hovered

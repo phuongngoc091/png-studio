@@ -20,10 +20,10 @@ StudioShell {
     isLeftPanelOpen: true
     modalSelectionMode: true
     showSwitcher: false
-    modalSelectionTitle: "Model + Runtime"
-    modalSelectionValue: "Select model and runtime"
+    modalSelectionTitle: qsTr("Model + Runtime")
+    modalSelectionValue: qsTr("Select model and runtime")
     modalSelectionDetail: ""
-    backToolTip: "Change model and runtime"
+    backToolTip: qsTr("Change model and runtime")
 
     property string playingType: "none"
     property string detectedLanguage: "en"
@@ -98,14 +98,14 @@ StudioShell {
     }
 
     readonly property var defaultLanguages: [
-        { text: "English", value: "en", detail: "Language code: en" },
-        { text: "Chinese", value: "zh", detail: "Language code: zh" },
-        { text: "Japanese", value: "ja", detail: "Language code: ja" },
-        { text: "Korean", value: "ko", detail: "Language code: ko" },
-        { text: "French", value: "fr", detail: "Language code: fr" },
-        { text: "Spanish", value: "es", detail: "Language code: es" },
-        { text: "German", value: "de", detail: "Language code: de" },
-        { text: "Vietnamese", value: "vi", detail: "Language code: vi" }
+        { text: qsTr("English"), value: "en", detail: qsTr("Language code: en") },
+        { text: qsTr("Chinese"), value: "zh", detail: qsTr("Language code: zh") },
+        { text: qsTr("Japanese"), value: "ja", detail: qsTr("Language code: ja") },
+        { text: qsTr("Korean"), value: "ko", detail: qsTr("Language code: ko") },
+        { text: qsTr("French"), value: "fr", detail: qsTr("Language code: fr") },
+        { text: qsTr("Spanish"), value: "es", detail: qsTr("Language code: es") },
+        { text: qsTr("German"), value: "de", detail: qsTr("Language code: de") },
+        { text: qsTr("Vietnamese"), value: "vi", detail: qsTr("Language code: vi") }
     ]
 
     function normalizeLanguageItems(items) {
@@ -135,7 +135,7 @@ StudioShell {
     }
 
     readonly property var supportedLanguages: {
-        var autoLanguage = [{ text: "Auto", value: "", detail: "Auto-detect target language" }]
+        var autoLanguage = [{ text: qsTr("Auto"), value: "", detail: qsTr("Auto-detect target language") }]
         if (family) {
             if (family.supportedLanguageSetId) {
                 var list = AppController.catalog.languageSet(family.supportedLanguageSetId)
@@ -169,14 +169,14 @@ StudioShell {
                     spacing: Theme.paddingSmall
 
                     AppTabButton {
-                        text: "Presets"
+                        text: qsTr("Presets")
                         iconName: "spark"
                         selected: root.activeLeftTab === "presets"
                         onClicked: root.activeLeftTab = "presets"
                     }
 
                     AppTabButton {
-                        text: "History"
+                        text: qsTr("History")
                         iconName: "history"
                         selected: root.activeLeftTab === "history"
                         onClicked: root.activeLeftTab = "history"
@@ -251,7 +251,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "Select a Voice Design model"
+                                text: qsTr("Select a Voice Design model")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontLarge
                                 font.bold: true
@@ -261,7 +261,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "Load a model family supporting voice design to begin styling voices from descriptions."
+                                text: qsTr("Load a model family supporting voice design to begin styling voices from descriptions.")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 wrapMode: Text.WordWrap
@@ -271,7 +271,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Choose model and runtime"
+                        text: qsTr("Choose model and runtime")
                         iconName: "gallery"
                         onClicked: root.backToGallery()
                     }
@@ -318,7 +318,7 @@ StudioShell {
                             }
 
                             Text {
-                                text: "Voice Description (Instruct)"
+                                text: qsTr("Voice Description (Instruct)")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontSmall
                                 font.bold: true
@@ -326,7 +326,7 @@ StudioShell {
                             }
 
                             Text {
-                                text: root.selectedPresetName !== "" ? "Preset: " + root.selectedPresetName : "Custom Description"
+                                text: root.selectedPresetName !== "" ? qsTr("Preset: %1").arg(root.selectedPresetName) : qsTr("Custom Description")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall - 1
                             }
@@ -351,7 +351,7 @@ StudioShell {
                                 id: noticeText
                                 anchors.fill: parent
                                 anchors.margins: Theme.paddingMedium
-                                text: "This model does not support free-text instruct. Use the options in Generation Settings on the right."
+                                text: qsTr("This model does not support free-text instruct. Use the options in Generation Settings on the right.")
                                 color: Theme.warning
                                 font.pixelSize: Theme.fontSmall
                                 wrapMode: Text.WordWrap
@@ -365,7 +365,7 @@ StudioShell {
 
                             AppTextArea {
                                 id: voiceDescriptionText
-                                placeholderText: "Describe the voice (e.g., A calm, friendly female voice with a warm tone, speaking slowly in a quiet room...)"
+                                placeholderText: qsTr("Describe the voice (e.g., A calm, friendly female voice with a warm tone, speaking slowly in a quiet room...)")
                                 font.pixelSize: Theme.fontMedium
                                 background: Rectangle { color: "transparent" }
                                 enabled: root.studioReady
@@ -410,7 +410,7 @@ StudioShell {
                             }
 
                             Text {
-                                text: "Target Text"
+                                text: qsTr("Target Text")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontSmall
                                 font.bold: true
@@ -418,7 +418,7 @@ StudioShell {
                             }
 
                             Text {
-                                text: targetText.text.length + " chars"
+                                text: qsTr("%1 chars").arg(targetText.text.length)
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                             }
@@ -433,7 +433,7 @@ StudioShell {
 
                             AppTextArea {
                                 id: targetText
-                                placeholderText: "Enter the text you want the voice to speak..."
+                                placeholderText: qsTr("Enter the text you want the voice to speak...")
                                 font.pixelSize: Theme.fontMedium
                                 background: Rectangle { color: "transparent" }
                                 enabled: root.studioReady
@@ -461,7 +461,7 @@ StudioShell {
                     Item { Layout.fillWidth: true }
 
                     PrimaryButton {
-                        text: "Generate Voice"
+                        text: qsTr("Generate Voice")
                         iconName: "spark"
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 40
@@ -533,7 +533,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Load model to view parameters"
+                        text: qsTr("Load model to view parameters")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true

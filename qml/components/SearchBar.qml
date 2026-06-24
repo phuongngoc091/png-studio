@@ -39,7 +39,7 @@ Rectangle {
         }
 
         PrimaryButton {
-            text: "Search"
+            text: qsTr("Search")
             implicitWidth: 80
             implicitHeight: 34
             onClicked: root.accepted()

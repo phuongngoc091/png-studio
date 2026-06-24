@@ -34,7 +34,7 @@ Item {
             spacing: Theme.paddingSmall
 
             Text {
-                text: "Generation History"
+                text: qsTr("Generation History")
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontMedium
                 font.bold: true
@@ -49,7 +49,7 @@ Item {
                 flat: true
 
                 contentItem: Text {
-                    text: "Clear All"
+                    text: qsTr("Clear All")
                     color: clearAllBtn.hovered ? Theme.danger : Theme.textSecondary
                     font.pixelSize: Theme.fontSmall
                     horizontalAlignment: Text.AlignHCenter
@@ -86,7 +86,7 @@ Item {
             }
 
             Text {
-                text: "No history yet"
+                text: qsTr("No history yet")
                 color: Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
                 Layout.alignment: Qt.AlignHCenter
@@ -177,7 +177,7 @@ Item {
                                 }
 
                                 Text {
-                                    text: "Text: " + modelData.text
+                                    text: qsTr("Text: %1").arg(modelData.text)
                                     color: Theme.textSecondary
                                     font.pixelSize: Theme.fontSmall - 1
                                     wrapMode: Text.Wrap
@@ -224,7 +224,7 @@ Item {
                                     }
                                     onClicked: root.loadDescriptionRequested(modelData.voiceDescription, modelData.text)
                                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                                    AppToolTip { text: "Load voice parameters" }
+                                    AppToolTip { text: qsTr("Load voice parameters") }
                                 }
 
                                 Button {
@@ -242,7 +242,7 @@ Item {
                                     }
                                     onClicked: AppController.history.deleteVoiceDesignHistoryItem(modelData.id)
                                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                                    AppToolTip { text: "Delete item" }
+                                    AppToolTip { text: qsTr("Delete item") }
                                 }
                             }
                         }

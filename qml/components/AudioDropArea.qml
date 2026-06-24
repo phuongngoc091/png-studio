@@ -57,7 +57,7 @@ Rectangle {
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text: "Drop audio file here"
+            text: qsTr("Drop audio file here")
             color: Theme.textPrimary
             font.pixelSize: Theme.fontMedium
             font.bold: true
@@ -65,7 +65,7 @@ Rectangle {
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text: "WAV, MP3, FLAC supported"
+            text: qsTr("WAV, MP3, FLAC supported")
             color: Theme.textSecondary
             font.pixelSize: Theme.fontSmall
         }

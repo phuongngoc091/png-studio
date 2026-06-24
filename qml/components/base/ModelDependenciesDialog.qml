@@ -51,7 +51,7 @@ Dialog {
                 Layout.fillWidth: true
                 spacing: 2
                 Text {
-                    text: "Model dependencies"
+                    text: qsTr("Model dependencies")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontMedium
                     font.bold: true
@@ -59,7 +59,7 @@ Dialog {
                     Layout.fillWidth: true
                 }
                 Text {
-                    text: "Select the model components to reveal"
+                    text: qsTr("Select the model components to reveal")
                     color: Theme.textSecondary
                     font.pixelSize: Theme.fontSmall
                     elide: Text.ElideRight
@@ -147,7 +147,7 @@ Dialog {
                 }
 
                 PrimaryButton {
-                    text: "Open in File Explorer"
+                    text: qsTr("Open in File Explorer")
                     quiet: true
                     implicitWidth: 154
                     implicitHeight: 28
@@ -256,7 +256,7 @@ Dialog {
                 }
 
                 PrimaryButton {
-                    text: "Open in File Explorer"
+                    text: qsTr("Open in File Explorer")
                     quiet: true
                     implicitWidth: 154
                     implicitHeight: 28

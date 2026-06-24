@@ -6,10 +6,10 @@ import LAStudio
 Dialog {
     id: root
 
-    property string titleText: "Confirm Action"
-    property string messageText: "Are you sure you want to proceed?"
-    property string confirmText: "Confirm"
-    property string cancelText: "Cancel"
+    property string titleText: qsTr("Confirm Action")
+    property string messageText: qsTr("Are you sure you want to proceed?")
+    property string confirmText: qsTr("Confirm")
+    property string cancelText: qsTr("Cancel")
     property bool isDestructive: false
 
     signal confirmed()

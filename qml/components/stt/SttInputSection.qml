@@ -23,7 +23,7 @@ Rectangle {
         spacing: Theme.paddingMedium
 
         Text {
-            text: "Audio Input"
+            text: qsTr("Audio Input")
             color: Theme.textPrimary
             font.pixelSize: Theme.fontMedium
             font.bold: true
@@ -42,9 +42,9 @@ Rectangle {
                 anchors.fill: parent
                 anchors.margins: Theme.paddingLarge
                 visible: !root.sttSession || root.sttSession.inputPath === ""
-                audioLabel: "Audio file input"
-                audioHint: "WAV, MP3, FLAC supported"
-                fileDialogTitle: "Select Audio File"
+                audioLabel: qsTr("Audio file input")
+                audioHint: qsTr("WAV, MP3, FLAC supported")
+                fileDialogTitle: qsTr("Select Audio File")
                 showSystemSource: true
                 busy: root.sttSession ? root.sttSession.processing : false
                 recording: root.sttSession ? root.sttSession.recording : false
@@ -72,7 +72,7 @@ Rectangle {
                 spacing: Theme.paddingMedium
 
                 Text {
-                    text: "Loaded: " + (root.sttSession ? root.sttSession.inputPath.split(/[/\\]/).pop() : "")
+                    text: qsTr("Loaded: %1").arg(root.sttSession ? root.sttSession.inputPath.split(/[/\\]/).pop() : "")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontSmall
                     elide: Text.ElideMiddle
@@ -91,7 +91,7 @@ Rectangle {
                     spacing: Theme.paddingMedium
 
                     PrimaryButton {
-                        text: "Change / Record"
+                        text: qsTr("Change / Record")
                         quiet: true
                         implicitHeight: 32
                         enabled: root.sttSession ? !root.sttSession.processing : false
@@ -103,7 +103,7 @@ Rectangle {
                     }
 
                     PrimaryButton {
-                        text: audioPlayer.playbackState === MediaPlayer.PlayingState ? "Pause" : "Play"
+                        text: audioPlayer.playbackState === MediaPlayer.PlayingState ? qsTr("Pause") : qsTr("Play")
                         buttonColor: audioPlayer.playbackState === MediaPlayer.PlayingState ? Theme.danger : Theme.success
                         implicitHeight: 32
                         onClicked: {
@@ -121,12 +121,12 @@ Rectangle {
 
             Text {
                 text: {
-                    if (!root.sttSession) return "No file selected"
-                    if (root.sttSession.recording) return "Recording audio..."
-                    if (root.sttSession.processing) return "Processing... " + root.sttSession.progress + "%"
-                    if (root.sttSession.inputLoading) return "Decoding file..."
+                    if (!root.sttSession) return qsTr("No file selected")
+                    if (root.sttSession.recording) return qsTr("Recording audio...")
+                    if (root.sttSession.processing) return qsTr("Processing... %1%").arg(root.sttSession.progress)
+                    if (root.sttSession.inputLoading) return qsTr("Decoding file...")
                     if (root.sttSession.inputError !== "") return root.sttSession.inputError
-                    return root.sttSession.inputPath !== "" ? "Ready to transcribe" : "Choose a file or capture audio"
+                    return root.sttSession.inputPath !== "" ? qsTr("Ready to transcribe") : qsTr("Choose a file or capture audio")
                 }
                 color: (root.sttSession && root.sttSession.inputError !== "") ? Theme.danger : Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
@@ -134,7 +134,7 @@ Rectangle {
             }
 
             PrimaryButton {
-                text: (root.sttSession && root.sttSession.processing) ? "Processing..." : "Transcribe File"
+                text: (root.sttSession && root.sttSession.processing) ? qsTr("Processing...") : qsTr("Transcribe File")
                 enabled: root.sttSession ? (root.sttSession.inputPath !== "" && !root.sttSession.processing && !root.sttSession.inputLoading && root.sttSession.inputError === "") : false
                 buttonColor: Theme.accent
                 onClicked: if (root.sttSession) root.sttSession.transcribeInput()

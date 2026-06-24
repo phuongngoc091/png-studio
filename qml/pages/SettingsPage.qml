@@ -10,23 +10,41 @@ Rectangle {
     id: root
 
     color: Theme.background
+    readonly property int translationRevision: AppController.localization.revision
 
     function getPageTitle(index) {
+        root.translationRevision
         switch(index) {
-            case 0: return "General Settings"
-            case 1: return "Hardware"
-            case 2: return "System Logs Console"
-            default: return "Settings"
+            case 0: return qsTr("General Settings")
+            case 1: return qsTr("Hardware")
+            case 2: return qsTr("System Logs Console")
+            default: return qsTr("Settings")
         }
     }
 
     function getPageDescription(index) {
+        root.translationRevision
         switch(index) {
-            case 0: return "Configure general options, download path, and view application metadata."
-            case 1: return "CPU, memory, GPU, and model loading limits."
-            case 2: return "Review developer debug traces, background worker output, and copy runtime logs."
+            case 0: return qsTr("Configure general options, download path, and view application metadata.")
+            case 1: return qsTr("CPU, memory, GPU, and model loading limits.")
+            case 2: return qsTr("Review developer debug traces, background worker output, and copy runtime logs.")
             default: return ""
         }
+    }
+
+    function settingsRoutes() {
+        root.translationRevision
+        return [
+            { label: qsTr("General"), iconName: "settings", index: 0 }
+        ]
+    }
+
+    function systemRoutes() {
+        root.translationRevision
+        return [
+            { label: qsTr("Hardware"), iconName: "cpu", index: 1 },
+            { label: qsTr("System Logs"), iconName: "file", index: 2 }
+        ]
     }
 
     RowLayout {
@@ -44,7 +62,7 @@ Rectangle {
                 spacing: 4
 
                 Text {
-                    text: "SETTINGS"
+                    text: qsTr("SETTINGS")
                     color: Theme.accentLight
                     font.pixelSize: 10
                     font.bold: true
@@ -55,16 +73,14 @@ Rectangle {
                 }
 
                 Repeater {
-                    model: [
-                        { label: "General", iconName: "settings", index: 0 }
-                    ]
+                    model: root.settingsRoutes()
                     delegate: sidebarItemDelegate
                 }
 
                 Item { Layout.preferredHeight: Theme.paddingSmall }
 
                 Text {
-                    text: "SYSTEM"
+                    text: qsTr("SYSTEM")
                     color: Theme.accentLight
                     font.pixelSize: 10
                     font.bold: true
@@ -75,10 +91,7 @@ Rectangle {
                 }
 
                 Repeater {
-                    model: [
-                        { label: "Hardware", iconName: "cpu", index: 1 },
-                        { label: "System Logs", iconName: "file", index: 2 }
-                    ]
+                    model: root.systemRoutes()
                     delegate: sidebarItemDelegate
                 }
 

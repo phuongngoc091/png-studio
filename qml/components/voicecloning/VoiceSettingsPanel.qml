@@ -87,7 +87,7 @@ ColumnLayout {
         }
 
         Text {
-            text: "Cloning Settings"
+            text: qsTr("Cloning Settings")
             color: Theme.textPrimary
             font.pixelSize: Theme.fontMedium
             font.bold: true
@@ -100,7 +100,7 @@ ColumnLayout {
             implicitHeight: 30
             flat: true
 
-            ToolTip.text: "Hide settings"
+            ToolTip.text: qsTr("Hide settings")
             ToolTip.visible: hovered
 
             contentItem: LineIcon {
@@ -134,19 +134,19 @@ ColumnLayout {
             spacing: Theme.paddingMedium
 
             SettingsSection {
-                title: "Core"
+                title: qsTr("Core")
                 iconName: "file"
                 visible: root.hasInstructInput
 
-                FieldLabel { text: (family && family.id && family.id.indexOf("qwen3") !== -1) ? "Style Instruction" : "Style & Emotion" }
+                FieldLabel { text: (family && family.id && family.id.indexOf("qwen3") !== -1) ? qsTr("Style Instruction") : qsTr("Style & Emotion") }
 
                 TextField {
                     id: instructInput
                     Layout.fillWidth: true
                     visible: root.hasInstructInput
                     placeholderText: (family && family.id && family.id.indexOf("qwen3") !== -1) 
-                                     ? "e.g. Speak with excitement, whisper, or deep voice..." 
-                                     : "happy, whisper, dramatic..."
+                                     ? qsTr("e.g. Speak with excitement, whisper, or deep voice...") 
+                                     : qsTr("happy, whisper, dramatic...")
                     color: Theme.textPrimary
                     placeholderTextColor: Theme.textSecondary
                     selectionColor: Theme.accent
@@ -166,7 +166,7 @@ ColumnLayout {
             }
 
             SettingsSection {
-                title: "Model Parameters"
+                title: qsTr("Model Parameters")
                 iconName: "sliders"
                 visible: root.basicSchema.length > 0
 
@@ -178,7 +178,7 @@ ColumnLayout {
             }
 
             CollapsibleSettingsSection {
-                title: "Advanced"
+                title: qsTr("Advanced")
                 iconName: "sliders"
                 expanded: root.advancedOpen
                 visible: root.advancedSchema.length > 0
@@ -192,12 +192,12 @@ ColumnLayout {
             }
 
             SettingsSection {
-                title: "Audio & System"
+                title: qsTr("Audio & System")
                 iconName: "cpu"
 
                 ToggleRow {
                     id: denoiseToggle
-                    text: "Denoise"
+                    text: qsTr("Denoise")
                     checked: true
                     onCheckedChanged: {
                         root.denoise = checked
@@ -207,7 +207,7 @@ ColumnLayout {
 
                 ToggleRow {
                     id: preprocessToggle
-                    text: "Preprocess prompt"
+                    text: qsTr("Preprocess prompt")
                     checked: true
                     onCheckedChanged: {
                         root.preprocessPrompt = checked
@@ -217,7 +217,7 @@ ColumnLayout {
 
                 ToggleRow {
                     id: randomSeedToggle
-                    text: "Random seed"
+                    text: qsTr("Random seed")
                     checked: true
                     onCheckedChanged: {
                         root.randomSeed = checked

@@ -129,7 +129,7 @@ ColumnLayout {
         }
 
         Text {
-            text: "TTS Settings"
+            text: qsTr("TTS Settings")
             color: Theme.textPrimary
             font.pixelSize: Theme.fontMedium
             font.bold: true
@@ -143,7 +143,7 @@ ColumnLayout {
             flat: true
 
             AppToolTip {
-                text: "Hide settings"
+                text: qsTr("Hide settings")
                 visible: parent.hovered
             }
 
@@ -178,14 +178,14 @@ ColumnLayout {
             spacing: Theme.paddingMedium
 
             SettingsSection {
-                title: "Core"
+                title: qsTr("Core")
                 visible: true // Always show Core for language selection if supported
                 iconName: "file"
 
                 LanguageSelector {
                     id: langSelector
                     Layout.fillWidth: true
-                    labelText: "Target Language"
+                    labelText: qsTr("Target Language")
                     family: root.family
                     hasLanguageInput: root.hasLanguageInput
                     useTextFieldFallback: false
@@ -199,7 +199,7 @@ ColumnLayout {
                 }
 
                 FieldLabel { 
-                    text: (family && family.id && family.id.indexOf("qwen3") !== -1) ? "Style Instruction" : "Style & Emotion"
+                    text: (family && family.id && family.id.indexOf("qwen3") !== -1) ? qsTr("Style Instruction") : qsTr("Style & Emotion")
                     visible: instructInput.visible
                 }
 
@@ -208,8 +208,8 @@ ColumnLayout {
                     Layout.fillWidth: true
                     visible: root.hasInstructInput
                     placeholderText: (family && family.id && family.id.indexOf("qwen3") !== -1) 
-                                     ? "e.g. Speak with excitement, whisper, or deep voice..." 
-                                     : "happy, whisper, dramatic..."
+                                     ? qsTr("e.g. Speak with excitement, whisper, or deep voice...") 
+                                     : qsTr("happy, whisper, dramatic...")
                     color: Theme.textPrimary
                     placeholderTextColor: Theme.textSecondary
                     selectionColor: Theme.accent
@@ -229,7 +229,7 @@ ColumnLayout {
             }
 
             SettingsSection {
-                title: "Model Parameters"
+                title: qsTr("Model Parameters")
                 iconName: "sliders"
                 visible: root.basicSchema.length > 0
 
@@ -241,7 +241,7 @@ ColumnLayout {
             }
 
             CollapsibleSettingsSection {
-                title: "Advanced"
+                title: qsTr("Advanced")
                 iconName: "sliders"
                 expanded: root.advancedOpen
                 visible: root.advancedSchema.length > 0
@@ -255,13 +255,13 @@ ColumnLayout {
             }
 
             SettingsSection {
-                title: "Audio & System"
+                title: qsTr("Audio & System")
                 visible: !root.isKokoro
                 iconName: "cpu"
 
                 ToggleRow {
                     id: denoiseToggle
-                    text: "Denoise"
+                    text: qsTr("Denoise")
                     checked: true
                     onCheckedChanged: {
                         root.denoise = checked
@@ -271,7 +271,7 @@ ColumnLayout {
 
                 ToggleRow {
                     id: preprocessToggle
-                    text: "Preprocess prompt"
+                    text: qsTr("Preprocess prompt")
                     checked: true
                     onCheckedChanged: {
                         root.preprocessPrompt = checked
@@ -281,7 +281,7 @@ ColumnLayout {
 
                 ToggleRow {
                     id: randomSeedToggle
-                    text: "Random seed"
+                    text: qsTr("Random seed")
                     checked: true
                     onCheckedChanged: {
                         root.randomSeed = checked

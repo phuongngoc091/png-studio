@@ -16,8 +16,24 @@ ScrollView {
 
     property bool wideLayout: availableWidth >= 980
     property bool openDownloadsPaneOnStart: false
+    readonly property int translationRevision: AppController.localization.revision
     readonly property int contentMaxWidth: 1120
     readonly property int rowLabelWidth: 210
+
+    function updateChannelOptions() {
+        root.translationRevision
+        return [qsTr("Stable"), qsTr("Beta")]
+    }
+
+    function languageIndexFor(language) {
+        const languages = AppController.localization.availableLanguages
+        for (var i = 0; i < languages.length; i++) {
+            if (languages[i].value === language) {
+                return i
+            }
+        }
+        return 0
+    }
 
     ColumnLayout {
         width: Math.min(root.contentMaxWidth, Math.max(0, root.availableWidth - Theme.paddingMedium * 2))
@@ -34,12 +50,12 @@ ScrollView {
             rowSpacing: Theme.paddingLarge
 
             SectionPanel {
-                title: "App Update"
+                title: qsTr("App Update")
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
 
                 SettingsRow {
-                    label: "Installed"
+                    label: qsTr("Installed")
                     valueText: "LA Studio v0.1.0"
                 }
 
@@ -50,7 +66,7 @@ ScrollView {
                     spacing: Theme.paddingMedium
 
                     Text {
-                        text: "Updates channel"
+                        text: qsTr("Updates channel")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontSmall
                         font.bold: true
@@ -60,10 +76,10 @@ ScrollView {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Theme.paddingSmall
+                        spacing: Theme.paddingMedium
 
                         PrimaryButton {
-                            text: "Check for updates"
+                            text: qsTr("Check for updates")
                             buttonColor: Theme.surfaceAlt
                             implicitWidth: 132
                             implicitHeight: 32
@@ -72,7 +88,7 @@ ScrollView {
 
                         AppComboBox {
                             id: channelCombo
-                            model: ["Stable", "Beta"]
+                            model: root.updateChannelOptions()
                             currentIndex: 0
                             implicitWidth: 110
                             implicitHeight: 32
@@ -84,7 +100,7 @@ ScrollView {
             }
 
             SectionPanel {
-                title: "User Interface"
+                title: qsTr("User Interface")
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
 
@@ -98,7 +114,7 @@ ScrollView {
                         spacing: 3
 
                         Text {
-                            text: "App Language"
+                            text: qsTr("App Language")
                             color: Theme.textPrimary
                             font.pixelSize: Theme.fontSmall
                             font.bold: true
@@ -106,7 +122,7 @@ ScrollView {
                         }
 
                         Text {
-                            text: "Still in development"
+                            text: qsTr("Still in development")
                             color: Theme.textSecondary
                             font.pixelSize: 11
                             Layout.fillWidth: true
@@ -115,24 +131,21 @@ ScrollView {
 
                     AppComboBox {
                         id: langCombo
-                        model: [
-                            { text: "English", value: "en" },
-                            { text: "Tiếng Việt (still in development)", value: "vi" }
-                        ]
+                        model: AppController.localization.availableLanguages
                         textRole: "text"
-                        currentIndex: {
-                            for (var i = 0; i < model.length; i++) {
-                                if (model[i].value === AppController.settings.language) {
-                                    return i
-                                }
-                            }
-                            return 0
-                        }
+                        currentIndex: root.languageIndexFor(AppController.localization.currentLanguage)
                         Layout.fillWidth: true
                         Layout.maximumWidth: 260
                         implicitHeight: 32
                         onActivated: (index) => {
-                            AppController.settings.language = model[index].value
+                            AppController.localization.currentLanguage = model[index].value
+                        }
+
+                        Connections {
+                            target: AppController.localization
+                            function onCurrentLanguageChanged() {
+                                langCombo.currentIndex = root.languageIndexFor(AppController.localization.currentLanguage)
+                            }
                         }
                     }
 
@@ -141,7 +154,7 @@ ScrollView {
             }
 
             SectionPanel {
-                title: "General Settings"
+                title: qsTr("General Settings")
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
 
@@ -150,7 +163,7 @@ ScrollView {
                     spacing: Theme.paddingMedium
 
                     Text {
-                        text: "Open downloads pane when starting a new model download"
+                        text: qsTr("Open downloads pane when starting a new model download")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontSmall
                         wrapMode: Text.WordWrap
@@ -168,7 +181,7 @@ ScrollView {
             }
 
             SectionPanel {
-                title: "Models Directory"
+                title: qsTr("Models Directory")
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
 
@@ -177,7 +190,7 @@ ScrollView {
                     spacing: Theme.paddingSmall
 
                     Text {
-                        text: "Model downloads and indexing location"
+                        text: qsTr("Model downloads and indexing location")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontSmall
                         font.bold: true
@@ -226,12 +239,12 @@ ScrollView {
         }
 
         SectionPanel {
-            title: "App Info"
+            title: qsTr("App Info")
             Layout.fillWidth: true
 
             InfoActionRow {
-                label: "Open app logs"
-                actionText: "Open"
+                label: qsTr("Open app logs")
+                actionText: qsTr("Open")
                 onActivated: Qt.openUrlExternally("file:///" + AppController.logsDir)
             }
 
@@ -242,7 +255,7 @@ ScrollView {
                 spacing: Theme.paddingMedium
 
                 Text {
-                    text: "App home directory"
+                    text: qsTr("App home directory")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontSmall
                     Layout.preferredWidth: root.rowLabelWidth
@@ -267,8 +280,8 @@ ScrollView {
             ThinDivider {}
 
             InfoActionRow {
-                label: "Report bug or send feedback"
-                actionText: "Open in browser"
+                label: qsTr("Report bug or send feedback")
+                actionText: qsTr("Open in browser")
                 actionIcon: "external-link"
                 actionWidth: 146
                 onActivated: Qt.openUrlExternally("https://github.com/dduongtrandai/LA-Studio-Dev/issues")
@@ -281,43 +294,18 @@ ScrollView {
             Layout.bottomMargin: Theme.paddingLarge
             spacing: Theme.paddingSmall
 
-            Canvas {
-                id: alienIcon
+            Image {
+                id: laStudioLogo
                 Layout.alignment: Qt.AlignHCenter
-                width: 33
-                height: 24
-                onPaint: {
-                    var ctx = getContext("2d")
-                    ctx.clearRect(0, 0, width, height)
-                    ctx.fillStyle = "#a27eff"
-
-                    var pixels = [
-                        [0,0,1,0,0,0,0,0,1,0,0],
-                        [0,0,0,1,0,0,0,1,0,0,0],
-                        [0,0,1,1,1,1,1,1,1,0,0],
-                        [0,1,1,0,1,1,1,0,1,1,0],
-                        [1,1,1,1,1,1,1,1,1,1,1],
-                        [1,0,1,1,1,1,1,1,1,0,1],
-                        [1,0,1,0,0,0,0,0,1,0,1],
-                        [0,0,0,1,1,0,1,1,0,0,0]
-                    ]
-
-                    var pixelWidth = width / 11
-                    var pixelHeight = height / 8
-
-                    for (var r = 0; r < 8; r++) {
-                        for (var c = 0; c < 11; c++) {
-                            if (pixels[r][c] === 1) {
-                                ctx.fillRect(c * pixelWidth, r * pixelHeight, pixelWidth + 0.1, pixelHeight + 0.1)
-                            }
-                        }
-                    }
-                }
+                width: 32
+                height: 32
+                source: "qrc:/LAStudio/icons/app_icon_32.png"
+                fillMode: Image.PreserveAspectFit
             }
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: "Made by LA Studio Team"
+                text: qsTr("Made by Tran Dai Duong")
                 color: Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
                 opacity: 0.6
@@ -327,7 +315,7 @@ ScrollView {
 
     FolderDialog {
         id: folderDialog
-        title: "Select Models Directory"
+        title: qsTr("Select Models Directory")
         onAccepted: {
             AppController.modelsMigration.changeDirectory(selectedFolder.toString())
         }

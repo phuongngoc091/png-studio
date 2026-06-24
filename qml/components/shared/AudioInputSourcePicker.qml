@@ -8,10 +8,10 @@ ColumnLayout {
     id: root
 
     property string activeTab: "file"
-    property string audioLabel: "Audio file"
-    property string audioHint: "WAV, MP3, FLAC supported"
-    property string fileDialogTitle: "Select Audio File"
-    property var fileNameFilters: ["Audio files (*.wav *.mp3 *.flac)", "All files (*)"]
+    property string audioLabel: qsTr("Audio file")
+    property string audioHint: qsTr("WAV, MP3, FLAC supported")
+    property string fileDialogTitle: qsTr("Select Audio File")
+    property var fileNameFilters: [qsTr("Audio files (*.wav *.mp3 *.flac)"), qsTr("All files (*)")]
     property bool showSystemSource: true
     property bool busy: false
     property bool recording: false
@@ -39,14 +39,14 @@ ColumnLayout {
             spacing: 4
 
             AppTabButton {
-                text: "File"
+                text: qsTr("File")
                 iconName: "file"
                 selected: root.activeTab === "file"
                 onClicked: if (!root.recording && !root.busy) root.activeTab = "file"
             }
 
             AppTabButton {
-                text: "Mic"
+                text: qsTr("Mic")
                 iconName: "mic"
                 selected: root.activeTab === "mic"
                 onClicked: if (!root.recording && !root.busy) root.activeTab = "mic"
@@ -54,7 +54,7 @@ ColumnLayout {
 
             AppTabButton {
                 visible: root.showSystemSource
-                text: "System"
+                text: qsTr("System")
                 iconName: "volume"
                 selected: root.activeTab === "system"
                 onClicked: if (!root.recording && !root.busy) root.activeTab = "system"
@@ -114,7 +114,7 @@ ColumnLayout {
                 }
 
                 PrimaryButton {
-                    text: "Choose file"
+                    text: qsTr("Choose file")
                     iconName: "file"
                     implicitWidth: 128
                     implicitHeight: 34
@@ -125,7 +125,7 @@ ColumnLayout {
         }
 
         RecorderPane {
-            title: root.saving ? "Saving..." : (root.recording ? "Recording microphone" : "Record microphone")
+            title: root.saving ? qsTr("Saving...") : (root.recording ? qsTr("Recording microphone") : qsTr("Record microphone"))
             iconName: "mic"
             recording: root.recording
             meterVisible: root.recording && root.activeTab === "mic"
@@ -137,7 +137,7 @@ ColumnLayout {
         }
 
         RecorderPane {
-            title: root.saving ? "Saving..." : (root.recording ? "Recording system audio" : "Record system audio")
+            title: root.saving ? qsTr("Saving...") : (root.recording ? qsTr("Recording system audio") : qsTr("Record system audio"))
             iconName: "volume"
             recording: root.recording
             meterVisible: root.recording && root.activeTab === "system"
@@ -194,7 +194,7 @@ ColumnLayout {
     component RecorderPane: Item {
         id: recorderPane
 
-        property string title: "Record"
+        property string title: qsTr("Record")
         property string iconName: "mic"
         property bool recording: false
         property bool meterVisible: false

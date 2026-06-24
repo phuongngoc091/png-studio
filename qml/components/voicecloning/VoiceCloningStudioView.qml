@@ -21,10 +21,10 @@ StudioShell {
     isLeftPanelOpen: true
     modalSelectionMode: true
     showSwitcher: false
-    modalSelectionTitle: "Model + Runtime"
-    modalSelectionValue: "Select model and runtime"
+    modalSelectionTitle: qsTr("Model + Runtime")
+    modalSelectionValue: qsTr("Select model and runtime")
     modalSelectionDetail: ""
-    backToolTip: "Change model and runtime"
+    backToolTip: qsTr("Change model and runtime")
 
     property string referenceAudioPath: ""
     property string playingType: "none"
@@ -68,14 +68,14 @@ StudioShell {
     onRequestRuntimeSwitch: function(runtimeId) { root.runtimeSwitchRequested(runtimeId) }
 
     readonly property var defaultLanguages: [
-        { text: "English", value: "en", detail: "Language code: en" },
-        { text: "Chinese", value: "zh", detail: "Language code: zh" },
-        { text: "Japanese", value: "ja", detail: "Language code: ja" },
-        { text: "Korean", value: "ko", detail: "Language code: ko" },
-        { text: "French", value: "fr", detail: "Language code: fr" },
-        { text: "Spanish", value: "es", detail: "Language code: es" },
-        { text: "German", value: "de", detail: "Language code: de" },
-        { text: "Vietnamese", value: "vi", detail: "Language code: vi" }
+        { text: qsTr("English"), value: "en", detail: qsTr("Language code: en") },
+        { text: qsTr("Chinese"), value: "zh", detail: qsTr("Language code: zh") },
+        { text: qsTr("Japanese"), value: "ja", detail: qsTr("Language code: ja") },
+        { text: qsTr("Korean"), value: "ko", detail: qsTr("Language code: ko") },
+        { text: qsTr("French"), value: "fr", detail: qsTr("Language code: fr") },
+        { text: qsTr("Spanish"), value: "es", detail: qsTr("Language code: es") },
+        { text: qsTr("German"), value: "de", detail: qsTr("Language code: de") },
+        { text: qsTr("Vietnamese"), value: "vi", detail: qsTr("Language code: vi") }
     ]
 
     function normalizeLanguageItems(items) {
@@ -203,7 +203,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "Select a Voice Cloning model"
+                                text: qsTr("Select a Voice Cloning model")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontLarge
                                 font.bold: true
@@ -213,7 +213,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "The studio stays lightweight until you choose a compatible configuration."
+                                text: qsTr("The studio stays lightweight until you choose a compatible configuration.")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 wrapMode: Text.WordWrap
@@ -223,7 +223,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Choose model and runtime"
+                        text: qsTr("Choose model and runtime")
                         iconName: "gallery"
                         onClicked: root.backToGallery()
                     }
@@ -323,7 +323,7 @@ StudioShell {
                                             }
 
                                             Text {
-                                                text: "Target Language"
+                                                text: qsTr("Target Language")
                                                 color: Theme.textPrimary
                                                 font.pixelSize: Theme.fontSmall
                                                 font.bold: true
@@ -357,7 +357,7 @@ StudioShell {
                                                 }
 
                                                 Text {
-                                                    text: "Target Prompt"
+                                                    text: qsTr("Target Prompt")
                                                     color: Theme.textPrimary
                                                     font.pixelSize: Theme.fontSmall
                                                     font.bold: true
@@ -365,7 +365,7 @@ StudioShell {
                                                 }
 
                                                 PrimaryButton {
-                                                    text: "Import .txt"
+                                                    text: qsTr("Import .txt")
                                                     iconName: "folder"
                                                     quiet: true
                                                     implicitHeight: 28
@@ -397,7 +397,7 @@ StudioShell {
                                                         id: inputText
                                                         Layout.fillWidth: true
                                                         Layout.fillHeight: true
-                                                        placeholderText: "Enter the text you want the cloned voice to say..."
+                                                        placeholderText: qsTr("Enter the text you want the cloned voice to say...")
                                                         font.pixelSize: Theme.fontMedium
                                                         background: Rectangle { color: "transparent" }
                                                         onTextChanged: languageDetectTimer.restart()
@@ -412,7 +412,7 @@ StudioShell {
 
                                                     Text {
                                                         Layout.fillWidth: true
-                                                        text: "⚠️ VieNeu-TTS Turbo may be less stable with phrases under 5 words."
+                                                        text: qsTr("⚠️ VieNeu-TTS Turbo may be less stable with phrases under 5 words.")
                                                         color: Theme.warning
                                                         font.pixelSize: 11
                                                         wrapMode: Text.WordWrap
@@ -449,7 +449,7 @@ StudioShell {
                             }
 
                             PrimaryButton {
-                                text: "Clone Voice"
+                                text: qsTr("Clone Voice")
                                 iconName: "spark"
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 42
@@ -498,7 +498,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Choose a model to unlock settings"
+                        text: qsTr("Choose a model to unlock settings")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true
@@ -508,7 +508,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Model parameters and audio controls appear after the configuration is loaded."
+                        text: qsTr("Model parameters and audio controls appear after the configuration is loaded.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         wrapMode: Text.WordWrap
@@ -516,7 +516,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Open model gallery"
+                        text: qsTr("Open model gallery")
                         iconName: "gallery"
                         quiet: true
                         onClicked: root.backToGallery()

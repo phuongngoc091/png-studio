@@ -54,7 +54,7 @@ Rectangle {
                     onClicked: AppController.copyToClipboard(root.modelData.id)
                     AppToolTip {
                         visible: parent.hovered
-                        text: "Copy Model ID"
+                        text: qsTr("Copy Model ID")
                     }
                 }
 
@@ -101,7 +101,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: "Last updated: " + (root.modelData ? formatTime(root.modelData.lastModified) : "")
+                    text: qsTr("Last updated: %1").arg(root.modelData ? formatTime(root.modelData.lastModified) : "")
                     color: Theme.textSecondary
                     font.pixelSize: 12
                 }
@@ -109,7 +109,7 @@ Rectangle {
                 Item { Layout.fillWidth: true }
                 
                 PrimaryButton {
-                    text: "Model Card ↗"
+                    text: qsTr("Model Card ↗")
                     buttonColor: Theme.surfaceAlt
                     textColor: Theme.textPrimary
                     onClicked: {
@@ -121,19 +121,19 @@ Rectangle {
 
             RowLayout {
                 spacing: 8
-                Text { text: "Format"; color: Theme.textSecondary; font.pixelSize: 12 }
+                Text { text: qsTr("Format"); color: Theme.textSecondary; font.pixelSize: 12 }
                 Rectangle {
                     implicitWidth: 60; implicitHeight: 20; color: "#3b82f6"; radius: 4
                     Text { 
                         anchors.centerIn: parent
                         text: {
-                            if (!root.modelData) return "UNKNOWN"
+                            if (!root.modelData) return qsTr("UNKNOWN")
                             var tags = root.modelData.tags || []
                             if (tags.includes("gguf")) return "GGUF"
                             if (tags.includes("ggml")) return "GGML"
                             if (tags.includes("safetensors")) return "Safetensors"
                             if (tags.includes("onnx")) return "ONNX"
-                            return "Bin"
+                            return qsTr("Bin")
                         }
                         color: "white"; font.pixelSize: 9; font.bold: true 
                     }
@@ -156,7 +156,7 @@ Rectangle {
                     spacing: Theme.paddingMedium
 
                     Text {
-                        text: "📦 Download Options"
+                        text: qsTr("📦 Download Options")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontLarge
                         font.bold: true
@@ -192,7 +192,7 @@ Rectangle {
                                     radius: 4
                                     Text {
                                         anchors.centerIn: parent
-                                        text: "File"
+                                        text: qsTr("File")
                                         color: Theme.textPrimary
                                         font.pixelSize: 10
                                     }
@@ -213,7 +213,7 @@ Rectangle {
                                 }
 
                                 PrimaryButton {
-                                    text: "Download"
+                                    text: qsTr("Download")
                                     implicitWidth: 100
                                     implicitHeight: 32
                                     font.pixelSize: Theme.fontSmall
@@ -225,7 +225,7 @@ Rectangle {
 
                     Text {
                         visible: fileList.count === 0
-                        text: "No downloadable files found for this model."
+                        text: qsTr("No downloadable files found for this model.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         Layout.alignment: Qt.AlignHCenter
@@ -239,7 +239,7 @@ Rectangle {
                 spacing: Theme.paddingMedium
 
                 Text {
-                    text: "📄 Model Info"
+                    text: qsTr("📄 Model Info")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontLarge
                     font.bold: true
@@ -255,8 +255,7 @@ Rectangle {
                         width: parent.width
                         wrapMode: Text.WordWrap
                         textFormat: Text.RichText
-                        text: root.modelData ? "<b>Task:</b> " + (root.modelData.task || "Unknown") + "<br><br>" +
-                                             "<b>Tags:</b> " + (root.modelData.tags ? root.modelData.tags.join(', ') : "None") : ""
+                        text: root.modelData ? qsTr("<b>Task:</b> %1<br><br><b>Tags:</b> %2").arg(root.modelData.task || qsTr("Unknown")).arg(root.modelData.tags ? root.modelData.tags.join(', ') : qsTr("None")) : ""
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontMedium
                     }
@@ -266,14 +265,14 @@ Rectangle {
     }
 
     function formatTime(isoString) {
-        if (!isoString) return "unknown"
+        if (!isoString) return qsTr("unknown")
         var date = new Date(isoString)
         var now = new Date()
         var diff = now - date
         var days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        if (days === 0) return "today"
-        if (days === 1) return "yesterday"
-        return days + " days ago"
+        if (days === 0) return qsTr("today")
+        if (days === 1) return qsTr("yesterday")
+        return qsTr("%1 days ago").arg(days)
     }
 
     function formatSize(s) {
@@ -290,7 +289,7 @@ Rectangle {
         spacing: Theme.paddingLarge
         
         Text {
-            text: "Select a model to see details"
+            text: qsTr("Select a model to see details")
             color: Theme.textSecondary
             font.pixelSize: Theme.fontLarge
             Layout.alignment: Qt.AlignHCenter

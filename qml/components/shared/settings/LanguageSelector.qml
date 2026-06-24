@@ -9,7 +9,7 @@ ColumnLayout {
 
     property var family: null
     property string language: ""
-    property string labelText: "Language"
+    property string labelText: qsTr("Language")
     property bool useTextFieldFallback: false
     property bool hasLanguageInput: true
 
@@ -32,7 +32,7 @@ ColumnLayout {
             result.push({
                 text: label,
                 value: code,
-                detail: item.detail || (code !== "" ? "Language code: " + code : "")
+                detail: item.detail || (code !== "" ? qsTr("Language code: %1").arg(code) : "")
             })
         }
         return result
@@ -99,7 +99,7 @@ ColumnLayout {
         Layout.fillWidth: true
         visible: root.showTextField
         text: root.language
-        placeholderText: "e.g. en, vi, auto"
+        placeholderText: qsTr("e.g. en, vi, auto")
         color: Theme.textPrimary
         placeholderTextColor: Theme.textSecondary
         font.pixelSize: Theme.fontMedium

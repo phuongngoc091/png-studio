@@ -22,14 +22,14 @@ Rectangle {
     property string sortOrder: "asc" // "asc", "desc"
 
     property var sortOptions: [
-        { text: "Name (A-Z)", sortBy: "name", sortOrder: "asc" },
-        { text: "Name (Z-A)", sortBy: "name", sortOrder: "desc" },
-        { text: "Params (Large-Small)", sortBy: "params", sortOrder: "desc" },
-        { text: "Params (Small-Large)", sortBy: "params", sortOrder: "asc" },
-        { text: "Size (Large-Small)", sortBy: "size", sortOrder: "desc" },
-        { text: "Size (Small-Large)", sortBy: "size", sortOrder: "asc" },
-        { text: "Modified (Newest)", sortBy: "modified", sortOrder: "desc" },
-        { text: "Modified (Oldest)", sortBy: "modified", sortOrder: "asc" }
+        { text: qsTr("Name (A-Z)"), sortBy: "name", sortOrder: "asc" },
+        { text: qsTr("Name (Z-A)"), sortBy: "name", sortOrder: "desc" },
+        { text: qsTr("Params (Large-Small)"), sortBy: "params", sortOrder: "desc" },
+        { text: qsTr("Params (Small-Large)"), sortBy: "params", sortOrder: "asc" },
+        { text: qsTr("Size (Large-Small)"), sortBy: "size", sortOrder: "desc" },
+        { text: qsTr("Size (Small-Large)"), sortBy: "size", sortOrder: "asc" },
+        { text: qsTr("Modified (Newest)"), sortBy: "modified", sortOrder: "desc" },
+        { text: qsTr("Modified (Oldest)"), sortBy: "modified", sortOrder: "asc" }
     ]
 
     function loadPinnedModels() {
@@ -353,7 +353,7 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.paddingLarge
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "My Models"
+                        text: qsTr("My Models")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontLarge
                         font.bold: true
@@ -368,7 +368,7 @@ Rectangle {
                     spacing: 4
 
                     CategoryButton {
-                        text: "View All"
+                        text: qsTr("View All")
                         iconName: "gallery"
                         active: root.activeCategory === "all"
                         onClicked: root.activeCategory = "all"
@@ -383,21 +383,21 @@ Rectangle {
                     }
 
                     CategoryButton {
-                        text: "Speech to Text"
+                        text: qsTr("Speech to Text")
                         iconName: "mic"
                         active: root.activeCategory === "stt"
                         onClicked: root.activeCategory = "stt"
                     }
 
                     CategoryButton {
-                        text: "Text to Speech"
+                        text: qsTr("Text to Speech")
                         iconName: "volume"
                         active: root.activeCategory === "tts"
                         onClicked: root.activeCategory = "tts"
                     }
 
                     CategoryButton {
-                        text: "Voice Cloning"
+                        text: qsTr("Voice Cloning")
                         iconName: "spark"
                         active: root.activeCategory === "voice-clone"
                         onClicked: root.activeCategory = "voice-clone"
@@ -435,10 +435,10 @@ Rectangle {
 
                     Text {
                         text: {
-                            if (root.activeCategory === "stt") return "Speech to Text Models"
-                            if (root.activeCategory === "tts") return "Text to Speech Models"
-                            if (root.activeCategory === "voice-clone") return "Voice Cloning Models"
-                            return "All Local Models"
+                            if (root.activeCategory === "stt") return qsTr("Speech to Text Models")
+                            if (root.activeCategory === "tts") return qsTr("Text to Speech Models")
+                            if (root.activeCategory === "voice-clone") return qsTr("Voice Cloning Models")
+                            return qsTr("All Local Models")
                         }
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
@@ -489,7 +489,7 @@ Rectangle {
                                 id: searchField
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                placeholderText: "Filter models..."
+                                placeholderText: qsTr("Filter models...")
                                 color: Theme.textPrimary
                                 placeholderTextColor: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
@@ -522,14 +522,14 @@ Rectangle {
                     anchors.rightMargin: Theme.paddingLarge
                     spacing: Theme.paddingMedium
 
-                    TableHeaderText { text: "Arch"; Layout.preferredWidth: 80 }
-                    TableHeaderCell { text: "Params"; sortField: "params"; Layout.preferredWidth: 70 }
-                    TableHeaderText { text: "Publisher"; Layout.preferredWidth: 130 }
-                    TableHeaderCell { text: "Name / ID"; sortField: "name"; Layout.fillWidth: true }
-                    TableHeaderText { text: "Quant"; Layout.preferredWidth: 80 }
-                    TableHeaderCell { text: "Size"; sortField: "size"; Layout.preferredWidth: 80 }
-                    TableHeaderCell { text: "Modified"; sortField: "modified"; Layout.preferredWidth: 100 }
-                    TableHeaderText { text: "Actions"; Layout.preferredWidth: 110; horizontalAlignment: Text.AlignRight }
+                    TableHeaderText { text: qsTr("Arch"); Layout.preferredWidth: 80 }
+                    TableHeaderCell { text: qsTr("Params"); sortField: "params"; Layout.preferredWidth: 70 }
+                    TableHeaderText { text: qsTr("Publisher"); Layout.preferredWidth: 130 }
+                    TableHeaderCell { text: qsTr("Name / ID"); sortField: "name"; Layout.fillWidth: true }
+                    TableHeaderText { text: qsTr("Quant"); Layout.preferredWidth: 80 }
+                    TableHeaderCell { text: qsTr("Size"); sortField: "size"; Layout.preferredWidth: 80 }
+                    TableHeaderCell { text: qsTr("Modified"); sortField: "modified"; Layout.preferredWidth: 100 }
+                    TableHeaderText { text: qsTr("Actions"); Layout.preferredWidth: 110; horizontalAlignment: Text.AlignRight }
                 }
             }
 
@@ -751,7 +751,7 @@ Rectangle {
                                     ActionIconButton {
                                         id: moreActionsBtn
                                         iconName: "more-horizontal"
-                                        toolTipText: "More actions"
+                                        toolTipText: qsTr("More actions")
                                         onClicked: {
                                             actionMenu.modelData = modelData
                                             actionMenu.popup(moreActionsBtn, 0, moreActionsBtn.height)
@@ -760,7 +760,7 @@ Rectangle {
 
                                     ActionIconButton {
                                         iconName: "settings"
-                                        toolTipText: "Edit model default config"
+                                        toolTipText: qsTr("Edit model default config")
                                         onClicked: {
                                             root.selectedModel = modelData
                                             root.sidebarOpen = true
@@ -775,7 +775,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         visible: root.filteredModelsList.length === 0
-                        text: "No downloaded models found matching the filters."
+                        text: qsTr("No downloaded models found matching the filters.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontMedium
                     }
@@ -802,7 +802,7 @@ Rectangle {
                     anchors.rightMargin: Theme.paddingLarge
 
                     Text {
-                        text: "You have " + root.diskSpaceInfo.count + " local models, taking up " + root.diskSpaceInfo.sizeText + " of disk space."
+                        text: qsTr("You have %1 local models, taking up %2 of disk space.").arg(root.diskSpaceInfo.count).arg(root.diskSpaceInfo.sizeText)
                         color: Theme.textSecondary
                         font.pixelSize: 11
                     }
@@ -810,7 +810,7 @@ Rectangle {
                     Item { Layout.fillWidth: true }
 
                     Text {
-                        text: "Storage: " + AppController.models.modelsRoot
+                        text: qsTr("Storage: %1").arg(AppController.models.modelsRoot)
                         color: Qt.rgba(Theme.textSecondary.r, Theme.textSecondary.g, Theme.textSecondary.b, 0.7)
                         font.pixelSize: 11
                         font.family: "Consolas"
@@ -889,11 +889,11 @@ Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: 38
                         text: {
-                            if (!root.selectedModel) return "Use Model"
-                            if (root.selectedModel.task === "stt") return "Use in Speech to Text"
-                            if (root.selectedModel.task === "tts") return "Use in Text to Speech"
-                            if (root.selectedModel.task === "voice-clone") return "Use in Voice Cloning"
-                            return "Use Model"
+                            if (!root.selectedModel) return qsTr("Use Model")
+                            if (root.selectedModel.task === "stt") return qsTr("Use in Speech to Text")
+                            if (root.selectedModel.task === "tts") return qsTr("Use in Text to Speech")
+                            if (root.selectedModel.task === "voice-clone") return qsTr("Use in Voice Cloning")
+                            return qsTr("Use Model")
                         }
                         iconName: "play"
                         buttonColor: root.selectedModelFamily ? (root.selectedModelFamily.accent || Theme.accent) : Theme.accent
@@ -908,7 +908,7 @@ Rectangle {
 
                     Text {
                         visible: root.selectedModelFamily === null
-                        text: "⚠️ Model not registered in app catalog; launch from within studio templates instead."
+                        text: qsTr("⚠️ Model not registered in app catalog; launch from within studio templates instead.")
                         color: Theme.warning
                         font.pixelSize: 10
                         wrapMode: Text.Wrap
@@ -931,22 +931,22 @@ Rectangle {
                             Layout.fillWidth: true
                             spacing: Theme.paddingSmall
 
-                            SectionTitle { text: "Model Information" }
+                            SectionTitle { text: qsTr("Model Information") }
 
                             DetailInfoRow {
-                                label: "Model ID:"
+                                label: qsTr("Model ID:")
                                 value: root.selectedModel ? root.selectedModel.id : ""
                             }
                             DetailInfoRow {
-                                label: "Format:"
+                                label: qsTr("Format:")
                                 value: root.selectedModel && root.selectedModel.format ? root.selectedModel.format.toUpperCase() : "BIN"
                             }
                             DetailInfoRow {
-                                label: "Size:"
+                                label: qsTr("Size:")
                                 value: root.selectedModel ? root.selectedModel.size : ""
                             }
                             DetailInfoRow {
-                                label: "Directory:"
+                                label: qsTr("Directory:")
                                 value: root.selectedModel ? root.selectedModel.path : ""
                                 isPath: true
                             }
@@ -957,7 +957,7 @@ Rectangle {
                             Layout.fillWidth: true
                             spacing: 5
 
-                            SectionTitle { text: "Files in Folder" }
+                            SectionTitle { text: qsTr("Files in Folder") }
 
                             Repeater {
                                 model: root.selectedModel ? root.selectedModel.files : []
@@ -999,7 +999,7 @@ Rectangle {
                             spacing: Theme.paddingSmall
                             visible: root.selectedModelFamily !== null && root.selectedModelFamily.description !== ""
 
-                            SectionTitle { text: "Catalog Description" }
+                            SectionTitle { text: qsTr("Catalog Description") }
 
                             Text {
                                 text: root.selectedModelFamily ? root.selectedModelFamily.description : ""
@@ -1019,11 +1019,11 @@ Rectangle {
     // Modal Confirmation Dialog for Model deletion
     ConfirmationDialog {
         id: deleteConfirmDialog
-        titleText: "Delete Local Model"
+        titleText: qsTr("Delete Local Model")
         messageText: root.confirmationModelToDelete 
-                     ? "Are you sure you want to permanently delete the model files for '" + root.confirmationModelToDelete.id + "' from your hard drive?\n\nPath: " + root.confirmationModelToDelete.path
+                     ? qsTr("Are you sure you want to permanently delete the model files for '%1' from your hard drive?\n\nPath: %2").arg(root.confirmationModelToDelete.id).arg(root.confirmationModelToDelete.path)
                      : ""
-        confirmText: "Delete"
+        confirmText: qsTr("Delete")
         isDestructive: true
         
         onConfirmed: {
@@ -1070,7 +1070,7 @@ Rectangle {
 
         ContextMenuItem {
             iconName: "folder"
-            text: "Open in File Explorer"
+            text: qsTr("Open in File Explorer")
             onTriggered: {
                 if (!actionMenu.modelData) return
                 var m = actionMenu.modelData
@@ -1096,7 +1096,7 @@ Rectangle {
 
         ContextMenuItem {
             iconName: "star"
-            text: actionMenu.modelData && root.isPinned(actionMenu.modelData.id) ? "Unpin from Top" : "Pin to Top"
+            text: actionMenu.modelData && root.isPinned(actionMenu.modelData.id) ? qsTr("Unpin from Top") : qsTr("Pin to Top")
             iconColor: actionMenu.modelData && root.isPinned(actionMenu.modelData.id) ? Theme.warning : Theme.textSecondary
             onTriggered: {
                 if (actionMenu.modelData) {
@@ -1118,7 +1118,7 @@ Rectangle {
 
         ContextMenuItem {
             iconName: "copy"
-            text: "Copy Default Identifier"
+            text: qsTr("Copy Default Identifier")
             onTriggered: {
                 if (actionMenu.modelData) {
                     AppController.copyToClipboard(actionMenu.modelData.id)
@@ -1128,7 +1128,7 @@ Rectangle {
 
         ContextMenuItem {
             iconName: "copy"
-            text: "Copy Absolute Path"
+            text: qsTr("Copy Absolute Path")
             onTriggered: {
                 if (actionMenu.modelData) {
                     AppController.copyToClipboard(actionMenu.modelData.path)
@@ -1138,7 +1138,7 @@ Rectangle {
 
         ContextMenuItem {
             iconName: "external-link"
-            text: "Show on Web"
+            text: qsTr("Show on Web")
             onTriggered: {
                 if (actionMenu.modelData) {
                     Qt.openUrlExternally("https://huggingface.co/" + actionMenu.modelData.id)
@@ -1159,7 +1159,7 @@ Rectangle {
 
         ContextMenuItem {
             iconName: "trash"
-            text: "Delete"
+            text: qsTr("Delete")
             textColor: Qt.rgba(239, 83, 80, 0.8)
             iconColor: Qt.rgba(239, 83, 80, 0.8)
             hoverColor: Qt.rgba(239, 83, 80, 0.1)
@@ -1397,7 +1397,7 @@ Rectangle {
                 }
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 AppToolTip {
-                    text: "Copy path"
+                    text: qsTr("Copy path")
                     visible: parent.hovered
                 }
             }
@@ -1441,7 +1441,7 @@ Rectangle {
                 }
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 AppToolTip {
-                    text: "Open folder"
+                    text: qsTr("Open folder")
                     visible: parent.hovered
                 }
             }

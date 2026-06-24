@@ -41,9 +41,9 @@ Rectangle {
 
             Text {
                 property string modelName: {
-                    if (!root.itemData) return "Unnamed Model"
+                    if (!root.itemData) return qsTr("Unnamed Model")
                     var id = root.itemData.id || root.itemData.modelId || ""
-                    if (!id) return "Unnamed Model"
+                    if (!id) return qsTr("Unnamed Model")
                     return id.split('/').pop()
                 }
                 text: modelName
@@ -75,9 +75,9 @@ Rectangle {
                     spacing: 2
                     Text { text: "❤"; color: root.selected ? "#ffffff" : Theme.textSecondary; font.pixelSize: 10 }
                     Text {
-                        text: root.itemData ? (root.itemData.likes !== undefined ? root.itemData.likes : 0) : 0
-                        color: root.selected ? "#ffffff" : Theme.textSecondary
-                        font.pixelSize: 10
+                         text: root.itemData ? (root.itemData.likes !== undefined ? root.itemData.likes : 0) : 0
+                         color: root.selected ? "#ffffff" : Theme.textSecondary
+                         font.pixelSize: 10
                     }
                 }
                 RowLayout {
@@ -107,10 +107,10 @@ Rectangle {
         var now = new Date()
         var diff = now - date
         var days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        if (days < 0) return "just now"
-        if (days === 0) return "today"
-        if (days === 1) return "yesterday"
-        return days + " days ago"
+        if (days < 0) return qsTr("just now")
+        if (days === 0) return qsTr("today")
+        if (days === 1) return qsTr("yesterday")
+        return qsTr("%1 days ago").arg(days)
     }
 }
 

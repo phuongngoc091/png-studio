@@ -26,7 +26,7 @@ ColumnLayout {
             RowLayout {
                 Layout.fillWidth: true
                 Text {
-                    text: "Transcription"
+                    text: qsTr("Transcription")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontLarge
                     font.bold: true
@@ -41,7 +41,7 @@ ColumnLayout {
                     flat: true
                     
                     AppToolTip {
-                        text: "Copy transcription"
+                        text: qsTr("Copy transcription")
                         visible: parent.hovered
                     }
                     
@@ -74,7 +74,7 @@ ColumnLayout {
                     flat: true
                     
                     AppToolTip {
-                        text: "Clear transcription"
+                        text: qsTr("Clear transcription")
                         visible: parent.hovered
                     }
                     
@@ -112,7 +112,7 @@ ColumnLayout {
                     font.pixelSize: Theme.fontMedium
                     wrapMode: Text.Wrap
                     readOnly: true
-                    placeholderText: "Transcript will appear here after processing..."
+                    placeholderText: qsTr("Transcript will appear here after processing...")
                     placeholderTextColor: Theme.textSecondary
                     background: null
                     padding: 0

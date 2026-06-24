@@ -59,7 +59,7 @@ Rectangle {
 
             Text {
                 Layout.fillWidth: true
-                text: "Generated Audio"
+                text: qsTr("Generated Audio")
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontMedium
                 font.bold: true

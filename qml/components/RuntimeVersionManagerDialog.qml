@@ -108,8 +108,8 @@ Dialog {
 
     function downloadText(version) {
         var item = activeDownload(version)
-        if (!item) return "Download"
-        if (item.bytesTotal <= 0) return "Starting"
+        if (!item) return qsTr("Download")
+        if (item.bytesTotal <= 0) return qsTr("Starting")
         return Math.round((item.bytesReceived / item.bytesTotal) * 100) + "%"
     }
 
@@ -177,7 +177,7 @@ Dialog {
                     spacing: 2
                     Text {
                         Layout.fillWidth: true
-                        text: "Version Manager"
+                        text: qsTr("Version Manager")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true
@@ -224,7 +224,7 @@ Dialog {
                 width: parent.width
                 spacing: 0
 
-                SectionHeader { title: "Installed versions" }
+                SectionHeader { title: qsTr("Installed versions") }
 
                 Repeater {
                     model: root.installedVersions()
@@ -250,10 +250,10 @@ Dialog {
 
                 EmptyState {
                     visible: root.installedVersions().length === 0
-                    text: "No installed versions"
+                    text: qsTr("No installed versions")
                 }
 
-                SectionHeader { title: "Available downloads" }
+                SectionHeader { title: qsTr("Available downloads") }
 
                 Repeater {
                     model: root.downloadableVersions()
@@ -272,7 +272,7 @@ Dialog {
 
                 EmptyState {
                     visible: root.downloadableVersions().length === 0
-                    text: "No additional versions available"
+                    text: qsTr("No additional versions available")
                 }
             }
         }
@@ -288,13 +288,13 @@ Dialog {
 
             Text {
                 Layout.fillWidth: true
-                text: root.installedVersions().length + " installed"
+                text: qsTr("%1 installed").arg(root.installedVersions().length)
                 color: Theme.textSecondary
                 font.pixelSize: Theme.fontSmall
             }
 
             PrimaryButton {
-                text: "Done"
+                text: qsTr("Done")
                 implicitWidth: 104
                 implicitHeight: 36
                 onClicked: root.close()
@@ -386,7 +386,7 @@ Dialog {
 
             PrimaryButton {
                 visible: row.installed
-                text: row.selected ? "Selected" : "Use"
+                text: row.selected ? qsTr("Selected") : qsTr("Use")
                 iconName: row.selected ? "check" : ""
                 implicitWidth: row.selected ? 122 : 74
                 implicitHeight: 30

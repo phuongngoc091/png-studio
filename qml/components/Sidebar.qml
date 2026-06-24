@@ -188,7 +188,7 @@ Rectangle {
             }
 
             AppToolTip {
-                text: "Downloads"
+                text: qsTr("Downloads")
                 visible: downloadsMouse.containsMouse
             }
         }

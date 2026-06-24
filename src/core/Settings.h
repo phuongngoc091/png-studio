@@ -14,6 +14,7 @@ class Settings : public QObject {
     Q_PROPERTY(QString device READ device WRITE setDevice NOTIFY deviceChanged)
     Q_PROPERTY(int threads READ threads WRITE setThreads NOTIFY threadsChanged)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(QString uiLanguage READ uiLanguage WRITE setUiLanguage NOTIFY uiLanguageChanged)
     Q_PROPERTY(QString modelsPath READ modelsPath WRITE setModelsPath NOTIFY modelsPathChanged)
     Q_PROPERTY(QString selectedRuntime READ selectedRuntime WRITE setSelectedRuntime NOTIFY selectedRuntimeChanged)
     Q_PROPERTY(QString selectedTtsRuntime READ selectedTtsRuntime WRITE setSelectedTtsRuntime NOTIFY selectedTtsRuntimeChanged)
@@ -43,6 +44,9 @@ public:
 
     QString language() const;
     void setLanguage(const QString &v);
+
+    QString uiLanguage() const;
+    void setUiLanguage(const QString &v);
 
     QString modelsPath() const;
     void setModelsPath(const QString &v);
@@ -97,6 +101,7 @@ signals:
     void deviceChanged();
     void threadsChanged();
     void languageChanged();
+    void uiLanguageChanged();
     void modelsPathChanged();
     void selectedRuntimeChanged();
     void selectedTtsRuntimeChanged();
@@ -120,6 +125,7 @@ private:
     QString m_device;
     int m_threads;
     QString m_language;
+    QString m_uiLanguage;
     QString m_modelsPath;
     QString m_selectedRuntime;
     QString m_selectedTtsRuntime;

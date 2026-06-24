@@ -549,9 +549,8 @@ ComboBox {
                                     Layout.preferredWidth: 10
                                     Layout.preferredHeight: 10
                                 }
-                                
-                                Text {
-                                    text: "Likely too large"
+                                                              Text {
+                                    text: qsTr("Likely too large")
                                     color: Theme.danger
                                     font.pixelSize: 10
                                     font.bold: true
@@ -589,7 +588,7 @@ ComboBox {
                                 spacing: 4
                                 
                                 Text {
-                                    text: "Downloaded"
+                                    text: qsTr("Downloaded")
                                     color: Theme.success
                                     font.pixelSize: 10
                                     font.bold: true

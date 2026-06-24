@@ -5,6 +5,7 @@
 #include <QtQml/qqml.h>
 
 #include "core/Settings.h"
+#include "core/LocalizationManager.h"
 #include "core/HFHubClient.h"
 #include "core/DownloadManager.h"
 #include "core/ModelManager.h"
@@ -35,6 +36,7 @@ class AppController : public QObject {
     QML_SINGLETON
  
     Q_PROPERTY(Settings*        settings  READ settings  CONSTANT)
+    Q_PROPERTY(LocalizationManager* localization READ localization CONSTANT)
     Q_PROPERTY(HFHubClient*     hub       READ hub       CONSTANT)
     Q_PROPERTY(DownloadManager* downloads READ downloads CONSTANT)
     Q_PROPERTY(ModelManager*    models    READ models    CONSTANT)
@@ -67,6 +69,7 @@ public:
     static AppController *create(QQmlEngine *, QJSEngine *);
 
     Settings*        settings()  const { return m_settings; }
+    LocalizationManager* localization() const { return m_localization; }
     HFHubClient*     hub()       const { return m_hub; }
     DownloadManager* downloads() const { return m_downloads; }
     ModelManager*    models()    const { return m_models; }
@@ -106,6 +109,7 @@ private:
     static AppController *s_instance;
 
     Settings*        m_settings = nullptr;
+    LocalizationManager* m_localization = nullptr;
     HFHubClient*     m_hub = nullptr;
     DownloadManager* m_downloads = nullptr;
     ModelManager*    m_models = nullptr;

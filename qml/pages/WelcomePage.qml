@@ -42,7 +42,7 @@ Rectangle {
                         }
                     }
                     Text {
-                        text: "LOCAL AUDIO WORKSTATION"
+                        text: qsTr("LOCAL AUDIO WORKSTATION")
                         color: Theme.accentLight
                         font.pixelSize: 10
                         font.bold: true
@@ -51,14 +51,14 @@ Rectangle {
                 }
 
                 Text {
-                    text: "Welcome to LA Studio"
+                    text: qsTr("Welcome to LA Studio")
                     color: Theme.textPrimary
                     font.pixelSize: 26
                     font.bold: true
                 }
 
                 Text {
-                    text: "Private, offline, and high-performance local AI audio processing. All operations run locally on your device."
+                    text: qsTr("Private, offline, and high-performance local AI audio processing. All operations run locally on your device.")
                     color: Theme.textSecondary
                     font.pixelSize: 14
                     wrapMode: Text.WordWrap
@@ -80,7 +80,7 @@ Rectangle {
                 spacing: Theme.paddingMedium
 
                 Text {
-                    text: "Studios & Tools"
+                    text: qsTr("Studios & Tools")
                     color: Theme.textPrimary
                     font.pixelSize: 15
                     font.bold: true
@@ -95,40 +95,40 @@ Rectangle {
 
                     FeatureCard {
                         Layout.fillWidth: true
-                        title: "Speech to Text"
-                        description: "Transcribe voice recordings, audio files, or live micro recordings to text offline using Whisper."
+                        title: qsTr("Speech to Text")
+                        description: qsTr("Transcribe voice recordings, audio files, or live micro recordings to text offline using Whisper.")
                         iconName: "mic"
                         targetRoute: "studio-stt"
                     }
 
                     FeatureCard {
                         Layout.fillWidth: true
-                        title: "Text to Speech"
-                        description: "Synthesize natural, high-quality audio speech from text in multiple languages using local models."
+                        title: qsTr("Text to Speech")
+                        description: qsTr("Synthesize natural, high-quality audio speech from text in multiple languages using local models.")
                         iconName: "volume"
                         targetRoute: "studio-tts"
                     }
 
                     FeatureCard {
                         Layout.fillWidth: true
-                        title: "Voice Cloning Lab"
-                        description: "Generate synthetic speech using custom voice profiles cloned from short reference audio files."
+                        title: qsTr("Voice Cloning Lab")
+                        description: qsTr("Generate synthetic speech using custom voice profiles cloned from short reference audio files.")
                         iconName: "spark"
                         targetRoute: "studio-voice-cloning"
                     }
 
                     FeatureCard {
                         Layout.fillWidth: true
-                        title: "Voice Design"
-                        description: "Generate synthetic voice characteristics and speech from natural language descriptions."
+                        title: qsTr("Voice Design")
+                        description: qsTr("Generate synthetic voice characteristics and speech from natural language descriptions.")
                         iconName: "waves"
                         targetRoute: "studio-voice-design"
                     }
 
                     FeatureCard {
                         Layout.fillWidth: true
-                        title: "Model Manager"
-                        description: "Download and organize your local AI weights, check download queue, and set paths."
+                        title: qsTr("Model Manager")
+                        description: qsTr("Download and organize your local AI weights, check download queue, and set paths.")
                         iconName: "gallery"
                         targetRoute: "models"
                     }
@@ -153,7 +153,7 @@ Rectangle {
                     spacing: 2
                     Layout.fillWidth: true
                     Text {
-                        text: "Models Storage Location"
+                        text: qsTr("Models Storage Location")
                         color: Theme.textSecondary
                         font.pixelSize: 11
                         font.bold: true
@@ -170,7 +170,7 @@ Rectangle {
 
                 Button {
                     flat: true
-                    text: "✏ Settings"
+                    text: qsTr("✏ Settings")
                     contentItem: Text {
                         text: parent.text
                         color: parent.hovered ? Theme.accentLight : Theme.textSecondary

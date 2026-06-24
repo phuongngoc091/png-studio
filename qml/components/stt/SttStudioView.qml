@@ -21,19 +21,19 @@ StudioShell {
     }
     families: studioController ? studioController.families : []
     capability: "stt"
-    studioTitle: studioController ? studioController.studioHeaderTitle : "Speech-to-Text Studio"
+    studioTitle: studioController ? studioController.studioHeaderTitle : qsTr("Speech-to-Text Studio")
     studioReady: studioController ? studioController.studioReady : false
     isSettingsOpen: true
     showLeftPanel: true
     isLeftPanelOpen: true
     modalSelectionMode: true
     showSwitcher: false
-    modalSelectionTitle: family ? family.title : "Model + Runtime"
+    modalSelectionTitle: family ? family.title : qsTr("Model + Runtime")
     selectedFamilyId: studioController ? studioController.selectedFamilyId : ""
     studioContext: null
-    modalSelectionValue: studioController ? studioController.statusText : "Select model and runtime"
+    modalSelectionValue: studioController ? studioController.statusText : qsTr("Select model and runtime")
     modalSelectionDetail: studioController ? studioController.statusDetail : ""
-    backToolTip: "Change model and runtime"
+    backToolTip: qsTr("Change model and runtime")
 
     leftPanelContent: [
         SttHistoryPanel {
@@ -93,7 +93,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "Select an STT model and runtime"
+                                text: qsTr("Select an STT model and runtime")
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontLarge
                                 font.bold: true
@@ -103,7 +103,7 @@ StudioShell {
                             Text {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
-                                text: "The studio stays lightweight until you choose a compatible STT configuration."
+                                text: qsTr("The studio stays lightweight until you choose a compatible STT configuration.")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSmall
                                 wrapMode: Text.WordWrap
@@ -113,7 +113,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Choose model and runtime"
+                        text: qsTr("Choose model and runtime")
                         iconName: "gallery"
                         onClicked: root.backToGallery()
                     }
@@ -169,7 +169,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Choose a model to unlock STT settings"
+                        text: qsTr("Choose a model to unlock STT settings")
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true
@@ -179,7 +179,7 @@ StudioShell {
                     Text {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Model parameters and transcription controls appear after the STT configuration is loaded."
+                        text: qsTr("Model parameters and transcription controls appear after the STT configuration is loaded.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         wrapMode: Text.WordWrap
@@ -187,7 +187,7 @@ StudioShell {
 
                     PrimaryButton {
                         Layout.fillWidth: true
-                        text: "Open model gallery"
+                        text: qsTr("Open model gallery")
                         iconName: "gallery"
                         quiet: true
                         onClicked: root.backToGallery()

@@ -128,7 +128,7 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 Text {
-                    text: "Model Settings"
+                    text: qsTr("Model Settings")
                     color: Theme.textPrimary
                     font.pixelSize: Theme.fontLarge
                     font.bold: true
@@ -165,7 +165,7 @@ Rectangle {
                     spacing: Theme.paddingMedium
 
                     SettingsSection {
-                        title: "Core"
+                        title: qsTr("Core")
                         iconName: "file"
                         visible: root.hasLanguageInput
 
@@ -185,7 +185,7 @@ Rectangle {
                     }
 
                     SettingsSection {
-                        title: "Model Parameters"
+                        title: qsTr("Model Parameters")
                         iconName: "sliders"
                         visible: root.basicSchema.length > 0
 
@@ -199,7 +199,7 @@ Rectangle {
                     }
 
                     CollapsibleSettingsSection {
-                        title: "Advanced"
+                        title: qsTr("Advanced")
                         iconName: "sliders"
                         visible: root.advancedSchema.length > 0
                         expanded: root.advancedOpen

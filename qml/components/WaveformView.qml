@@ -7,7 +7,7 @@ Rectangle {
     property var samples: []
     property color waveColor: Theme.accent
     property color secondaryWaveColor: Theme.accentLight
-    property string placeholderText: "No audio data"
+    property string placeholderText: qsTr("No audio data")
     property var buckets: []
     property bool framed: false
     property bool showPlaceholder: true

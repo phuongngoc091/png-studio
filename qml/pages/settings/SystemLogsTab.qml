@@ -48,7 +48,7 @@ Item {
             // Custom Styled Auto Refresh CheckBox
             CheckBox {
                 id: autoRefreshCheck
-                text: "Auto-Refresh (1s)"
+                text: qsTr("Auto-Refresh (2s)")
                 checked: false
                 
                 indicator: Rectangle {
@@ -84,7 +84,7 @@ Item {
             // Custom Styled Auto Scroll CheckBox
             CheckBox {
                 id: autoScrollCheck
-                text: "Auto-Scroll to Bottom"
+                text: qsTr("Auto-Scroll to Bottom")
                 checked: true
 
                 indicator: Rectangle {
@@ -121,7 +121,7 @@ Item {
 
             // Styled Manual Refresh Button
             PrimaryButton {
-                text: "Refresh"
+                text: qsTr("Refresh")
                 iconName: "refresh"
                 buttonColor: Theme.surfaceAlt
                 implicitWidth: 100
@@ -132,7 +132,7 @@ Item {
 
             // Styled Copy to Clipboard Button
             PrimaryButton {
-                text: "Copy All"
+                text: qsTr("Copy All")
                 iconName: "copy"
                 buttonColor: Theme.surfaceAlt
                 implicitWidth: 110
@@ -146,7 +146,7 @@ Item {
 
             // Styled Clear Button
             PrimaryButton {
-                text: "Clear Logs"
+                text: qsTr("Clear Logs")
                 iconName: "trash"
                 buttonColor: Theme.danger
                 implicitWidth: 120
@@ -196,7 +196,7 @@ Item {
                     color: Theme.textPrimary
                     selectionColor: Theme.accent
                     selectedTextColor: "white"
-                    placeholderText: "No logs captured yet."
+                    placeholderText: qsTr("No logs captured yet.")
                     placeholderTextColor: Theme.textSecondary
                     
                     background: Rectangle {

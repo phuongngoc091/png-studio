@@ -51,6 +51,11 @@ bin/
 out/
 dist/
 
+# Android local state
+android/.gradle/
+android/.idea/
+android/local.properties
+
 # Qt Creator
 *.user
 *.user.*

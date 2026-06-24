@@ -51,8 +51,9 @@ int main(int argc, char *argv[])
 
     auto *controller = LAStudio::AppController::instance();
     if (!controller) {
-        controller = LAStudio::AppController::create(nullptr, nullptr);
+        controller = LAStudio::AppController::create(&engine, nullptr);
     }
+    controller->localization()->setEngine(&engine);
     engine.addImageProvider(QStringLiteral("waveform"), controller->waveformProvider());
 
     QObject::connect(
