@@ -33,7 +33,7 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 
 ## Project Updates
 
-### 2026-06-23 â€” Nemotron-3.5 Streaming ASR
+### 2026-06-23 - Nemotron-3.5 Streaming ASR
 
 LA Studio now supports NVIDIA **Nemotron-3.5 ASR Streaming 0.6B** for local multilingual speech-to-text through CrispASR. The Model Gallery can download the Q4_K or F16 GGUF model and compatible CrispASR v0.8.0 CPU, CUDA, or Vulkan runtime packages.
 
