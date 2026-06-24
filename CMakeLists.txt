@@ -299,11 +299,15 @@ endif()
 
 set_target_properties(LAStudio PROPERTIES
     OUTPUT_NAME "LA Studio"
-    WIN32_EXECUTABLE FALSE
     MACOSX_BUNDLE TRUE
 )
 
 if(WIN32)
+    # Keep a console in Debug builds for dev logging, but hide it in all non-Debug builds.
+    set_target_properties(LAStudio PROPERTIES
+        WIN32_EXECUTABLE $<IF:$<CONFIG:Debug>,FALSE,TRUE>
+    )
+
     # If an .rc resource exists (and an .ico) then add it so the built .exe has an embedded icon
     if(EXISTS "${CMAKE_SOURCE_DIR}/resources/app_icon.rc")
         message(STATUS "Found resources/app_icon.rc — adding to LAStudio sources for Windows exe icon")
