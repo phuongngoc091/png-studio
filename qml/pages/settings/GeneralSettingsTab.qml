@@ -284,7 +284,7 @@ ScrollView {
                 actionText: qsTr("Open in browser")
                 actionIcon: "external-link"
                 actionWidth: 146
-                onActivated: Qt.openUrlExternally("https://github.com/dduongtrandai/LA-Studio-Dev/issues")
+                onActivated: Qt.openUrlExternally("https://github.com/dduongtrandai/LA-Studio/issues")
             }
         }
 
