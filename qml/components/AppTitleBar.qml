@@ -9,7 +9,7 @@ Rectangle {
 
     property var window
     property string appName: "LA Studio"
-    property string appVersion: "0.1.1"
+    property string appVersion: Qt.application.version
     readonly property bool maximized: window && window.visibility === Window.Maximized
 
     Layout.fillWidth: true

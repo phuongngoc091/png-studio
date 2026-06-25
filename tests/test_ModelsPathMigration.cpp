@@ -10,6 +10,7 @@
 #include "controllers/ModelsPathMigrationService.h"
 #include "core/Settings.h"
 #include "core/ModelManager.h"
+#include "core/PathUtils.h"
 #include "core/DownloadManager.h"
 #include "core/HFHubClient.h"
 #include "stt/SttEngine.h"
@@ -17,14 +18,50 @@
 
 namespace LAStudio {
 
+namespace {
+
+void restoreFile(const QString &path, bool existed, const QByteArray &contents)
+{
+    if (!existed) {
+        QFile::remove(path);
+        return;
+    }
+
+    QDir().mkpath(QFileInfo(path).absolutePath());
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        file.write(contents);
+    }
+}
+
+} // namespace
+
 void TestModelsPathMigration::initTestCase()
 {
     QVERIFY(m_tempDir.isValid());
+
+    m_settingsJsonPath = PathUtils::dataDir() + QStringLiteral("/settings.json");
+    m_hadSettingsJson = QFile::exists(m_settingsJsonPath);
+    if (m_hadSettingsJson) {
+        QFile file(m_settingsJsonPath);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        m_settingsJsonContents = file.readAll();
+    }
+
+    m_settingsIniPath = PathUtils::dataDir() + QStringLiteral("/settings.ini");
+    m_hadSettingsIni = QFile::exists(m_settingsIniPath);
+    if (m_hadSettingsIni) {
+        QFile file(m_settingsIniPath);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        m_settingsIniContents = file.readAll();
+    }
 }
 
 void TestModelsPathMigration::cleanupTestCase()
 {
     QThreadPool::globalInstance()->waitForDone();
+    restoreFile(m_settingsJsonPath, m_hadSettingsJson, m_settingsJsonContents);
+    restoreFile(m_settingsIniPath, m_hadSettingsIni, m_settingsIniContents);
 }
 
 void TestModelsPathMigration::testModelsPathMigrator()

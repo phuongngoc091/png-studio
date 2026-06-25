@@ -1,5 +1,21 @@
 cmake_minimum_required(VERSION 3.21)
-project(LAStudio VERSION 0.1.1 LANGUAGES CXX)
+
+# This is the single source of truth for the application version. Release
+# automation may override it with -DLASTUDIO_VERSION=<major.minor.patch>.
+set(LASTUDIO_VERSION "0.1.2" CACHE STRING "LA Studio application version")
+if(NOT LASTUDIO_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+    message(FATAL_ERROR "LASTUDIO_VERSION must use MAJOR.MINOR.PATCH format; got '${LASTUDIO_VERSION}'")
+endif()
+
+project(LAStudio VERSION ${LASTUDIO_VERSION} LANGUAGES CXX)
+
+set(LASTUDIO_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+file(MAKE_DIRECTORY "${LASTUDIO_GENERATED_DIR}/lastudio")
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/AppVersion.h.in"
+    "${LASTUDIO_GENERATED_DIR}/lastudio/AppVersion.h"
+    @ONLY
+)
 
 include(CTest)
 include(cmake/CompilerOptions.cmake)
@@ -69,6 +85,7 @@ set(LASTUDIO_SOURCES
     src/controllers/ModelsPathMigrator.cpp
     src/controllers/ModelsPathMigrationService.cpp
     src/controllers/FileAccessService.cpp
+    src/controllers/AppUpdateService.cpp
     src/controllers/StudioActions.cpp
     src/controllers/ModelLifecycleController.cpp
     src/controllers/SttModelSession.cpp
@@ -137,6 +154,7 @@ set(LASTUDIO_HEADERS
     src/controllers/ModelsPathMigrator.h
     src/controllers/ModelsPathMigrationService.h
     src/controllers/FileAccessService.h
+    src/controllers/AppUpdateService.h
     src/controllers/IStudioAction.h
     src/controllers/StudioActions.h
     src/controllers/IModelSession.h
@@ -256,6 +274,7 @@ qt_add_qml_module(LAStudio
 )
 
 target_include_directories(LAStudio PRIVATE
+    ${LASTUDIO_GENERATED_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/audio
@@ -319,6 +338,18 @@ endif()
 
 # --- Installation Rules ---
 include(GNUInstallDirs)
+
+if(WIN32)
+    # Keep installer metadata synchronized with the executable at configure time.
+    file(TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}" LASTUDIO_INSTALLER_STAGE_DIR)
+    file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/out" LASTUDIO_INSTALLER_OUTPUT_DIR)
+    file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/icons/app_icon.ico" LASTUDIO_INSTALLER_ICON_FILE)
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/scripts/installer.iss.in"
+        "${CMAKE_BINARY_DIR}/installer.iss"
+        @ONLY
+    )
+endif()
 
 # Install the executable
 install(TARGETS LAStudio

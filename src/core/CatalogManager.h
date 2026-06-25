@@ -26,6 +26,7 @@ public:
     QVariantList modelCategories() const { return m_modelCategories; }
     QVariantList ttsFamilies() const { return m_ttsFamilies; }
     QVariantList sttFamilies() const { return m_sttFamilies; }
+    QString version() const { return m_version; }
     bool isUpdating() const { return m_isUpdating; }
 
     Q_INVOKABLE void fetchRemoteCatalog(const QString &url);
@@ -44,6 +45,7 @@ private:
     QVariantList m_modelCategories;
     QVariantList m_ttsFamilies;
     QVariantList m_sttFamilies;
+    QString m_version;
     bool m_isUpdating = false;
     QNetworkAccessManager *m_networkManager;
     QHash<QString, QVariantList> m_languageSetsCache;

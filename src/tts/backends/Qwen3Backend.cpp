@@ -83,9 +83,15 @@ static void setOrClearEnv(const char *name, const QByteArray &value, bool restor
 static int qwen3MaxFramesFor(const QString &text, const QVariantMap &settings)
 {
     if (settings.contains(QStringLiteral("max_codec_steps"))) {
-        return qBound(16, settings.value(QStringLiteral("max_codec_steps")).toInt(), 400);
+        const int requestedFrames = settings.value(QStringLiteral("max_codec_steps")).toInt();
+        if (requestedFrames > 0) {
+            return qBound(16, requestedFrames, 400);
+        }
     }
 
+    // Qwen3 generates 12 codec frames per second.  Leave enough headroom for
+    // natural pacing and final-word prosody; the former fixed 100-frame default
+    // capped every request at about 8.3 seconds.
     const int wordEstimate = qMax(1, text.simplified().split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts).size());
     const int estimatedSeconds = qBound(2, wordEstimate / 2 + 2, 25);
     return qBound(48, estimatedSeconds * 12, 300);
@@ -99,6 +105,7 @@ Qwen3Backend::~Qwen3Backend()
 bool Qwen3Backend::load(const QVariantMap &config, QString &error, QVariantList &schema)
 {
     const QString originalRuntimePath = config.value("runtimePath").toString();
+    const bool isCudaRuntime = originalRuntimePath.contains(QStringLiteral("cuda"), Qt::CaseInsensitive);
     QString modelPath = PathUtils::toNativeShortPath(config.value("model").toString());
     QString codecPath = PathUtils::toNativeShortPath(config.value("codec").toString());
     QString runtimePath = PathUtils::toNativeShortPath(originalRuntimePath);
@@ -121,14 +128,35 @@ bool Qwen3Backend::load(const QVariantMap &config, QString &error, QVariantList 
     crispasr_open_params_v1 params{};
     params.abi_version = 1;
     params.n_threads = recommendedThreadCount();
-    params.use_gpu = originalRuntimePath.contains("cuda", Qt::CaseInsensitive) ? 1 : 0;
+    params.use_gpu = isCudaRuntime ? 1 : 0;
     params.verbosity = 1;
     params.flash_attn = 1;
     params.n_gpu_layers = -1;
 
     QByteArray modelPathBytes = modelPath.toUtf8();
+    if (isCudaRuntime) {
+        QMutexLocker locker(&s_envMutex);
+        m_restoreCodePredictorBackendEnv = qEnvironmentVariableIsSet("QWEN3_TTS_CP_BACKEND");
+        m_previousCodePredictorBackendEnv = qgetenv("QWEN3_TTS_CP_BACKEND");
+
+        // Some CUDA devices collapse the autoregressive code predictor into
+        // repeated codec codes. Keep the talker and codec on CUDA, but pin
+        // this small, stateful predictor to the CPU scheduler for correctness.
+        // CrispASR reads this at session open and on every predictor step.
+        setCrtEnv("QWEN3_TTS_CP_BACKEND", "cpu");
+        m_codePredictorBackendEnvOverridden = true;
+        Logger::info("Qwen3Backend", "CUDA safety fallback: CPU code predictor; talker and codec remain on CUDA.");
+    }
+
     m_session = qi.crispasr_session_open_with_params(modelPathBytes.constData(), "qwen3-tts", &params);
     if (!m_session) {
+        if (isCudaRuntime) {
+            QMutexLocker locker(&s_envMutex);
+            setOrClearEnv("QWEN3_TTS_CP_BACKEND", m_previousCodePredictorBackendEnv, m_restoreCodePredictorBackendEnv);
+            m_codePredictorBackendEnvOverridden = false;
+            m_restoreCodePredictorBackendEnv = false;
+            m_previousCodePredictorBackendEnv.clear();
+        }
         error = QStringLiteral("Failed to initialize Qwen3-TTS session via CrispASR runtime.");
         Logger::error("Qwen3Backend", error);
         return false;
@@ -155,7 +183,6 @@ bool Qwen3Backend::load(const QVariantMap &config, QString &error, QVariantList 
             originalRuntimePath.contains(QStringLiteral("vulkan"), Qt::CaseInsensitive)) {
             setCrtEnv("QWEN3_TTS_CODEC_GPU", "1");
         }
-        setCrtEnv("QWEN3_TTS_SKIP_REF_DECODE", "0");
         QByteArray codecPathBytes = codecPath.toUtf8();
         qi.crispasr_session_set_codec_path(static_cast<crispasr_session*>(m_session), codecPathBytes.constData());
     }
@@ -252,6 +279,13 @@ void Qwen3Backend::unload()
         m_session = nullptr;
     }
     CrispQwen3TtsInterface::instance().unload();
+    if (m_codePredictorBackendEnvOverridden) {
+        QMutexLocker locker(&s_envMutex);
+        setOrClearEnv("QWEN3_TTS_CP_BACKEND", m_previousCodePredictorBackendEnv, m_restoreCodePredictorBackendEnv);
+        m_codePredictorBackendEnvOverridden = false;
+        m_restoreCodePredictorBackendEnv = false;
+        m_previousCodePredictorBackendEnv.clear();
+    }
     m_modelPath.clear();
 }
 
@@ -342,7 +376,12 @@ bool Qwen3Backend::synthesize(const QString &text, float speed, const QVariantMa
     const QByteArray previousSeedEnv = qgetenv("QWEN3_TTS_SEED");
 
     setCrtEnv("QWEN3_TTS_MAX_FRAMES", QByteArray::number(maxFrames).constData());
-    setCrtEnv("QWEN3_TTS_SKIP_REF_DECODE", "0");
+    // CrispASR 0.8.4's normal path decodes only generated codec codes.  The
+    // opt-out (0) concatenates reference and generated codes then trims the
+    // PCM result, which exercises CUDA's chunked codec path and can produce
+    // a degenerate repeated sound.  The codec is stateless, so this is
+    // equivalent for the generated audio while avoiding that CUDA-only path.
+    setCrtEnv("QWEN3_TTS_SKIP_REF_DECODE", "1");
     if (seed > 0) {
         setCrtEnv("QWEN3_TTS_SEED", QByteArray::number(seed).constData());
     } else {

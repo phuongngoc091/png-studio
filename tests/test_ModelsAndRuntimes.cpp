@@ -135,6 +135,41 @@ void TestModelsAndRuntimes::testVoiceDesignFamiliesExposeRuntimeOptions()
     }
 }
 
+void TestModelsAndRuntimes::testQwen3TtsUsesAutomaticFrameLimit()
+{
+    const QString oldCurrentPath = QDir::currentPath();
+    const auto restoreCurrentPath = qScopeGuard([oldCurrentPath]() {
+        QDir::setCurrent(oldCurrentPath);
+    });
+    const QString repoRoot = QDir(QFileInfo(QStringLiteral(__FILE__)).absolutePath() + QStringLiteral("/..")).absolutePath();
+    QVERIFY2(QDir::setCurrent(repoRoot), "Test must run from the repository root to load catalog and schema files");
+
+    CatalogManager catalog;
+    QSet<QString> qwen3FamilyIds = {
+        QStringLiteral("qwen3-tts-0.6b-base"),
+        QStringLiteral("qwen3-tts-1.7b-base"),
+        QStringLiteral("qwen3-tts-1.7b-customvoice"),
+        QStringLiteral("qwen3-tts-1.7b-voicedesign")
+    };
+
+    for (const QVariant &familyValue : catalog.ttsFamilies()) {
+        const QVariantMap family = familyValue.toMap();
+        const QString familyId = family.value(QStringLiteral("id")).toString();
+        if (!qwen3FamilyIds.contains(familyId)) {
+            continue;
+        }
+
+        const QVariantMap parameter = family.value(QStringLiteral("parameterDefinitions")).toMap()
+                                         .value(QStringLiteral("max_codec_steps")).toMap();
+        QVERIFY2(!parameter.isEmpty(), qPrintable(familyId + QStringLiteral(" should expose max_codec_steps")));
+        QCOMPARE(parameter.value(QStringLiteral("min")).toInt(), 0);
+        QCOMPARE(parameter.value(QStringLiteral("default")).toInt(), 0);
+        qwen3FamilyIds.remove(familyId);
+    }
+
+    QVERIFY2(qwen3FamilyIds.isEmpty(), "Every Qwen3-TTS family should be present in the catalog");
+}
+
 void TestModelsAndRuntimes::testLogViewServicePending()
 {
     qDebug() << "--- START: testLogViewServicePending ---";

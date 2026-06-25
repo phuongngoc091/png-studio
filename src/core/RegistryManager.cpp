@@ -161,7 +161,10 @@ void RegistryManager::refreshFromCatalog()
         return;
     }
 
-    if (!importCatalog(m_catalog->modelCategories(), m_catalog->ttsFamilies(), m_catalog->sttFamilies())) {
+    if (!importCatalog(m_catalog->modelCategories(),
+                       m_catalog->ttsFamilies(),
+                       m_catalog->sttFamilies(),
+                       m_catalog->version())) {
         emit errorOccurred(QStringLiteral("Failed to import catalog into registry"));
         return;
     }
@@ -219,7 +222,8 @@ bool RegistryManager::ensureSchema()
 
 bool RegistryManager::importCatalog(const QVariantList &modelCategories,
                                     const QVariantList &ttsFamilies,
-                                    const QVariantList &sttFamilies)
+                                    const QVariantList &sttFamilies,
+                                    const QString &catalogVersion)
 {
     QSqlDatabase db = QSqlDatabase::database(m_connectionName);
     if (!db.transaction()) {
@@ -240,7 +244,7 @@ bool RegistryManager::importCatalog(const QVariantList &modelCategories,
             "VALUES (?, 'bundled', ?, 'catalog.json', CURRENT_TIMESTAMP) "
             "ON CONFLICT(id) DO UPDATE SET version = excluded.version, imported_at = CURRENT_TIMESTAMP"));
         query.addBindValue(QString::fromLatin1(kRegistrySourceId));
-        query.addBindValue(QStringLiteral("0.1.1"));
+        query.addBindValue(catalogVersion);
         if (!execPrepared(query, QStringLiteral("upsert catalog source"))) return rollback();
     }
 

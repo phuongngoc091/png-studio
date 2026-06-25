@@ -36,7 +36,8 @@ private:
     bool ensureSchema();
     bool importCatalog(const QVariantList &modelCategories,
                        const QVariantList &ttsFamilies,
-                       const QVariantList &sttFamilies);
+                       const QVariantList &sttFamilies,
+                       const QString &catalogVersion);
     bool reloadCachedViews();
 
     QString m_databasePath;

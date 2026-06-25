@@ -19,6 +19,7 @@ set(TEST_SOURCES
     mocks/AppController.cpp
 
     ../src/controllers/FileAccessService.cpp
+    ../src/controllers/AppUpdateService.cpp
     ../src/controllers/DownloadInstallService.cpp
     ../src/controllers/ModelsPathMigrator.cpp
     ../src/controllers/ModelsPathMigrationService.cpp
@@ -58,6 +59,7 @@ set(TEST_SOURCES
     ../src/audio/AudioPlayer.h
     ../src/core/HFHubClient.h
     ../src/controllers/AppController.h
+    ../src/controllers/AppUpdateService.h
     ../src/controllers/IStudioAction.h
     ../src/controllers/StudioActions.h
     ../src/controllers/IModelSession.h

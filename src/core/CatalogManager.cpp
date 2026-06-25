@@ -233,6 +233,7 @@ void CatalogManager::parseCatalog(const QByteArray &data)
     }
 
     QJsonObject obj = doc.object();
+    m_version = obj.value(QStringLiteral("version")).toString();
     const QVariantList modelPicks = obj.value("modelPicks").toArray().toVariantList();
     m_modelCategories = obj.value("modelCategories").toArray().toVariantList();
     m_ttsFamilies = obj.value("ttsFamilies").toArray().toVariantList();

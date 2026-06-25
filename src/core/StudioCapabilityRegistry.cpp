@@ -37,7 +37,7 @@ StudioCapabilityRegistry::StudioCapabilityRegistry(QObject *parent)
 
     registerCapability(StudioCapabilityDescriptor{
         QStringLiteral("voice-cloning"),
-        QStringLiteral("Voice Cloning Lab"),
+        QStringLiteral("Voice Cloning"),
         QStringLiteral("studio-voice-cloning"),
         QStringLiteral("voice-cloning"),
         QStringLiteral("tts-shared"),

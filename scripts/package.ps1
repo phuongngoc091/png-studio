@@ -13,6 +13,7 @@ param(
     [string] $Preset = "windows-msvc-release",
     [string] $QtRoot,
     [string] $VcpkgRoot,
+    [string] $Version,
     [switch] $SkipInstaller
 )
 
@@ -20,6 +21,16 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
+
+if (-not [string]::IsNullOrWhiteSpace($Version)) {
+    $Version = $Version.Trim()
+    if ($Version.StartsWith("v")) {
+        $Version = $Version.Substring(1)
+    }
+    if ($Version -notmatch '^\d+\.\d+\.\d+$') {
+        throw "Version must use MAJOR.MINOR.PATCH format; got '$Version'."
+    }
+}
 
 # Helper: Test if command exists
 function Test-Command {
@@ -259,6 +270,9 @@ if ($Preset -like "*mingw*") {
     $vcpkgTriplet = "x64-windows"
 }
 $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=$vcpkgTriplet"
+if (-not [string]::IsNullOrWhiteSpace($Version)) {
+    $cmakeArgs += "-DLASTUDIO_VERSION=$Version"
+}
 
 $env:VCPKG_ROOT = $VcpkgRoot
 & cmake @cmakeArgs
@@ -296,12 +310,16 @@ $isccPath = Find-Iscc
 if ($null -eq $isccPath) {
     Write-Warning "Inno Setup Compiler (ISCC.exe) was not found."
     Write-Warning "The application has been successfully built and staged at: $stageDir"
-    Write-Warning "To package it into an installer, please install Inno Setup 6 (https://jrsoftware.org/isdownload.php) and run: ISCC.exe scripts\installer.iss"
+    Write-Warning "To package it into an installer, please install Inno Setup 6 (https://jrsoftware.org/isdownload.php) and run: ISCC.exe $buildDir\installer.iss"
     exit 0
 }
 
 Write-Host ">> Compiling installer using Inno Setup..." -ForegroundColor Cyan
-& $isccPath (Join-Path $RepoRoot "scripts\installer.iss")
+$installerScript = Join-Path $buildDir "installer.iss"
+if (-not (Test-Path $installerScript)) {
+    throw "Generated installer script not found at: $installerScript"
+}
+& $isccPath $installerScript
 if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed." }
 
 $installerPath = Join-Path $RepoRoot "out\LA-Studio-Setup.exe"

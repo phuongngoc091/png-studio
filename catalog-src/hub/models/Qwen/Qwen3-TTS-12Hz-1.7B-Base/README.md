@@ -17,7 +17,7 @@ Qwen3-TTS Base 1.7B is a high-fidelity zero-shot voice cloning text-to-speech mo
 ## LA Studio Notes
 
 Qwen3-TTS Base 1.7B in LA Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-base-GGUF`. It needs:
-- Backbone: `qwen3-tts-12hz-1.7b-base-q8_0.gguf`
+- Backbone: `qwen3-tts-12hz-1.7b-base-q8_0.gguf` or `qwen3-tts-12hz-1.7b-base-f16.gguf`
 - Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`
 
 It requires a 24kHz reference WAV file and a reference transcript to clone a voice.

@@ -4,6 +4,7 @@
 #include <QIcon>
 #include <QFont>
 
+#include "lastudio/AppVersion.h"
 #include "core/Logger.h"
 #include "core/QmlLogger.h"
 #include "controllers/AppController.h"
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
 
     app.setOrganizationName(QStringLiteral(""));
     app.setApplicationName(QStringLiteral("LA Studio"));
-    app.setApplicationVersion(QStringLiteral("0.1.1"));
+    app.setApplicationVersion(QString::fromLatin1(LASTUDIO_VERSION));
     // Set application window icon from the embedded .ico resource.
     app.setWindowIcon(QIcon(QStringLiteral(":/LAStudio/icons/app_icon.ico")));
 

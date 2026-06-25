@@ -1,5 +1,6 @@
 #pragma once
 #include "TtsBackend.h"
+#include <QByteArray>
 
 namespace LAStudio {
 
@@ -18,6 +19,9 @@ public:
 private:
     void *m_session = nullptr;
     QString m_modelPath;
+    bool m_codePredictorBackendEnvOverridden = false;
+    bool m_restoreCodePredictorBackendEnv = false;
+    QByteArray m_previousCodePredictorBackendEnv;
 };
 
 } // namespace LAStudio

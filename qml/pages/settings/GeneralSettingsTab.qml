@@ -25,6 +25,28 @@ ScrollView {
         return [qsTr("Stable"), qsTr("Beta")]
     }
 
+    function selectedUpdateChannel() {
+        return channelCombo.currentIndex === 1 ? "beta" : "stable"
+    }
+
+    function updateActionText() {
+        if (AppController.updates.checking) return qsTr("Checking...")
+        if (AppController.updates.downloading) return qsTr("Downloading...")
+        if (AppController.updates.downloaded) return qsTr("Install update")
+        if (AppController.updates.updateAvailable) return qsTr("Download update")
+        return qsTr("Check for updates")
+    }
+
+    function runUpdateAction() {
+        if (AppController.updates.downloaded) {
+            installUpdateDialog.open()
+        } else if (AppController.updates.updateAvailable) {
+            AppController.updates.downloadUpdate()
+        } else {
+            AppController.updates.checkForUpdates(root.selectedUpdateChannel())
+        }
+    }
+
     function languageIndexFor(language) {
         const languages = AppController.localization.availableLanguages
         for (var i = 0; i < languages.length; i++) {
@@ -56,7 +78,7 @@ ScrollView {
 
                 SettingsRow {
                     label: qsTr("Installed")
-                    valueText: "LA Studio v0.1.1"
+                    valueText: qsTr("%1 v%2").arg(Qt.application.name).arg(Qt.application.version)
                 }
 
                 ThinDivider {}
@@ -79,11 +101,13 @@ ScrollView {
                         spacing: Theme.paddingMedium
 
                         PrimaryButton {
-                            text: qsTr("Check for updates")
+                            text: root.updateActionText()
                             buttonColor: Theme.surfaceAlt
-                            implicitWidth: 132
+                            implicitWidth: 142
                             implicitHeight: 32
                             quiet: true
+                            enabled: !AppController.updates.checking && !AppController.updates.downloading
+                            onClicked: root.runUpdateAction()
                         }
 
                         AppComboBox {
@@ -92,10 +116,28 @@ ScrollView {
                             currentIndex: 0
                             implicitWidth: 110
                             implicitHeight: 32
+                            enabled: !AppController.updates.checking && !AppController.updates.downloading
                         }
 
                         Item { Layout.fillWidth: true }
                     }
+                }
+
+                ProgressBar {
+                    visible: AppController.updates.downloading
+                    from: 0
+                    to: 1
+                    value: AppController.updates.downloadProgress
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    visible: AppController.updates.statusMessage !== "" || AppController.updates.errorMessage !== ""
+                    text: AppController.updates.errorMessage !== "" ? AppController.updates.errorMessage : AppController.updates.statusMessage
+                    color: AppController.updates.errorMessage !== "" ? Theme.danger : Theme.textSecondary
+                    font.pixelSize: Theme.fontSmall
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
             }
 
@@ -319,6 +361,15 @@ ScrollView {
         onAccepted: {
             AppController.modelsMigration.changeDirectory(selectedFolder.toString())
         }
+    }
+
+    ConfirmationDialog {
+        id: installUpdateDialog
+        titleText: qsTr("Install update")
+        messageText: qsTr("LA Studio will close and start the installer. Your app data and downloaded models will stay in the app home directory.")
+        confirmText: qsTr("Install")
+        cancelText: qsTr("Cancel")
+        onConfirmed: AppController.updates.installDownloadedUpdate()
     }
 
     component SectionPanel: Rectangle {

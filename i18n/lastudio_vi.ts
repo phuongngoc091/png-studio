@@ -12,6 +12,10 @@
         <translation>Đã cài đặt</translation>
     </message>
     <message>
+        <source>%1 v%2</source>
+        <translation>%1 v%2</translation>
+    </message>
+    <message>
         <source>Updates channel</source>
         <translation>Kênh cập nhật</translation>
     </message>
@@ -507,7 +511,7 @@
         <translation>Tổng hợp giọng nói tự nhiên, chất lượng cao từ văn bản bằng nhiều ngôn ngữ khác nhau sử dụng các mô hình cục bộ.</translation>
     </message>
     <message>
-        <source>Voice Cloning Lab</source>
+        <source>Voice Cloning</source>
         <translation>Phòng nhân bản giọng nói</translation>
     </message>
     <message>
@@ -798,7 +802,7 @@
         <translation>Tổng hợp giọng nói (TTS)</translation>
     </message>
     <message>
-        <source>Voice Cloning Lab</source>
+        <source>Voice Cloning</source>
         <translation>Phòng nhân bản giọng nói</translation>
     </message>
     <message>

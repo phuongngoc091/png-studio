@@ -28,6 +28,7 @@ AppController::AppController(QObject *parent)
     m_modelsMigration = new ModelsPathMigrationService(m_settings, m_models, m_downloads, m_stt, m_tts, this);
     m_files = new FileAccessService(this);
     m_downloadInstall = new DownloadInstallService(m_downloads, m_models, m_runtimes, this);
+    m_updates = new AppUpdateService(m_downloads, this);
 }
 
 AppController::~AppController()

@@ -11,6 +11,7 @@ private slots:
     void testModelManagerConcreteModelDir();
     void testCapabilityFamilyModelSuitability();
     void testVoiceDesignFamiliesExposeRuntimeOptions();
+    void testQwen3TtsUsesAutomaticFrameLimit();
     void testLogViewServicePending();
     void testStudioConfigurationResolver();
 };

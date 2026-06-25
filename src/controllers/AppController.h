@@ -25,6 +25,7 @@
 #include "DownloadInstallService.h"
 #include "VoiceDesignPresetService.h"
 #include "SttSessionController.h"
+#include "AppUpdateService.h"
 
 #include "ModelSessionRegistry.h"
 
@@ -55,6 +56,7 @@ class AppController : public QObject {
     Q_PROPERTY(DownloadInstallService* downloadInstall READ downloadInstall CONSTANT)
     Q_PROPERTY(VoiceDesignPresetService* voiceDesignPresets READ voiceDesignPresets CONSTANT)
     Q_PROPERTY(SttSessionController* sttSession READ sttSession CONSTANT)
+    Q_PROPERTY(AppUpdateService* updates READ updates CONSTANT)
     Q_PROPERTY(ModelSessionRegistry* sessionRegistry READ sessionRegistry CONSTANT)
 
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
@@ -88,6 +90,7 @@ public:
     DownloadInstallService* downloadInstall() const { return m_downloadInstall; }
     VoiceDesignPresetService* voiceDesignPresets() const { return m_voiceDesignPresets; }
     SttSessionController* sttSession() const { return m_sttSession; }
+    AppUpdateService* updates() const { return m_updates; }
     ModelSessionRegistry* sessionRegistry() const { return m_sessionRegistry; }
 
     WaveformProvider* waveformProvider() const { return m_waveformProvider; }
@@ -129,6 +132,7 @@ private:
     DownloadInstallService* m_downloadInstall = nullptr;
     VoiceDesignPresetService* m_voiceDesignPresets = nullptr;
     SttSessionController* m_sttSession = nullptr;
+    AppUpdateService* m_updates = nullptr;
     ModelSessionRegistry* m_sessionRegistry = nullptr;
 
     QString m_errorMessage;

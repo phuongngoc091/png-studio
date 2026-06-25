@@ -60,8 +60,7 @@ Dialog {
             { version: "v0.1.0" }
         ]
         if (engineId.indexOf("crispasr") !== -1) return [
-            { version: "v0.7.2" },
-            { version: "v0.7.1" }
+            { version: "v0.8.4" }
         ]
         if (engineId.indexOf("whisper") !== -1) return [
             { version: "v1.8.4" },

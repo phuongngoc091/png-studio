@@ -111,7 +111,7 @@ Rectangle {
 
                     FeatureCard {
                         Layout.fillWidth: true
-                        title: qsTr("Voice Cloning Lab")
+                        title: qsTr("Voice Cloning")
                         description: qsTr("Generate synthetic speech using custom voice profiles cloned from short reference audio files.")
                         iconName: "spark"
                         targetRoute: "studio-voice-cloning"

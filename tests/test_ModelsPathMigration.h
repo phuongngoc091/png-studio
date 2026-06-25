@@ -1,5 +1,7 @@
 #pragma once
 #include <QObject>
+#include <QByteArray>
+#include <QString>
 #include <QTemporaryDir>
 
 namespace LAStudio {
@@ -15,6 +17,12 @@ private slots:
 
 private:
     QTemporaryDir m_tempDir;
+    QString m_settingsJsonPath;
+    QByteArray m_settingsJsonContents;
+    bool m_hadSettingsJson = false;
+    QString m_settingsIniPath;
+    QByteArray m_settingsIniContents;
+    bool m_hadSettingsIni = false;
 };
 
 } // namespace LAStudio

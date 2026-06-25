@@ -12,6 +12,7 @@
 #include "audio/AudioRecorder.h"
 #include "audio/AudioPlayer.h"
 #include "audio/WaveformProvider.h"
+#include "controllers/AppUpdateService.h"
 #include <QGuiApplication>
 #include <QClipboard>
 #include "core/Logger.h"
@@ -54,11 +55,13 @@ AppController::AppController(QObject *parent)
     m_downloadInstall = new DownloadInstallService(m_downloads, m_models, m_runtimes, this);
     m_voiceDesignPresets = new VoiceDesignPresetService(this);
     m_sttSession = new SttSessionController(this);
+    m_updates = new AppUpdateService(m_downloads, this);
 
     connect(m_preview, &AudioPreviewService::errorOccurred, this, &AppController::onError);
     connect(m_history, &HistoryService::errorOccurred, this, &AppController::onError);
     connect(m_downloadInstall, &DownloadInstallService::errorOccurred, this, &AppController::onError);
     connect(m_voiceDesignPresets, &VoiceDesignPresetService::errorOccurred, this, &AppController::onError);
+    connect(m_updates, &AppUpdateService::errorOccurred, this, &AppController::onError);
 
     connect(m_stt, &SttEngine::errorOccurred, this, &AppController::onError);
     connect(m_tts, &TtsEngine::errorOccurred, this, &AppController::onError);
