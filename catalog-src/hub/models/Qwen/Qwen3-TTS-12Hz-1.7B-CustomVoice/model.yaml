@@ -118,13 +118,6 @@ laStudio:
       max: 2147483647
       default: -1
       description: Random seed for reproducibility. -1 for random.
-    length_scale:
-      name: Length Scale
-      type: float
-      min: 0.25
-      max: 4.0
-      default: 1.0
-      description: Duration multiplier. Values above 1.0 speak slower; below 1.0 speak faster.
     max_codec_steps:
       name: Max Codec Steps
       type: int
@@ -173,5 +166,4 @@ laStudio:
         - voice
         - temperature
         - seed
-        - length_scale
         - max_codec_steps

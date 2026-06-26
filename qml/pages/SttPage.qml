@@ -10,6 +10,7 @@ StudioPageFrame {
 
     contentView: Component {
         SttStudioView {
+            studioController: sttPageFrame.studioController
             sttSession: AppController.sttSession
 
             onBackToGallery: sttPageFrame.openConfiguration(studioController ? studioController.selectedFamilyId : "")

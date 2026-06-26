@@ -33,6 +33,7 @@ StudioShell {
     property string selectedPresetName: ""
     property string selectedLanguage: "en"
     property string activeLeftTab: "presets"
+    readonly property bool inputsLocked: AppController.tts.processing
 
     readonly property var studioConfig: AppController.tts.studioConfigForCapability("voice-design")
     readonly property bool hasLanguageInput: studioConfig && studioConfig.inputs ? studioConfig.inputs.indexOf("language") !== -1 : false
@@ -195,6 +196,7 @@ StudioShell {
                     id: presetPanel
                     familyId: root.selectedFamilyId
                     onPresetSelected: function(description, name) {
+                        if (root.inputsLocked) return
                         voiceDescriptionText.text = description
                         root.selectedPresetName = name
                     }
@@ -203,6 +205,7 @@ StudioShell {
                 VoiceDesignHistoryPanel {
                     id: historyPanel
                     onLoadDescriptionRequested: function(description, text) {
+                        if (root.inputsLocked) return
                         voiceDescriptionText.text = description
                         targetText.text = text
                         root.selectedPresetName = ""
@@ -369,7 +372,7 @@ StudioShell {
                                 font.pixelSize: Theme.fontMedium
                                 background: Rectangle { color: "transparent" }
                                 enabled: root.studioReady
-                                readOnly: !settingsPanel.freeTextInstruct
+                                readOnly: root.inputsLocked || !settingsPanel.freeTextInstruct
                                 opacity: root.studioReady ? 1.0 : 0.55
                                 onTextChanged: {
                                     if (activeFocus) {
@@ -437,6 +440,7 @@ StudioShell {
                                 font.pixelSize: Theme.fontMedium
                                 background: Rectangle { color: "transparent" }
                                 enabled: root.studioReady
+                                readOnly: root.inputsLocked
                                 opacity: root.studioReady ? 1.0 : 0.55
                             }
                         }
@@ -447,6 +451,7 @@ StudioShell {
                             Layout.rightMargin: Theme.paddingMedium
                             tags: root.nonVerbalTags
                             targetEditor: targetText
+                            locked: root.inputsLocked
                             visible: root.nonVerbalTags.length > 0
                         }
                     }
@@ -467,6 +472,7 @@ StudioShell {
                         Layout.preferredHeight: 40
                         loading: AppController.tts.processing
                         enabled: (root.studioController ? root.studioController.canProcess : false)
+                                 && !root.inputsLocked
                                  && AppController.tts.modelLoaded
                                  && targetText.text.length > 0
                                  && (!settingsPanel.requiresInstruct
@@ -481,6 +487,15 @@ StudioShell {
                             AppController.tts.designVoice(targetText.text.normalize("NFC"), synSettings)
                         }
                     }
+
+                    PrimaryButton {
+                        text: qsTr("Stop")
+                        iconName: "x"
+                        Layout.preferredWidth: 100
+                        Layout.preferredHeight: 40
+                        visible: AppController.tts.processing
+                        onClicked: AppController.tts.cancelProcessing()
+                    }
                 }
 
                 // Audio Output Player
@@ -493,6 +508,9 @@ StudioShell {
                     sampleCountText: root.sampleCountText()
                     isPlaying: root.playingType === "voice-design" && AppController.player.playing
                     processing: AppController.tts.processing
+                    generationProgress: AppController.tts.generationProgress
+                    progressEstimated: AppController.tts.generationProgressEstimated
+                    progressLabel: AppController.tts.generationProgressLabel
                     onPlayClicked: {
                         if (root.playingType === "voice-design" && AppController.player.playing) {
                             AppController.player.stop()
@@ -550,6 +568,7 @@ StudioShell {
                 Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 family: root.family
                 selectedLanguage: root.selectedLanguage
+                locked: root.inputsLocked
                 onSelectedLanguageChanged: root.selectedLanguage = selectedLanguage
                 onCloseRequested: root.isSettingsOpen = false
             }

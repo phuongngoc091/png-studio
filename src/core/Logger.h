@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QLoggingCategory>
+#include <QtGlobal>
 
 namespace LAStudio {
 
@@ -21,6 +22,7 @@ public:
 
     static void init();
     static void clear();
+    static qint64 sessionStartOffset();
     static void log(Level level, const QString &category, const QString &message);
     static void debug(const QString &cat, const QString &msg)   { log(Debug, cat, msg); }
     static void info(const QString &cat, const QString &msg)    { log(Info, cat, msg); }

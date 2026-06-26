@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QString>
+#include <QtGlobal>
 
 #include <QtQml/qqml.h>
 
@@ -30,8 +31,11 @@ signals:
     void logContentChanged();
 
 private:
+    QString readSessionLogFile() const;
+
     bool m_loading = false;
     QString m_logContent;
+    qint64 m_sessionStartPosition = 0;
     qint64 m_lastLogPosition = 0;
 };
 

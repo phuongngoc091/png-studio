@@ -22,6 +22,7 @@ public slots:
     void loadModel(const QString &modelPath, bool useGpu, const QString &runtimePath = QString());
     void unloadModel();
     void transcribe(const QVector<float> &samples, const QString &language, int threads, bool translate, const QVariantMap &settings);
+    void cancelProcessing();
 
 signals:
     void modelLoaded(bool success, const QString &error);

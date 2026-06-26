@@ -54,7 +54,7 @@ Dialog {
             { version: "v0.1.0" }
         ]
         if (engineId.indexOf("omnivoice") !== -1) return [
-            { version: "v0.1.0" }
+            { version: "v0.1.2" }
         ]
         if (engineId.indexOf("speech-lm-tts") !== -1) return [
             { version: "v0.1.0" }

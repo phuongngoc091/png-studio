@@ -14,6 +14,7 @@ ColumnLayout {
     property bool isPlaying: false
     property bool showTips: true
     property bool showHeader: true
+    property bool locked: false
 
     signal audioCleared()
     signal playClicked()
@@ -54,8 +55,10 @@ ColumnLayout {
                 id: inputTabs
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                enabled: !root.locked
 
                 onAudioLoaded: (path) => {
+                    if (root.locked) return
                     root.audioPath = path
                 }
             }
@@ -92,6 +95,7 @@ ColumnLayout {
                     text: "Change / Record"
                     quiet: true
                     implicitHeight: 32
+                    enabled: !root.locked
                     onClicked: {
                         if (root.isPlaying)
                             root.stopClicked()
@@ -142,6 +146,7 @@ ColumnLayout {
                 quiet: true
                 implicitHeight: 28
                 implicitWidth: 105
+                enabled: !root.locked
                 onClicked: txtFileDialogLoader.active = true
             }
         }
@@ -167,6 +172,7 @@ ColumnLayout {
                 placeholderText: "Type what is spoken in the reference audio here..."
                 font.pixelSize: Theme.fontSmall
                 background: Rectangle { color: "transparent" }
+                readOnly: root.locked
 
                 onTextChanged: root.referenceText = text
             }
@@ -233,6 +239,10 @@ ColumnLayout {
             Component.onCompleted: open()
 
             onAccepted: {
+                if (root.locked) {
+                    txtFileDialogLoader.active = false
+                    return
+                }
                 var path = AppController.files.urlToLocalPath(selectedFile.toString())
                 var content = AppController.files.readTextFile(path)
                 refTextEdit.text = content

@@ -15,6 +15,7 @@ ColumnLayout {
     property bool preprocessPrompt: true
     property bool randomSeed: true
     property int customSeed: 42
+    property bool locked: false
 
     property var capabilitySchema: []
     property var basicSchema: []
@@ -271,6 +272,7 @@ ColumnLayout {
                     hasLanguageInput: root.hasLanguageInput
                     useTextFieldFallback: false
                     language: root.selectedLanguage
+                    enabled: !root.locked
                     onLanguageChanged: {
                         if (root.selectedLanguage !== language) {
                             root.selectedLanguage = language
@@ -286,6 +288,7 @@ ColumnLayout {
                 visible: root.basicSchema.length > 0
 
                 ModelParameterControls {
+                    enabled: !root.locked
                     schema: root.basicSchema
                     dynamicSettings: root.dynamicSettings
                     onParameterChanged: function(parameterId, value) { root.updateDynamicSetting(parameterId, value) }
@@ -300,6 +303,7 @@ ColumnLayout {
                 onToggled: root.advancedOpen = !root.advancedOpen
 
                 ModelParameterControls {
+                    enabled: !root.locked
                     schema: root.advancedSchema
                     dynamicSettings: root.dynamicSettings
                     onParameterChanged: function(parameterId, value) { root.updateDynamicSetting(parameterId, value) }
@@ -315,6 +319,7 @@ ColumnLayout {
                     id: denoiseToggle
                     text: "Denoise"
                     checked: root.denoise
+                    enabled: !root.locked
                     onCheckedChanged: {
                         root.denoise = checked
                         root.settingsChanged()
@@ -325,6 +330,7 @@ ColumnLayout {
                     id: preprocessToggle
                     text: "Preprocess prompt"
                     checked: root.preprocessPrompt
+                    enabled: !root.locked
                     onCheckedChanged: {
                         root.preprocessPrompt = checked
                         root.settingsChanged()
@@ -335,6 +341,7 @@ ColumnLayout {
                     id: randomSeedToggle
                     text: "Random seed"
                     checked: root.randomSeed
+                    enabled: !root.locked
                     onCheckedChanged: {
                         root.randomSeed = checked
                         root.settingsChanged()
@@ -345,6 +352,7 @@ ColumnLayout {
                     id: customSeedInput
                     Layout.fillWidth: true
                     visible: !randomSeedToggle.checked
+                    enabled: !root.locked
                     text: root.customSeed.toString()
                     color: Theme.textPrimary
                     placeholderTextColor: Theme.textSecondary

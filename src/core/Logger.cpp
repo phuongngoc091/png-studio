@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QMutex>
 #include <QDir>
+#include <QFileInfo>
 #include <QThread>
 #include <QSysInfo>
 #include <QCoreApplication>
@@ -24,6 +25,7 @@ Q_LOGGING_CATEGORY(logUI, "lastudio.ui")
 
 static QFile *s_logFile = nullptr;
 static QMutex s_logMutex;
+static qint64 s_sessionStartOffset = 0;
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -146,6 +148,9 @@ void Logger::init()
     if (file.exists() && file.size() >= MaxLogFileSize) {
         rotateLogs();
     }
+
+    QFileInfo logInfo(logPath);
+    s_sessionStartOffset = logInfo.exists() ? logInfo.size() : 0;
     
     s_logFile = new QFile(logPath);
     // Opened in Append mode to preserve log files across app restarts
@@ -165,6 +170,12 @@ void Logger::init()
     qCInfo(logCore) << "OS Version:    " << QSysInfo::prettyProductName();
     qCInfo(logCore) << "Architecture:  " << QSysInfo::currentCpuArchitecture();
     qCInfo(logCore) << "==================================================";
+}
+
+qint64 Logger::sessionStartOffset()
+{
+    QMutexLocker locker(&s_logMutex);
+    return s_sessionStartOffset;
 }
 
 void Logger::clear()

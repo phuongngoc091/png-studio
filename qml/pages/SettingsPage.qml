@@ -17,7 +17,6 @@ Rectangle {
         switch(index) {
             case 0: return qsTr("General Settings")
             case 1: return qsTr("Hardware")
-            case 2: return qsTr("System Logs Console")
             default: return qsTr("Settings")
         }
     }
@@ -27,7 +26,6 @@ Rectangle {
         switch(index) {
             case 0: return qsTr("Configure general options, download path, and view application metadata.")
             case 1: return qsTr("CPU, memory, GPU, and model loading limits.")
-            case 2: return qsTr("Review developer debug traces, background worker output, and copy runtime logs.")
             default: return ""
         }
     }
@@ -42,8 +40,7 @@ Rectangle {
     function systemRoutes() {
         root.translationRevision
         return [
-            { label: qsTr("Hardware"), iconName: "cpu", index: 1 },
-            { label: qsTr("System Logs"), iconName: "file", index: 2 }
+            { label: qsTr("Hardware"), iconName: "cpu", index: 1 }
         ]
     }
 
@@ -151,14 +148,6 @@ Rectangle {
 
                     GeneralSettingsTab {}
                     HardwareSettingsTab {}
-                    Loader {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        active: settingsStack.currentIndex === 2
-                        sourceComponent: Component {
-                            SystemLogsTab {}
-                        }
-                    }
                 }
             }
         }

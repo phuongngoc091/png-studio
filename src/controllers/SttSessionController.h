@@ -81,6 +81,7 @@ public:
     Q_INVOKABLE void startRecording(bool systemAudio = false);
     Q_INVOKABLE void stopRecording();
     Q_INVOKABLE void transcribeInput();
+    Q_INVOKABLE void cancelProcessing();
     Q_INVOKABLE void clearTranscript();
     Q_INVOKABLE void copyTranscript();
     Q_INVOKABLE void loadHistoryItem(const QString &text, const QString &filePathOrUrl);

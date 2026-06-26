@@ -29,6 +29,10 @@ void TtsWorker::loadVoice(const QVariantMap &config)
         emit modelLoaded(false, QStringLiteral("Unsupported backend configuration"), QVariantList());
         return;
     }
+    m_backend->setProgressCallback([this](int current, int total, const QString &stage, int chunkIndex, int chunkCount) {
+        emit progress(current, total, stage, chunkIndex, chunkCount);
+        return !m_cancelRequested.load();
+    });
 
     QString error;
     QVariantList schema;
@@ -55,6 +59,7 @@ void TtsWorker::unloadVoice()
 void TtsWorker::synthesize(const QString &text, int speakerId, float speed, const QVariantMap &settings)
 {
     Q_UNUSED(speakerId);
+    m_cancelRequested = false;
     if (!m_backend) {
         emit errorOccurred(QStringLiteral("No TTS model loaded"));
         return;
@@ -88,6 +93,7 @@ void TtsWorker::synthesize(const QString &text, int speakerId, float speed, cons
 
 void TtsWorker::cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings)
 {
+    m_cancelRequested = false;
     if (!m_backend) {
         emit errorOccurred(QStringLiteral("No TTS model loaded"));
         return;
@@ -116,6 +122,14 @@ void TtsWorker::cloneVoice(const QString &text, const QString &referencePath, co
         emit finished(samples, sampleRate);
     } else {
         emit errorOccurred(error);
+    }
+}
+
+void TtsWorker::cancelProcessing()
+{
+    m_cancelRequested = true;
+    if (m_backend) {
+        m_backend->cancelProcessing();
     }
 }
 

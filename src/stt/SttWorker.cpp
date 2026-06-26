@@ -57,13 +57,18 @@ void SttWorker::transcribe(const QVector<float> &samples, const QString &languag
     QString fullText;
     QVariantList segmentList;
     QString error;
-    if (!m_backend->transcribe(samples, language, threads, translate, settings, fullText, segmentList, error)) {
+    if (m_backend->transcribe(samples, language, threads, translate, settings, fullText, segmentList, error)) {
+        emit finished(fullText, segmentList);
+    } else {
         emit errorOccurred(error);
-        return;
     }
+}
 
-    emit finished(fullText, segmentList);
+void SttWorker::cancelProcessing()
+{
+    if (m_backend) {
+        m_backend->cancelProcessing();
+    }
 }
 
 } // namespace LAStudio
-

@@ -139,6 +139,13 @@ Rectangle {
                 buttonColor: Theme.accent
                 onClicked: if (root.sttSession) root.sttSession.transcribeInput()
             }
+
+            PrimaryButton {
+                text: qsTr("Stop")
+                iconName: "x"
+                visible: root.sttSession ? root.sttSession.processing : false
+                onClicked: if (root.sttSession) root.sttSession.cancelProcessing()
+            }
         }
     }
 

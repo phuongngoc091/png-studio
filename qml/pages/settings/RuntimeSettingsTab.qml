@@ -19,7 +19,7 @@ ScrollView {
     ]
 
     property var omnivoiceRuntimeVersions: [
-        { version: "v0.1.0", url: "https://github.com/dduongtrandai/omnivoice.cpp/releases/tag/v0.1.0" }
+        { version: "v0.1.2", url: "https://github.com/dduongtrandai/omnivoice.cpp/releases/tag/v0.1.2" }
     ]
 
     property var vibevoiceRuntimeVersions: [

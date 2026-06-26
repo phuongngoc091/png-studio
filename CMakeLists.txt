@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # This is the single source of truth for the application version. Release
 # automation may override it with -DLASTUDIO_VERSION=<major.minor.patch>.
-set(LASTUDIO_VERSION "0.1.2" CACHE STRING "LA Studio application version")
+set(LASTUDIO_VERSION "0.1.3" CACHE STRING "LA Studio application version")
 if(NOT LASTUDIO_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
     message(FATAL_ERROR "LASTUDIO_VERSION must use MAJOR.MINOR.PATCH format; got '${LASTUDIO_VERSION}'")
 endif()
@@ -198,7 +198,6 @@ qt_add_qml_module(LAStudio
         qml/pages/settings/GeneralSettingsTab.qml
         qml/pages/settings/RuntimeSettingsTab.qml
         qml/pages/settings/HardwareSettingsTab.qml
-        qml/pages/settings/SystemLogsTab.qml
 
         qml/components/Sidebar.qml
         qml/components/AppTitleBar.qml
@@ -220,6 +219,7 @@ qt_add_qml_module(LAStudio
         qml/components/ModelDetailsView.qml
         qml/components/DownloadProgressBar.qml
         qml/components/DownloadsPopup.qml
+        qml/components/BottomLogPanel.qml
         qml/components/voicecloning/VoiceSettingsPanel.qml
         qml/components/voicecloning/VoiceCloningStudioView.qml
         qml/components/voicecloning/ReferenceInputBox.qml

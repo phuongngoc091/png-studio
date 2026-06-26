@@ -90,5 +90,6 @@ void SttEngine::onWorkerFinished(const QString &, const QVariantList &) {}
 void SttEngine::onWorkerError(const QString &) {}
 void SttEngine::dispatch(const EngineEvent &) {}
 void SttEngine::applyState(const EngineState &) {}
+void SttEngine::cancelProcessing() {}
 
 } // namespace LAStudio

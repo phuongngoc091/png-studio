@@ -209,6 +209,7 @@ std::optional<SessionConfiguration> TtsSharedModelSession::resolveConfig(const S
     out.selection = config;
     out.runtimePath = resolved.runtimePath;
     out.familyConfig = resolved.family;
+    out.resolvedPathsByRole = resolved.resolvedPaths;
     out.signature = resolved.signature;
 
     for (const auto &val : resolved.resolvedPaths.values()) {

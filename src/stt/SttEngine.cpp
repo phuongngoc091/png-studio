@@ -70,6 +70,11 @@ void SttEngine::transcribeSamples(const QVector<float> &samples, const QString &
     dispatch(EventTranscribe{samples, language, threads, translate, settings});
 }
 
+void SttEngine::cancelProcessing()
+{
+    dispatch(EventCancelProcessing{});
+}
+
 void SttEngine::onWorkerModelLoaded(bool success, const QString &error)
 {
     dispatch(EventWorkerLoaded{success, error});
@@ -181,6 +186,9 @@ void SttEngine::dispatch(const EngineEvent &event)
             s.hasPendingLoad = false;
             s.pendingModelPath.clear();
             s.pendingRuntimePath.clear();
+        },
+        [this](StateProcessing&, const EventCancelProcessing&) {
+            QMetaObject::invokeMethod(m_worker, "cancelProcessing", Qt::QueuedConnection);
         },
         [this](StateProcessing& s, const EventWorkerFinished& e) {
             m_progress = 100;

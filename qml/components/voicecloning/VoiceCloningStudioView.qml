@@ -33,6 +33,7 @@ StudioShell {
     property string selectedLanguageCode: "en"
     property real mainHorizontalInset: Theme.paddingXL
     property real promptInset: Theme.paddingSmall
+    readonly property bool inputsLocked: AppController.tts.processing
     readonly property var nonVerbalTags: {
         if (family && family.studio && family.studio[root.capability] && family.studio[root.capability].nonVerbalTags)
             return family.studio[root.capability].nonVerbalTags
@@ -96,6 +97,13 @@ StudioShell {
         return result
     }
 
+    function languageIndexFor(value) {
+        for (var i = 0; i < root.languageItems.length; ++i) {
+            if (root.languageItems[i].value === value) return i
+        }
+        return -1
+    }
+
     readonly property var languageItems: {
         if (family) {
             if (family.supportedLanguageSetId) {
@@ -155,12 +163,20 @@ StudioShell {
         onTriggered: root.detectedLanguage = VoiceCloningUtils.detectLanguageCode(inputText.text)
     }
 
+    onDetectedLanguageChanged: {
+        var detectedIndex = root.languageIndexFor(root.detectedLanguage)
+        if (detectedIndex >= 0 && root.selectedLanguageCode !== root.detectedLanguage) {
+            root.selectedLanguageCode = root.detectedLanguage
+        }
+    }
+
     leftPanelContent: [
         TtsHistoryPanel {
             id: historyPanel
             anchors.fill: parent
             onCloseRequested: root.isLeftPanelOpen = false
             onLoadPromptRequested: function(text) {
+                if (root.inputsLocked) return
                 inputText.text = text
             }
         }
@@ -273,6 +289,7 @@ StudioShell {
                                     width: parent.width
                                     showTips: true
                                     showHeader: true
+                                    locked: root.inputsLocked
                                     isPlaying: root.playingType === "reference"
                                     onAudioPathChanged: {
                                         root.referenceAudioPath = referenceBox.audioPath
@@ -335,9 +352,22 @@ StudioShell {
                                                 Layout.preferredWidth: 220
                                                 model: root.languageItems
                                                 textRole: "text"
-                                                currentIndex: 0
+                                                currentIndex: {
+                                                    var selectedIndex = root.languageIndexFor(root.selectedLanguageCode)
+                                                    if (selectedIndex >= 0) return selectedIndex
+                                                    var detectedIndex = root.languageIndexFor(root.detectedLanguage)
+                                                    if (detectedIndex >= 0) return detectedIndex
+                                                    return 0
+                                                }
                                                 searchable: model.length > 15
-                                                onCurrentIndexChanged: root.selectedLanguageCode = model[currentIndex].value
+                                                enabled: !root.inputsLocked
+                                                onCurrentIndexChanged: {
+                                                    if (!model || currentIndex < 0 || currentIndex >= model.length) return
+                                                    var value = model[currentIndex].value
+                                                    if (root.selectedLanguageCode !== value) {
+                                                        root.selectedLanguageCode = value
+                                                    }
+                                                }
                                             }
                                         }
 
@@ -370,6 +400,7 @@ StudioShell {
                                                     quiet: true
                                                     implicitHeight: 28
                                                     implicitWidth: 105
+                                                    enabled: !root.inputsLocked
                                                     onClicked: promptFileDialogLoader.active = true
                                                 }
 
@@ -400,6 +431,7 @@ StudioShell {
                                                         placeholderText: qsTr("Enter the text you want the cloned voice to say...")
                                                         font.pixelSize: Theme.fontMedium
                                                         background: Rectangle { color: "transparent" }
+                                                        readOnly: root.inputsLocked
                                                         onTextChanged: languageDetectTimer.restart()
                                                     }
 
@@ -407,6 +439,7 @@ StudioShell {
                                                         Layout.fillWidth: true
                                                         tags: root.nonVerbalTags
                                                         targetEditor: inputText
+                                                        locked: root.inputsLocked
                                                         visible: root.nonVerbalTags.length > 0
                                                     }
 
@@ -434,6 +467,9 @@ StudioShell {
                                             sampleCountText: root.sampleCountText()
                                             isPlaying: root.playingType === "tts" && AppController.player.playing
                                             processing: AppController.tts.processing
+                                            generationProgress: AppController.tts.generationProgress
+                                            progressEstimated: AppController.tts.generationProgressEstimated
+                                            progressLabel: AppController.tts.generationProgressLabel
                                             onPlayClicked: {
                                                 if (root.playingType === "tts" && AppController.player.playing) {
                                                     AppController.player.stop()
@@ -448,23 +484,38 @@ StudioShell {
                                 }
                             }
 
-                            PrimaryButton {
-                                text: qsTr("Clone Voice")
-                                iconName: "spark"
+                            RowLayout {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 42
-                                loading: AppController.tts.processing
-                                enabled: {
-                                    var isQwen3 = root.family && root.family.id && root.family.id.indexOf("qwen3") !== -1
-                                    var baseEnabled = (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0 && root.referenceAudioPath !== ""
-                                    if (isQwen3) {
-                                        return baseEnabled && referenceBox.referenceText.trim().length > 0
+                                spacing: Theme.paddingMedium
+
+                                PrimaryButton {
+                                    text: qsTr("Clone Voice")
+                                    iconName: "spark"
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 42
+                                    loading: AppController.tts.processing
+                                    enabled: {
+                                        var isQwen3 = root.family && root.family.id && root.family.id.indexOf("qwen3") !== -1
+                                        var baseEnabled = (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0 && root.referenceAudioPath !== ""
+                                        baseEnabled = baseEnabled && !root.inputsLocked
+                                        if (isQwen3) {
+                                            return baseEnabled && referenceBox.referenceText.trim().length > 0
+                                        }
+                                        return baseEnabled
                                     }
-                                    return baseEnabled
+                                    onClicked: {
+                                        var settings = settingsPanel.getSettingsObject(root.selectedLanguageCode, inputText.text, referenceBox.referenceText)
+                                        AppController.tts.cloneVoice(VoiceCloningUtils.normalizeText(inputText.text), root.referenceAudioPath, settings)
+                                    }
                                 }
-                                onClicked: {
-                                    var settings = settingsPanel.getSettingsObject(root.selectedLanguageCode, inputText.text, referenceBox.referenceText)
-                                    AppController.tts.cloneVoice(VoiceCloningUtils.normalizeText(inputText.text), root.referenceAudioPath, settings)
+
+                                PrimaryButton {
+                                    text: qsTr("Stop")
+                                    iconName: "x"
+                                    Layout.preferredWidth: 100
+                                    Layout.preferredHeight: 42
+                                    visible: AppController.tts.processing
+                                    onClicked: AppController.tts.cancelProcessing()
                                 }
                             }
                         }
@@ -529,6 +580,7 @@ StudioShell {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 family: root.family
+                locked: root.inputsLocked
                 onCloseRequested: root.isSettingsOpen = false
             }
         }
@@ -557,6 +609,10 @@ StudioShell {
             Component.onCompleted: open()
 
             onAccepted: {
+                if (root.inputsLocked) {
+                    promptFileDialogLoader.active = false
+                    return
+                }
                 var path = AppController.files.urlToLocalPath(selectedFile.toString())
                 var content = AppController.files.readTextFile(path)
                 inputText.text = content

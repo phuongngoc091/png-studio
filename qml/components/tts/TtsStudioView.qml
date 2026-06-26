@@ -31,6 +31,7 @@ StudioShell {
     property string lastSynthesizedText: ""
     property real mainHorizontalInset: Theme.paddingXL
     property real promptInset: Theme.paddingSmall
+    readonly property bool inputsLocked: AppController.tts.processing
     readonly property var nonVerbalTags: {
         if (family && family.studio && family.studio[root.capability] && family.studio[root.capability].nonVerbalTags)
             return family.studio[root.capability].nonVerbalTags
@@ -138,6 +139,7 @@ StudioShell {
             anchors.fill: parent
             onCloseRequested: root.isLeftPanelOpen = false
             onLoadPromptRequested: function(text) {
+                if (root.inputsLocked) return
                 inputText.text = text
             }
         }
@@ -317,6 +319,7 @@ StudioShell {
                                 font.pixelSize: Theme.fontMedium
                                 background: Rectangle { color: "transparent" }
                                 enabled: root.studioReady
+                                readOnly: root.inputsLocked
                                 opacity: root.studioReady ? 1.0 : 0.55
                                 onTextChanged: languageDetectTimer.restart()
 
@@ -335,6 +338,7 @@ StudioShell {
                             Layout.rightMargin: Theme.paddingMedium
                             tags: root.nonVerbalTags
                             targetEditor: inputText
+                            locked: root.inputsLocked
                             visible: root.nonVerbalTags.length > 0
                         }
 
@@ -370,12 +374,21 @@ StudioShell {
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 42
                         loading: AppController.tts.processing
-                        enabled: (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0
+                        enabled: (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0 && !root.inputsLocked
                         onClicked: {
                             root.lastSynthesizedText = inputText.text
                             var synSettings = settingsPanel.getSynthesisSettings()
                             AppController.tts.synthesize(inputText.text.normalize("NFC"), 0, 1.0, synSettings)
                         }
+                    }
+
+                    PrimaryButton {
+                        text: qsTr("Stop")
+                        iconName: "x"
+                        Layout.preferredWidth: 100
+                        Layout.preferredHeight: 42
+                        visible: AppController.tts.processing
+                        onClicked: AppController.tts.cancelProcessing()
                     }
                 }
 
@@ -388,6 +401,9 @@ StudioShell {
                     sampleCountText: root.sampleCountText()
                     isPlaying: root.playingType === "tts" && AppController.player.playing
                     processing: AppController.tts.processing
+                    generationProgress: AppController.tts.generationProgress
+                    progressEstimated: AppController.tts.generationProgressEstimated
+                    progressLabel: AppController.tts.generationProgressLabel
                     onPlayClicked: {
                         if (root.playingType === "tts" && AppController.player.playing) {
                             AppController.player.stop()
@@ -471,6 +487,7 @@ StudioShell {
                 family: root.family
                 suggestedLanguage: root.detectedLanguage
                 backendType: root.resolveBackendType()
+                locked: root.inputsLocked
                 onCloseRequested: root.isSettingsOpen = false
             }
         }

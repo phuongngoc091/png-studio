@@ -39,6 +39,9 @@ class TtsEngine : public QObject {
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(bool isCloneAction READ isCloneAction NOTIFY synthesisFinished)
     Q_PROPERTY(QString lastGenerationMode READ lastGenerationMode NOTIFY lastGenerationModeChanged)
+    Q_PROPERTY(int generationProgress READ generationProgress NOTIFY generationProgressChanged)
+    Q_PROPERTY(bool generationProgressEstimated READ generationProgressEstimated NOTIFY generationProgressChanged)
+    Q_PROPERTY(QString generationProgressLabel READ generationProgressLabel NOTIFY generationProgressChanged)
 
 
 public:
@@ -55,7 +58,7 @@ public:
     struct StateUnloaded {};
     struct StateLoading { bool cancelRequested = false; };
     struct StateReady {};
-    struct StateProcessing { bool cancelRequested = false; };
+    struct StateProcessing { bool unloadRequested = false; bool stopRequested = false; };
     struct StateError { QString message; };
 
     using EngineState = std::variant<StateUnloaded, StateLoading, StateReady, StateProcessing, StateError>;
@@ -66,10 +69,11 @@ public:
     struct EventWorkerLoaded { bool success; QString error; QVariantList schema; };
     struct EventSynthesize { QString text; int speakerId; float speed; QVariantMap settings; };
     struct EventCloneVoice { QString text; QString referencePath; QVariantMap settings; };
+    struct EventCancelProcessing {};
     struct EventWorkerFinished { QVector<float> samples; int sampleRate; };
     struct EventWorkerError { QString error; };
 
-    using EngineEvent = std::variant<EventLoadVoice, EventUnload, EventWorkerLoaded, EventSynthesize, EventCloneVoice, EventWorkerFinished, EventWorkerError>;
+    using EngineEvent = std::variant<EventLoadVoice, EventUnload, EventWorkerLoaded, EventSynthesize, EventCloneVoice, EventCancelProcessing, EventWorkerFinished, EventWorkerError>;
 
     explicit TtsEngine(QObject *parent = nullptr);
     ~TtsEngine() override;
@@ -88,6 +92,9 @@ public:
     double cpuUsage() const { return m_cpuUsage; }
     bool isCloneAction() const { return m_isCloneAction; }
     QString lastGenerationMode() const { return m_lastGenerationMode; }
+    int generationProgress() const { return m_generationProgress; }
+    bool generationProgressEstimated() const { return m_generationProgressEstimated; }
+    QString generationProgressLabel() const { return m_generationProgressLabel; }
 
 
     Q_INVOKABLE QVariantList schemaForCapability(const QString &capability) const;
@@ -107,6 +114,7 @@ public:
                                  float speed = 1.0f, const QVariantMap &settings = QVariantMap());
     Q_INVOKABLE void cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings = QVariantMap());
     Q_INVOKABLE void designVoice(const QString &text, const QVariantMap &settings = QVariantMap());
+    Q_INVOKABLE void cancelProcessing();
 
 
     QByteArray lastPcm() const { return m_lastPcm; }
@@ -126,12 +134,14 @@ signals:
     void cpuUsageChanged();
     void stateChanged();
     void lastGenerationModeChanged();
+    void generationProgressChanged();
 
 
 private slots:
     void onWorkerModelLoaded(bool success, const QString &error, const QVariantList &schema);
     void onWorkerFinished(const QVector<float> &samples, int sampleRate);
     void onWorkerError(const QString &error);
+    void onWorkerProgress(int current, int total, const QString &stage, int chunkIndex, int chunkCount);
     void updateCpuUsage();
 
 private:
@@ -145,6 +155,8 @@ private:
     void rememberLoadingVoiceConfig(const QVariantMap &config);
     void rememberLoadedVoiceConfig();
     void clearVoiceConfigTracking();
+    void resetGenerationProgress();
+    void setGenerationProgress(int progress, bool estimated, const QString &label);
 
     TtsWorker *m_worker = nullptr;
     QThread *m_thread = nullptr;
@@ -170,6 +182,9 @@ private:
     QTimer *m_cpuTimer = nullptr;
     bool m_isCloneAction = false;
     QString m_lastGenerationMode = QStringLiteral("tts");
+    int m_generationProgress = 0;
+    bool m_generationProgressEstimated = true;
+    QString m_generationProgressLabel = QStringLiteral("Generating audio");
 };
 
 } // namespace LAStudio

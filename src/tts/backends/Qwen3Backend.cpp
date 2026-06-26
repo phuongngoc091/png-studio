@@ -349,11 +349,22 @@ bool Qwen3Backend::synthesize(const QString &text, float speed, const QVariantMa
         }
     }
     if (settings.contains("length_scale")) {
-        if (!qi.crispasr_session_set_float ||
-            qi.crispasr_session_set_float(static_cast<crispasr_session*>(m_session), "length_scale",
-                                          settings.value("length_scale").toFloat()) != 0) {
-            error = QStringLiteral("Failed to apply Qwen3-TTS length_scale.");
-            return false;
+        const float lengthScale = settings.value(QStringLiteral("length_scale"), 1.0f).toFloat();
+        if (qAbs(lengthScale - 1.0f) > 0.0001f) {
+            if (!qi.crispasr_session_set_float) {
+                error = QStringLiteral("Qwen3-TTS runtime does not expose length_scale configuration.");
+                return false;
+            }
+
+            const int rc = qi.crispasr_session_set_float(static_cast<crispasr_session*>(m_session),
+                                                         "length_scale",
+                                                         lengthScale);
+            if (rc != 0) {
+                error = rc == -2
+                    ? QStringLiteral("Qwen3-TTS runtime does not support length_scale.")
+                    : QStringLiteral("Failed to apply Qwen3-TTS length_scale (rc=%1).").arg(rc);
+                return false;
+            }
         }
     }
     if (qi.crispasr_session_set_int) {

@@ -45,6 +45,7 @@ struct ov_init_params {
 
 typedef bool (*ov_cancel_cb)(void * user_data);
 typedef bool (*ov_audio_chunk_cb)(const float * samples, int n_samples, void * user_data);
+typedef bool (*ov_progress_cb)(int current, int total, const char * stage, int chunk_index, int chunk_count, void * user_data);
 typedef const char * (*ov_version_fn)(void);
 typedef const char * (*ov_last_error_fn)(void);
 typedef void (*ov_audio_free_fn)(struct ov_audio * a);
@@ -82,6 +83,9 @@ struct ov_tts_params {
     void *       cancel_user_data;
     ov_audio_chunk_cb on_chunk;
     void *            on_chunk_user_data;
+    bool postproc;
+    ov_progress_cb on_progress;
+    void *         on_progress_user_data;
 };
 
 class OmnivoiceInterface {
@@ -91,9 +95,12 @@ public:
         return inst;
     }
 
-    void unload() {
+    bool unload() {
         if (m_lib.isLoaded()) {
-            m_lib.unload();
+            if (!m_lib.unload()) {
+                m_lastError = m_lib.errorString();
+                return false;
+            }
         }
         ov_version = nullptr;
         ov_last_error = nullptr;
@@ -106,6 +113,7 @@ public:
         ov_duration_sec_to_tokens = nullptr;
         m_loadedPath.clear();
         m_lastError.clear();
+        return true;
     }
 
     bool load(const QString& libPath) {

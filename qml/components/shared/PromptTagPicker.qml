@@ -11,6 +11,7 @@ ColumnLayout {
     property Item targetEditor: null
     property string title: qsTr("Non-verbal tags")
     property string helperText: qsTr("Click a tag to insert it at the cursor.")
+    property bool locked: false
 
     signal tagInserted(string tag)
 
@@ -112,6 +113,7 @@ ColumnLayout {
                 implicitWidth: tagText.implicitWidth + 18
                 padding: 0
                 flat: true
+                enabled: !root.locked
 
                 ToolTip.text: item.description || item.value
                 ToolTip.visible: hovered && ToolTip.text !== ""

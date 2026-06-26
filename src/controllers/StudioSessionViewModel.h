@@ -1,9 +1,12 @@
 #pragma once
 #include <QObject>
 #include <QString>
+#include <QElapsedTimer>
+#include <QTimer>
 #include <QVariantMap>
 #include <QtQml/qqml.h>
 #include "IStudioAction.h"
+#include "IModelSession.h"
 #include "core/CapabilityFamilyModel.h"
 #include "core/StudioSelectionRepository.h"
 
@@ -27,6 +30,10 @@ class StudioSessionViewModel : public QObject {
     Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY stateChanged)
     Q_PROPERTY(QString estimatedRamUsage READ estimatedRamUsage NOTIFY stateChanged)
     Q_PROPERTY(QString estimatedVramUsage READ estimatedVramUsage NOTIFY stateChanged)
+    Q_PROPERTY(QString loadedModelName READ loadedModelName NOTIFY stateChanged)
+    Q_PROPERTY(QVariantList loadedModelFiles READ loadedModelFiles NOTIFY stateChanged)
+    Q_PROPERTY(qint64 inferenceElapsedMs READ inferenceElapsedMs NOTIFY stateChanged)
+    Q_PROPERTY(QString inferenceElapsedText READ inferenceElapsedText NOTIFY stateChanged)
 
     Q_PROPERTY(bool modelActive READ modelActive NOTIFY stateChanged)
     Q_PROPERTY(bool canProcess READ canProcess NOTIFY stateChanged)
@@ -63,6 +70,10 @@ public:
     double cpuUsage() const;
     QString estimatedRamUsage() const;
     QString estimatedVramUsage() const;
+    QString loadedModelName() const;
+    QVariantList loadedModelFiles() const;
+    qint64 inferenceElapsedMs() const;
+    QString inferenceElapsedText() const;
 
     bool modelActive() const;
     bool canProcess() const;
@@ -117,6 +128,9 @@ private slots:
 private:
     void initializeAction();
     QVariantMap getFamilyConfig(const QString &familyId) const;
+    std::optional<SessionConfiguration> activeSessionConfiguration() const;
+    void syncInferenceTimer();
+    static QString formatElapsed(qint64 elapsedMs);
 
     QString m_capabilityId;
     CapabilityFamilyModel* m_familiesModel = nullptr;
@@ -130,6 +144,9 @@ private:
     QVariantMap m_pendingFiles;
 
     bool m_selectionCommitted = false;
+    QElapsedTimer m_inferenceTimer;
+    QTimer *m_inferenceUiTimer = nullptr;
+    qint64 m_lastInferenceElapsedMs = 0;
 };
 
 } // namespace LAStudio

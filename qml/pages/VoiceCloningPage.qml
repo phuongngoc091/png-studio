@@ -9,6 +9,7 @@ StudioPageFrame {
 
     contentView: Component {
         VoiceCloningStudioView {
+            studioController: cloningPageFrame.studioController
             family: {
                 var fams = studioController.families
                 for (var i = 0; i < fams.length; i++) {

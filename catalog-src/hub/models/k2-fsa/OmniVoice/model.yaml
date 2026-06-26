@@ -10,9 +10,9 @@ base:
         user: Serveurperso
         repo: OmniVoice-GGUF
         files:
+          - name: omnivoice-base-Q4_K_M.gguf
           - name: omnivoice-base-Q8_0.gguf
             size: 656 MB
-          - name: omnivoice-base-Q4_K_M.gguf
           - name: omnivoice-base-BF16.gguf
           - name: omnivoice-base-F32.gguf
   - key: Serveurperso/omnivoice-tokenizer
@@ -25,11 +25,11 @@ base:
         user: Serveurperso
         repo: OmniVoice-GGUF
         files:
+          - name: omnivoice-tokenizer-Q4_K_M.gguf
+          - name: omnivoice-tokenizer-Q8_0.gguf
+          - name: omnivoice-tokenizer-BF16.gguf
           - name: omnivoice-tokenizer-F32.gguf
             size: 734 MB
-          - name: omnivoice-tokenizer-BF16.gguf
-          - name: omnivoice-tokenizer-Q8_0.gguf
-          - name: omnivoice-tokenizer-Q4_K_M.gguf
 metadataOverrides:
   domain: tts
   architectures:
@@ -303,7 +303,7 @@ laStudio:
       name: CPU Omnivoice (x64)
       asset: omnivoice-win-cpu.zip
       library: omnivoice.dll
-      version: v0.1.0
+      version: v0.1.2
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
     - id: omnivoice.cpp-win-x86_64-cuda-11
@@ -312,7 +312,7 @@ laStudio:
       name: CUDA 11 Omnivoice (x64)
       asset: omnivoice-win-cuda-11.zip
       library: omnivoice.dll
-      version: v0.1.0
+      version: v0.1.2
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
     - id: omnivoice.cpp-win-x86_64-cuda-12
@@ -321,7 +321,7 @@ laStudio:
       name: CUDA 12 Omnivoice (x64)
       asset: omnivoice-win-cuda-12.zip
       library: omnivoice.dll
-      version: v0.1.0
+      version: v0.1.2
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
     - id: omnivoice.cpp-win-x86_64-vulkan
@@ -330,7 +330,7 @@ laStudio:
       name: Vulkan Omnivoice (x64)
       asset: omnivoice-win-vulkan.zip
       library: omnivoice.dll
-      version: v0.1.0
+      version: v0.1.2
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
   studio:

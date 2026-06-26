@@ -4,6 +4,8 @@
 #include "audio/WavIO.h"
 #include <runtimes/OmnivoiceInterface.h>
 #include <QDir>
+#include <cstring>
+#include <utility>
 
 namespace LAStudio {
 
@@ -12,6 +14,47 @@ static QString s_sessionOmniRuntimePath;
 OmnivoiceBackend::~OmnivoiceBackend()
 {
     unload();
+}
+
+void OmnivoiceBackend::setProgressCallback(std::function<bool(int current,
+                                                              int total,
+                                                              const QString &stage,
+                                                              int chunkIndex,
+                                                              int chunkCount)> callback)
+{
+    m_progressCallback = std::move(callback);
+}
+
+bool OmnivoiceBackend::handleProgress(int current,
+                                      int total,
+                                      const char *stage,
+                                      int chunkIndex,
+                                      int chunkCount,
+                                      void *userData)
+{
+    auto *self = static_cast<OmnivoiceBackend *>(userData);
+    if (!self || self->m_cancelRequested.load()) {
+        return false;
+    }
+    if (!self || !self->m_progressCallback) {
+        return true;
+    }
+    return self->m_progressCallback(current,
+                                    total,
+                                    QString::fromUtf8(stage ? stage : ""),
+                                    chunkIndex,
+                                    chunkCount);
+}
+
+bool OmnivoiceBackend::shouldCancel(void *userData)
+{
+    auto *self = static_cast<OmnivoiceBackend *>(userData);
+    return self && self->m_cancelRequested.load();
+}
+
+void OmnivoiceBackend::cancelProcessing()
+{
+    m_cancelRequested = true;
 }
 
 bool OmnivoiceBackend::load(const QVariantMap &config, QString &error, QVariantList &schema)
@@ -95,13 +138,16 @@ void OmnivoiceBackend::unload()
         }
         m_context = nullptr;
     }
-    OmnivoiceInterface::instance().unload();
+    if (OmnivoiceInterface::instance().unload()) {
+        s_sessionOmniRuntimePath.clear();
+    }
 }
 
 bool OmnivoiceBackend::synthesize(const QString &text, float speed, const QVariantMap &settings, 
                                QVector<float> &samples, int &sampleRate, QString &error)
 {
     Q_UNUSED(speed);
+    m_cancelRequested = false;
     auto& oi = OmnivoiceInterface::instance();
     if (!oi.isLoaded() || !m_context) {
         error = QStringLiteral("Omnivoice runtime was unloaded unexpectedly.");
@@ -113,8 +159,15 @@ bool OmnivoiceBackend::synthesize(const QString &text, float speed, const QVaria
     QByteArray instructBytes;
 
     ov_tts_params params;
+    memset(&params, 0, sizeof(params));
     oi.ov_tts_default_params(&params);
     params.text = textBytes.constData();
+    params.cancel = &OmnivoiceBackend::shouldCancel;
+    params.cancel_user_data = this;
+    if (params.abi_version >= 4) {
+        params.on_progress = &OmnivoiceBackend::handleProgress;
+        params.on_progress_user_data = this;
+    }
 
     if (settings.contains(QStringLiteral("lang"))) {
         langBytes = settings.value(QStringLiteral("lang")).toString().toUtf8();
@@ -194,6 +247,7 @@ bool OmnivoiceBackend::synthesize(const QString &text, float speed, const QVaria
 bool OmnivoiceBackend::cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings, 
                                QVector<float> &samples, int &sampleRate, QString &error)
 {
+    m_cancelRequested = false;
     auto& oi = OmnivoiceInterface::instance();
     if (!oi.isLoaded() || !m_context) {
         error = QStringLiteral("Omnivoice runtime was unloaded unexpectedly.");
@@ -219,10 +273,17 @@ bool OmnivoiceBackend::cloneVoice(const QString &text, const QString &referenceP
     QByteArray refTextBytes;
 
     ov_tts_params params;
+    memset(&params, 0, sizeof(params));
     oi.ov_tts_default_params(&params);
     params.text = textBytes.constData();
     params.ref_audio_24k = refSamples.constData();
     params.ref_n_samples = refSamples.size();
+    params.cancel = &OmnivoiceBackend::shouldCancel;
+    params.cancel_user_data = this;
+    if (params.abi_version >= 4) {
+        params.on_progress = &OmnivoiceBackend::handleProgress;
+        params.on_progress_user_data = this;
+    }
 
     if (settings.contains("lang")) {
         langBytes = settings.value("lang").toString().toUtf8();

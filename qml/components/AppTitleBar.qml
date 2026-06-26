@@ -20,11 +20,14 @@ Rectangle {
         if (!window) return
         if (maximized) {
             window.showNormal()
-            window.visibility = Window.Windowed
         } else {
             window.showMaximized()
-            window.visibility = Window.Maximized
         }
+    }
+
+    function minimizeWindow() {
+        if (!window) return
+        window.showMinimized()
     }
 
     MouseArea {
@@ -73,7 +76,7 @@ Rectangle {
         WindowButton {
             iconName: "minus"
             hoverColor: Qt.rgba(1, 1, 1, 0.12)
-            onClicked: if (root.window) root.window.showMinimized()
+            onClicked: root.minimizeWindow()
         }
 
         WindowButton {

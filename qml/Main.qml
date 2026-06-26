@@ -122,10 +122,15 @@ ApplicationWindow {
                 color: Theme.surfaceAlt
             }
 
-            StackLayout {
-                id: stack
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                spacing: 0
+
+                StackLayout {
+                    id: stack
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
                 WelcomePage {
                     onPageRequested: function(routeId) {
@@ -260,6 +265,18 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     active: stack.currentIndex === 7
                     sourceComponent: SettingsPage {}
+                }
+                }
+
+                BottomLogPanel {
+                    id: bottomLogPanel
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: bottomLogPanel.implicitHeight
+                    
+                    Behavior on Layout.preferredHeight {
+                        enabled: !bottomLogPanel.isResizing
+                        NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                    }
                 }
             }
         }

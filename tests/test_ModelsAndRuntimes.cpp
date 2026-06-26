@@ -170,6 +170,48 @@ void TestModelsAndRuntimes::testQwen3TtsUsesAutomaticFrameLimit()
     QVERIFY2(qwen3FamilyIds.isEmpty(), "Every Qwen3-TTS family should be present in the catalog");
 }
 
+void TestModelsAndRuntimes::testQwen3TtsDoesNotExposeUnsupportedLengthScale()
+{
+    const QString oldCurrentPath = QDir::currentPath();
+    const auto restoreCurrentPath = qScopeGuard([oldCurrentPath]() {
+        QDir::setCurrent(oldCurrentPath);
+    });
+    const QString repoRoot = QDir(QFileInfo(QStringLiteral(__FILE__)).absolutePath() + QStringLiteral("/..")).absolutePath();
+    QVERIFY2(QDir::setCurrent(repoRoot), "Test must run from the repository root to load catalog and schema files");
+
+    CatalogManager catalog;
+    QSet<QString> qwen3FamilyIds = {
+        QStringLiteral("qwen3-tts-0.6b-base"),
+        QStringLiteral("qwen3-tts-1.7b-base"),
+        QStringLiteral("qwen3-tts-1.7b-customvoice"),
+        QStringLiteral("qwen3-tts-1.7b-voicedesign")
+    };
+
+    for (const QVariant &familyValue : catalog.ttsFamilies()) {
+        const QVariantMap family = familyValue.toMap();
+        const QString familyId = family.value(QStringLiteral("id")).toString();
+        if (!qwen3FamilyIds.contains(familyId)) {
+            continue;
+        }
+
+        const QVariantMap definitions = family.value(QStringLiteral("parameterDefinitions")).toMap();
+        QVERIFY2(!definitions.contains(QStringLiteral("length_scale")),
+                 qPrintable(familyId + QStringLiteral(" should not expose unsupported length_scale")));
+
+        const QVariantMap studio = family.value(QStringLiteral("studio")).toMap();
+        for (const QVariant &capabilityValue : studio) {
+            const QVariantMap capability = capabilityValue.toMap();
+            const QVariantList parameters = capability.value(QStringLiteral("parameters")).toList();
+            QVERIFY2(!parameters.contains(QStringLiteral("length_scale")),
+                     qPrintable(familyId + QStringLiteral(" should not send unsupported length_scale")));
+        }
+
+        qwen3FamilyIds.remove(familyId);
+    }
+
+    QVERIFY2(qwen3FamilyIds.isEmpty(), "Every Qwen3-TTS family should be present in the catalog");
+}
+
 void TestModelsAndRuntimes::testLogViewServicePending()
 {
     qDebug() << "--- START: testLogViewServicePending ---";

@@ -24,6 +24,7 @@ RowLayout {
     property string modalSelectionValue: qsTr("Select model and runtime")
     property string modalSelectionDetail: ""
     property var studioController: null
+    readonly property bool isProcessingState: studioController ? studioController.statusText === "Processing" : false
     
     property bool showLeftPanel: false
     property bool isLeftPanelOpen: true
@@ -193,23 +194,25 @@ RowLayout {
             statusColor: root.statusColor()
             currentRuntimeItem: root.currentRuntimeItem()
             modelLoaded: {
-                var st = root.statusText()
-                return st === "Ready" || st === "Processing"
+                var rawSt = studioController ? studioController.statusText : (root.studioReady ? "Ready" : "Setup required")
+                return rawSt === "Ready" || rawSt === "Processing"
             }
-            processing: root.statusText() === "Processing"
+            processing: root.isProcessingState
             cpuUsage: studioController ? studioController.cpuUsage : 0
             estimatedRamUsage: studioController ? studioController.estimatedRamUsage : ""
             estimatedVramUsage: studioController ? studioController.estimatedVramUsage : ""
+            loadedModelName: studioController ? studioController.loadedModelName : ""
+            loadedModelFiles: studioController ? studioController.loadedModelFiles : []
+            inferenceElapsedText: studioController ? studioController.inferenceElapsedText : ""
             studioReady: root.studioReady
             backToolTip: root.backToolTip
             runtimeDisplayText: root.modalSelectionMode ? root.modalSelectionValue : ""
-            runtimeClickable: root.modalSelectionMode
+            runtimeClickable: root.modalSelectionMode && !root.isProcessingState
             onBackClicked: root.requestBack()
             onRuntimeClicked: root.requestConfigurationPicker()
             onReloadRequested: root.requestReload()
             onEjectRequested: root.requestEject()
         }
-
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: root.showSwitcher ? 56 : 0
@@ -232,6 +235,7 @@ RowLayout {
 
                 Button {
                     visible: root.modalSelectionMode
+                    enabled: !root.isProcessingState
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
                     flat: true
@@ -304,6 +308,7 @@ RowLayout {
                     AppComboBox {
                         id: familySelector
                         Layout.preferredWidth: 240
+                        enabled: !root.isProcessingState
                         model: root.families
                         textRole: "title"
                         valueRole: "id"
@@ -328,6 +333,7 @@ RowLayout {
                     AppComboBox {
                         id: runtimeSelector
                         Layout.preferredWidth: 320
+                        enabled: !root.isProcessingState
                         model: root.installedRuntimes()
                         textRole: "name"
                         valueRole: "id"

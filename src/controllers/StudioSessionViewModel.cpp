@@ -7,6 +7,7 @@
 #include "core/Logger.h"
 #include "core/RegistryManager.h"
 #include "core/HardwareManager.h"
+#include <QFileInfo>
 #include <QTimer>
 
 namespace LAStudio {
@@ -28,6 +29,10 @@ StudioSessionViewModel::StudioSessionViewModel(QObject *parent)
         connect(app->tts(), &TtsEngine::cpuUsageChanged, this, &StudioSessionViewModel::stateChanged);
         connect(app->tts(), &TtsEngine::memoryUsageChanged, this, &StudioSessionViewModel::stateChanged);
     }
+
+    m_inferenceUiTimer = new QTimer(this);
+    m_inferenceUiTimer->setInterval(1000);
+    connect(m_inferenceUiTimer, &QTimer::timeout, this, &StudioSessionViewModel::stateChanged);
 }
 
 void StudioSessionViewModel::setCapabilityId(const QString &id)
@@ -178,6 +183,120 @@ QString StudioSessionViewModel::estimatedVramUsage() const
     AppController *app = AppController::instance();
     if (!app || m_capabilityId == QStringLiteral("stt")) return {};
     return app->tts()->estimatedVramUsage();
+}
+
+std::optional<SessionConfiguration> StudioSessionViewModel::activeSessionConfiguration() const
+{
+    AppController *app = AppController::instance();
+    if (!app || !app->sessionRegistry()) {
+        return std::nullopt;
+    }
+
+    IModelSession *session = app->sessionRegistry()->sessionForCapability(m_capabilityId);
+    if (!session) {
+        return std::nullopt;
+    }
+
+    auto config = session->activeConfiguration();
+    if (!config || config->capabilityId != m_capabilityId) {
+        return std::nullopt;
+    }
+    return config;
+}
+
+QString StudioSessionViewModel::loadedModelName() const
+{
+    auto config = activeSessionConfiguration();
+    if (!config) {
+        return QString();
+    }
+
+    const QVariantMap family = config->familyConfig.isEmpty()
+        ? getFamilyConfig(config->selection.familyId)
+        : config->familyConfig;
+    return family.value(QStringLiteral("title"), config->selection.familyId).toString();
+}
+
+QVariantList StudioSessionViewModel::loadedModelFiles() const
+{
+    QVariantList out;
+    auto config = activeSessionConfiguration();
+    if (!config) {
+        return out;
+    }
+
+    const QVariantMap family = config->familyConfig.isEmpty()
+        ? getFamilyConfig(config->selection.familyId)
+        : config->familyConfig;
+    const QVariantList requiredFiles = family.value(QStringLiteral("requiredFiles")).toList();
+
+    for (const QVariant &reqValue : requiredFiles) {
+        const QVariantMap req = reqValue.toMap();
+        const QString role = req.value(QStringLiteral("role")).toString();
+        if (role.isEmpty() || !config->selection.selectedFiles.contains(role)) {
+            continue;
+        }
+
+        const QString selectedFile = config->selection.selectedFiles.value(role).toString();
+        const QString resolvedPath = config->resolvedPathsByRole.value(role).toString();
+        QVariantMap item;
+        item.insert(QStringLiteral("role"), role);
+        item.insert(QStringLiteral("label"), req.value(QStringLiteral("name"), role).toString());
+        item.insert(QStringLiteral("purpose"), req.value(QStringLiteral("purpose")).toString());
+        item.insert(QStringLiteral("fileName"), selectedFile.isEmpty() ? QFileInfo(resolvedPath).fileName() : selectedFile);
+        item.insert(QStringLiteral("path"), resolvedPath);
+        out.append(item);
+    }
+
+    if (out.isEmpty()) {
+        for (auto it = config->selection.selectedFiles.cbegin(); it != config->selection.selectedFiles.cend(); ++it) {
+            const QString role = it.key();
+            const QString resolvedPath = config->resolvedPathsByRole.value(role).toString();
+            QVariantMap item;
+            item.insert(QStringLiteral("role"), role);
+            item.insert(QStringLiteral("label"), role);
+            item.insert(QStringLiteral("purpose"), QString());
+            item.insert(QStringLiteral("fileName"), it.value().toString());
+            item.insert(QStringLiteral("path"), resolvedPath);
+            out.append(item);
+        }
+    }
+
+    return out;
+}
+
+qint64 StudioSessionViewModel::inferenceElapsedMs() const
+{
+    if (state() == StudioState::Processing && m_inferenceTimer.isValid()) {
+        return m_inferenceTimer.elapsed();
+    }
+    return m_lastInferenceElapsedMs;
+}
+
+QString StudioSessionViewModel::inferenceElapsedText() const
+{
+    const qint64 elapsed = inferenceElapsedMs();
+    if (elapsed <= 0) {
+        return QString();
+    }
+    return formatElapsed(elapsed);
+}
+
+QString StudioSessionViewModel::formatElapsed(qint64 elapsedMs)
+{
+    const qint64 totalSeconds = qMax<qint64>(0, elapsedMs / 1000);
+    const qint64 hours = totalSeconds / 3600;
+    const qint64 minutes = (totalSeconds % 3600) / 60;
+    const qint64 seconds = totalSeconds % 60;
+    if (hours > 0) {
+        return QStringLiteral("%1:%2:%3")
+            .arg(hours)
+            .arg(minutes, 2, 10, QLatin1Char('0'))
+            .arg(seconds, 2, 10, QLatin1Char('0'));
+    }
+    return QStringLiteral("%1:%2")
+        .arg(minutes, 2, 10, QLatin1Char('0'))
+        .arg(seconds, 2, 10, QLatin1Char('0'));
 }
 
 QVariantMap StudioSessionViewModel::getFamilyConfig(const QString &familyId) const
@@ -377,12 +496,43 @@ void StudioSessionViewModel::autoLoadIfReady()
 
 void StudioSessionViewModel::onActionStateChanged()
 {
+    syncInferenceTimer();
     emit stateChanged();
 }
 
 void StudioSessionViewModel::onActionConfigurationChanged()
 {
     emit stateChanged();
+}
+
+void StudioSessionViewModel::syncInferenceTimer()
+{
+    const StudioState currentState = state();
+    if (currentState == StudioState::Processing) {
+        if (!m_inferenceTimer.isValid()) {
+            m_lastInferenceElapsedMs = 0;
+            m_inferenceTimer.start();
+        }
+        if (m_inferenceUiTimer && !m_inferenceUiTimer->isActive()) {
+            m_inferenceUiTimer->start();
+        }
+        return;
+    }
+
+    if (m_inferenceTimer.isValid()) {
+        m_lastInferenceElapsedMs = m_inferenceTimer.elapsed();
+        m_inferenceTimer.invalidate();
+    }
+    if (m_inferenceUiTimer) {
+        m_inferenceUiTimer->stop();
+    }
+
+    if (currentState == StudioState::Loading ||
+        currentState == StudioState::Unloaded ||
+        currentState == StudioState::Error)
+    {
+        m_lastInferenceElapsedMs = 0;
+    }
 }
 
 // Presentational helper implementations

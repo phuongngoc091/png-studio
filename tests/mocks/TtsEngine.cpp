@@ -96,6 +96,10 @@ void TtsEngine::clearVoiceConfigTracking() {}
 void TtsEngine::onWorkerModelLoaded(bool, const QString &, const QVariantList &) {}
 void TtsEngine::onWorkerFinished(const QVector<float> &, int) {}
 void TtsEngine::onWorkerError(const QString &) {}
+void TtsEngine::onWorkerProgress(int, int, const QString &, int, int) {}
 void TtsEngine::updateCpuUsage() {}
+void TtsEngine::cancelProcessing() {}
+void TtsEngine::resetGenerationProgress() {}
+void TtsEngine::setGenerationProgress(int, bool, const QString &) {}
 
 } // namespace LAStudio

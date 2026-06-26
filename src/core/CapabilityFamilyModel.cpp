@@ -542,6 +542,12 @@ CapabilityFamilyModel::CapabilityFamilyModel(ModelManager *models, RuntimeManage
     if (m_runtimes) {
         connect(m_runtimes, &RuntimeManager::registryUpdated, this, &CapabilityFamilyModel::refresh);
     }
+    if (m_settings) {
+        connect(m_settings, &Settings::selectedTtsRuntimeChanged, this, &CapabilityFamilyModel::refresh);
+        connect(m_settings, &Settings::selectedTtsRuntimeVersionChanged, this, &CapabilityFamilyModel::refresh);
+        connect(m_settings, &Settings::selectedSttRuntimeChanged, this, &CapabilityFamilyModel::refresh);
+        connect(m_settings, &Settings::selectedSttRuntimeVersionChanged, this, &CapabilityFamilyModel::refresh);
+    }
 }
 
 int CapabilityFamilyModel::rowCount(const QModelIndex &parent) const
@@ -1036,6 +1042,8 @@ void CapabilityFamilyModel::updateItems()
             QVariantList versionOptions;
             QString selectedInstalledVersion;
             QString highestInstalledVersion;
+            QVariantMap selectedInstalledRuntime;
+            QVariantMap highestInstalledRuntime;
             bool hasInstalling = false;
             bool hasDownloading = false;
             int latestInstallState = 0;
@@ -1087,9 +1095,11 @@ void CapabilityFamilyModel::updateItems()
                     installed = true;
                     if (runtimeId == savedRuntimeId && reqVer == savedRuntimeVersion) {
                         selectedInstalledVersion = reqVer;
+                        selectedInstalledRuntime = rt;
                     }
                     if (runtimeVersionGreater(reqVer, highestInstalledVersion)) {
                         highestInstalledVersion = reqVer;
+                        highestInstalledRuntime = rt;
                     }
                 }
             }
@@ -1100,6 +1110,9 @@ void CapabilityFamilyModel::updateItems()
             const QString selectedVersion = !selectedInstalledVersion.isEmpty()
                 ? selectedInstalledVersion
                 : highestInstalledVersion;
+            QVariantMap displayRuntime = !selectedInstalledRuntime.isEmpty()
+                ? selectedInstalledRuntime
+                : highestInstalledRuntime;
 
             QString resolvedSelectedVersion = selectedVersion;
             if (!installed && !installedVers.isEmpty()) {
@@ -1112,6 +1125,15 @@ void CapabilityFamilyModel::updateItems()
                     }
                     if (runtimeVersionGreater(installedVersion, resolvedSelectedVersion)) {
                         resolvedSelectedVersion = installedVersion;
+                    }
+                }
+            }
+            if (displayRuntime.isEmpty() && installed) {
+                for (const QVariant &entryVal : runtimeEntries) {
+                    const QVariantMap rt = entryVal.toMap();
+                    if (rt.value(QStringLiteral("version")).toString() == resolvedSelectedVersion) {
+                        displayRuntime = rt;
+                        break;
                     }
                 }
             }
@@ -1134,7 +1156,7 @@ void CapabilityFamilyModel::updateItems()
                 }
             }
 
-            QVariantMap opt = latestRuntime;
+            QVariantMap opt = installed && !displayRuntime.isEmpty() ? displayRuntime : latestRuntime;
             opt[QStringLiteral("version")] = installed ? resolvedSelectedVersion : latestVersion;
             opt[QStringLiteral("latestVersion")] = latestVersion;
             opt[QStringLiteral("defaultVersion")] = latestVersion;

@@ -235,6 +235,13 @@ void SttSessionController::transcribeInput()
     m_engine->transcribeSamples(m_activeJob.samples, m_activeJob.language, m_activeJob.threads, m_activeJob.translate, m_dynamicSettings);
 }
 
+void SttSessionController::cancelProcessing()
+{
+    if (m_engine) {
+        m_engine->cancelProcessing();
+    }
+}
+
 void SttSessionController::clearTranscript()
 {
     m_transcript.clear();

@@ -19,6 +19,9 @@ Rectangle {
     property real cpuUsage: 0
     property string estimatedRamUsage: ""
     property string estimatedVramUsage: ""
+    property string loadedModelName: ""
+    property var loadedModelFiles: []
+    property string inferenceElapsedText: ""
     property bool studioReady: false
     property string studioTitle: ""
     property string backToolTip: qsTr("Back")
@@ -30,6 +33,13 @@ Rectangle {
     signal reloadRequested()
     signal ejectRequested()
 
+    function loadedFilesSummary() {
+        var count = root.loadedModelFiles ? root.loadedModelFiles.length : 0
+        if (count <= 0) return qsTr("No files reported")
+        if (count === 1) return qsTr("1 file loaded")
+        return qsTr("%1 files loaded").arg(count)
+    }
+
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: Theme.paddingLarge
@@ -39,6 +49,7 @@ Rectangle {
         ToolIconButton {
             iconName: "chevron-left"
             toolTip: root.backToolTip
+            enabled: !root.processing
             onClicked: root.backClicked()
         }
 
@@ -88,6 +99,25 @@ Rectangle {
                     elide: Text.ElideMiddle
                     Layout.fillWidth: true
                     Layout.maximumWidth: 220
+                }
+
+                Rectangle {
+                    radius: 5
+                    color: Qt.rgba(0.49, 0.30, 1.0, 0.16)
+                    border.color: Qt.rgba(0.49, 0.30, 1.0, 0.40)
+                    border.width: 1
+                    visible: root.inferenceElapsedText !== ""
+                    implicitHeight: 20
+                    implicitWidth: inferenceTimerText.implicitWidth + 10
+
+                    Text {
+                        id: inferenceTimerText
+                        anchors.centerIn: parent
+                        text: root.processing ? qsTr("Inference %1").arg(root.inferenceElapsedText) : qsTr("Last %1").arg(root.inferenceElapsedText)
+                        color: Theme.textPrimary
+                        font.pixelSize: 10
+                        font.bold: true
+                    }
                 }
 
                 Rectangle {
@@ -144,6 +174,187 @@ Rectangle {
                         color: Theme.textPrimary
                         font.pixelSize: 10
                         font.bold: true
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            id: loadedModelInfo
+            visible: root.modelLoaded && root.width > 880
+            Layout.preferredWidth: 250
+            Layout.minimumWidth: 170
+            Layout.maximumWidth: 300
+            Layout.preferredHeight: 38
+            radius: 8
+            color: modelInfoMouse.containsMouse || modelInfoPopup.opened ? Qt.rgba(1, 1, 1, 0.055) : Qt.rgba(1, 1, 1, 0.03)
+            border.color: modelInfoPopup.opened ? Qt.rgba(0.49, 0.30, 1.0, 0.45) : Qt.rgba(1, 1, 1, 0.08)
+            border.width: 1
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                spacing: 8
+
+                LineIcon {
+                    name: "file"
+                    color: Theme.accentLight
+                    Layout.preferredWidth: 15
+                    Layout.preferredHeight: 15
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 0
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: root.loadedModelName !== "" ? root.loadedModelName : (root.family ? root.family.title : qsTr("Loaded model"))
+                        color: Theme.textPrimary
+                        font.pixelSize: Theme.fontSmall
+                        font.bold: true
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: root.loadedFilesSummary()
+                        color: Theme.textSecondary
+                        font.pixelSize: 10
+                        elide: Text.ElideRight
+                    }
+                }
+
+                LineIcon {
+                    name: modelInfoPopup.opened ? "chevron-up" : "chevron-down"
+                    color: Theme.textSecondary
+                    Layout.preferredWidth: 13
+                    Layout.preferredHeight: 13
+                }
+            }
+
+            MouseArea {
+                id: modelInfoMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: modelInfoPopup.opened ? modelInfoPopup.close() : modelInfoPopup.open()
+            }
+
+            Popup {
+                id: modelInfoPopup
+                x: loadedModelInfo.width - width
+                y: loadedModelInfo.height + 8
+                width: 420
+                modal: false
+                focus: true
+                closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+                padding: 0
+
+                background: Rectangle {
+                    color: Qt.rgba(0.09, 0.09, 0.14, 0.98)
+                    radius: 8
+                    border.color: Qt.rgba(1, 1, 1, 0.12)
+                    border.width: 1
+                }
+
+                contentItem: ColumnLayout {
+                    width: modelInfoPopup.width
+                    spacing: 0
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.margins: Theme.paddingMedium
+                        spacing: 4
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: root.loadedModelName !== "" ? root.loadedModelName : qsTr("Loaded model")
+                            color: Theme.textPrimary
+                            font.pixelSize: Theme.fontMedium
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: root.currentRuntimeItem ? (root.currentRuntimeItem.name + (root.currentRuntimeItem.version ? "  " + root.currentRuntimeItem.version : "")) : (root.runtimeDisplayText !== "" ? root.runtimeDisplayText : qsTr("Runtime not reported"))
+                            color: Theme.textSecondary
+                            font.pixelSize: Theme.fontSmall
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    Rectangle { Layout.fillWidth: true; height: 1; color: Qt.rgba(1, 1, 1, 0.08) }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.margins: Theme.paddingMedium
+                        spacing: Theme.paddingSmall
+
+                        Repeater {
+                            model: root.loadedModelFiles || []
+
+                            delegate: Rectangle {
+                                Layout.fillWidth: true
+                                implicitHeight: fileRow.implicitHeight + Theme.paddingSmall
+                                radius: 6
+                                color: Qt.rgba(1, 1, 1, 0.035)
+                                border.color: Qt.rgba(1, 1, 1, 0.07)
+                                border.width: 1
+
+                                RowLayout {
+                                    id: fileRow
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.leftMargin: Theme.paddingSmall
+                                    anchors.rightMargin: Theme.paddingSmall
+                                    spacing: Theme.paddingSmall
+
+                                    Text {
+                                        Layout.preferredWidth: 84
+                                        text: (modelData.label || modelData.role || qsTr("File"))
+                                        color: Theme.accentLight
+                                        font.pixelSize: Theme.fontSmall
+                                        font.bold: true
+                                        elide: Text.ElideRight
+                                    }
+
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 1
+
+                                        Text {
+                                            Layout.fillWidth: true
+                                            text: modelData.fileName || "--"
+                                            color: Theme.textPrimary
+                                            font.pixelSize: Theme.fontSmall
+                                            elide: Text.ElideMiddle
+                                        }
+
+                                        Text {
+                                            Layout.fillWidth: true
+                                            text: modelData.path || ""
+                                            color: Theme.textSecondary
+                                            font.pixelSize: 10
+                                            elide: Text.ElideMiddle
+                                            visible: text !== ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            visible: !root.loadedModelFiles || root.loadedModelFiles.length === 0
+                            text: qsTr("The loaded session did not report individual model files.")
+                            color: Theme.textSecondary
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
             }
@@ -210,7 +421,7 @@ Rectangle {
                 HeaderActionButton {
                     iconName: "power"
                     toolTip: qsTr("Unload model from memory")
-                    enabled: root.modelLoaded
+                    enabled: root.modelLoaded && !root.processing
                     onClicked: root.ejectRequested()
                 }
 

@@ -12,6 +12,7 @@ private slots:
     void testCapabilityFamilyModelSuitability();
     void testVoiceDesignFamiliesExposeRuntimeOptions();
     void testQwen3TtsUsesAutomaticFrameLimit();
+    void testQwen3TtsDoesNotExposeUnsupportedLengthScale();
     void testLogViewServicePending();
     void testStudioConfigurationResolver();
 };

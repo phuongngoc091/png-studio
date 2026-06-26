@@ -24,6 +24,7 @@ struct SessionConfiguration {
     QString runtimePath;
     QVariantMap familyConfig;
     QStringList resolvedModelPaths;
+    QVariantMap resolvedPathsByRole;
     QString signature;
 };
 

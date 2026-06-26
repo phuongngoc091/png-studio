@@ -73,19 +73,19 @@
             "name": "1. Language Model (Base)",
             "variants": [
               {
-                "name": "Q8_0 (Recommended)",
-                "file": "omnivoice-base-Q8_0.gguf",
-                "size": "656 MB",
-                "tags": [
-                  "q8_0"
-                ]
-              },
-              {
                 "name": "Q4_K_M (Fastest)",
                 "file": "omnivoice-base-Q4_K_M.gguf",
                 "size": "407 MB",
                 "tags": [
                   "q4_k_m"
+                ]
+              },
+              {
+                "name": "Q8_0 (Recommended)",
+                "file": "omnivoice-base-Q8_0.gguf",
+                "size": "656 MB",
+                "tags": [
+                  "q8_0"
                 ]
               },
               {
@@ -110,19 +110,11 @@
             "name": "2. Audio Codec (Tokenizer)",
             "variants": [
               {
-                "name": "F32 (Recommended)",
-                "file": "omnivoice-tokenizer-F32.gguf",
-                "size": "734 MB",
+                "name": "Q4_K_M",
+                "file": "omnivoice-tokenizer-Q4_K_M.gguf",
+                "size": "252 MB",
                 "tags": [
-                  "f32"
-                ]
-              },
-              {
-                "name": "BF16",
-                "file": "omnivoice-tokenizer-BF16.gguf",
-                "size": "373 MB",
-                "tags": [
-                  "bf16"
+                  "q4_k_m"
                 ]
               },
               {
@@ -134,11 +126,19 @@
                 ]
               },
               {
-                "name": "Q4_K_M",
-                "file": "omnivoice-tokenizer-Q4_K_M.gguf",
-                "size": "252 MB",
+                "name": "BF16",
+                "file": "omnivoice-tokenizer-BF16.gguf",
+                "size": "373 MB",
                 "tags": [
-                  "q4_k_m"
+                  "bf16"
+                ]
+              },
+              {
+                "name": "F32 (Recommended)",
+                "file": "omnivoice-tokenizer-F32.gguf",
+                "size": "734 MB",
+                "tags": [
+                  "f32"
                 ]
               }
             ]

@@ -59,10 +59,11 @@ public:
     struct EventUnload {};
     struct EventWorkerLoaded { bool success; QString error; };
     struct EventTranscribe { QVector<float> samples; QString language; int threads; bool translate; QVariantMap settings; };
+    struct EventCancelProcessing {};
     struct EventWorkerFinished { QString text; QVariantList segments; };
     struct EventWorkerError { QString error; };
 
-    using EngineEvent = std::variant<EventLoad, EventUnload, EventWorkerLoaded, EventTranscribe, EventWorkerFinished, EventWorkerError>;
+    using EngineEvent = std::variant<EventLoad, EventUnload, EventWorkerLoaded, EventTranscribe, EventCancelProcessing, EventWorkerFinished, EventWorkerError>;
 
     explicit SttEngine(QObject *parent = nullptr);
     ~SttEngine() override;
@@ -76,7 +77,8 @@ public:
     Q_INVOKABLE void loadModel(const QString &modelPath, bool useGpu = false, const QString &runtimePath = QString());
     Q_INVOKABLE void unloadModel();
     Q_INVOKABLE void unloadModelSync();
-    void transcribeSamples(const QVector<float> &samples, const QString &language = "en", int threads = 4, bool translate = false, const QVariantMap &settings = QVariantMap());
+    Q_INVOKABLE void transcribeSamples(const QVector<float> &samples, const QString &language = "en", int threads = 4, bool translate = false, const QVariantMap &settings = QVariantMap());
+    Q_INVOKABLE void cancelProcessing();
 
 signals:
     void modelLoadedChanged();

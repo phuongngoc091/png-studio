@@ -151,6 +151,8 @@ std::optional<SessionConfiguration> SttModelSession::resolveConfig(const StudioC
     out.capabilityId = config.capabilityId;
     out.selection = config;
     out.runtimePath = resolved.runtimePath;
+    out.familyConfig = resolved.family;
+    out.resolvedPathsByRole = resolved.resolvedPaths;
     out.signature = resolved.signature;
 
     // Resolve paths values

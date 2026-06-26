@@ -3,6 +3,7 @@
 #include <QVariantMap>
 #include <QVariantList>
 #include <QVector>
+#include <functional>
 
 namespace LAStudio {
 
@@ -15,6 +16,17 @@ public:
     
     // Unload resources related to this backend.
     virtual void unload() = 0;
+
+    virtual void setProgressCallback(std::function<bool(int current,
+                                                        int total,
+                                                        const QString &stage,
+                                                        int chunkIndex,
+                                                        int chunkCount)> callback)
+    {
+        Q_UNUSED(callback);
+    }
+
+    virtual void cancelProcessing() {}
     
     // Synthesize text to raw float PCM samples.
     virtual bool synthesize(const QString &text, float speed, const QVariantMap &settings, 

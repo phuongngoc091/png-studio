@@ -54,6 +54,11 @@ void WhisperSttBackend::unloadModel()
     WhisperInterface::instance().unload();
 }
 
+void WhisperSttBackend::cancelProcessing()
+{
+    m_abort = true;
+}
+
 bool WhisperSttBackend::transcribe(const QVector<float> &samples,
                                    const QString &language,
                                    int threads,
@@ -73,6 +78,8 @@ bool WhisperSttBackend::transcribe(const QVector<float> &samples,
         error = QStringLiteral("Whisper runtime was unloaded unexpectedly.");
         return false;
     }
+
+    m_abort = false;
 
     auto readBool = [&](const char *key, bool fallback) -> bool {
         if (!settings.contains(QLatin1String(key))) return fallback;
@@ -140,6 +147,11 @@ bool WhisperSttBackend::transcribe(const QVector<float> &samples,
     params.greedy.best_of = std::max(1, readInt("best_of", params.greedy.best_of));
     params.beam_search.beam_size = std::max(1, readInt("beam_size", params.beam_search.beam_size));
     params.beam_search.patience = readFloat("beam_patience", params.beam_search.patience);
+
+    params.abort_callback = [](void *data) {
+        return static_cast<WhisperSttBackend*>(data)->m_abort.load();
+    };
+    params.abort_callback_user_data = this;
 
     QByteArray promptBytes;
     const QString initialPrompt = readString("initial_prompt", QString());

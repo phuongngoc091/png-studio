@@ -179,19 +179,19 @@
               "name": "1. Language Model (Base)",
               "variants": [
                 {
-                  "name": "Q8_0 (Recommended)",
-                  "file": "omnivoice-base-Q8_0.gguf",
-                  "size": "656 MB",
-                  "tags": [
-                    "q8_0"
-                  ]
-                },
-                {
                   "name": "Q4_K_M (Fastest)",
                   "file": "omnivoice-base-Q4_K_M.gguf",
                   "size": "407 MB",
                   "tags": [
                     "q4_k_m"
+                  ]
+                },
+                {
+                  "name": "Q8_0 (Recommended)",
+                  "file": "omnivoice-base-Q8_0.gguf",
+                  "size": "656 MB",
+                  "tags": [
+                    "q8_0"
                   ]
                 },
                 {
@@ -216,19 +216,11 @@
               "name": "2. Audio Codec (Tokenizer)",
               "variants": [
                 {
-                  "name": "F32 (Recommended)",
-                  "file": "omnivoice-tokenizer-F32.gguf",
-                  "size": "734 MB",
+                  "name": "Q4_K_M",
+                  "file": "omnivoice-tokenizer-Q4_K_M.gguf",
+                  "size": "252 MB",
                   "tags": [
-                    "f32"
-                  ]
-                },
-                {
-                  "name": "BF16",
-                  "file": "omnivoice-tokenizer-BF16.gguf",
-                  "size": "373 MB",
-                  "tags": [
-                    "bf16"
+                    "q4_k_m"
                   ]
                 },
                 {
@@ -240,11 +232,19 @@
                   ]
                 },
                 {
-                  "name": "Q4_K_M",
-                  "file": "omnivoice-tokenizer-Q4_K_M.gguf",
-                  "size": "252 MB",
+                  "name": "BF16",
+                  "file": "omnivoice-tokenizer-BF16.gguf",
+                  "size": "373 MB",
                   "tags": [
-                    "q4_k_m"
+                    "bf16"
+                  ]
+                },
+                {
+                  "name": "F32 (Recommended)",
+                  "file": "omnivoice-tokenizer-F32.gguf",
+                  "size": "734 MB",
+                  "tags": [
+                    "f32"
                   ]
                 }
               ]
@@ -1799,7 +1799,7 @@
           "name": "CPU Omnivoice (x64)",
           "asset": "omnivoice-win-cpu.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.0",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         },
@@ -1810,7 +1810,7 @@
           "name": "CUDA 11 Omnivoice (x64)",
           "asset": "omnivoice-win-cuda-11.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.0",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         },
@@ -1821,7 +1821,7 @@
           "name": "CUDA 12 Omnivoice (x64)",
           "asset": "omnivoice-win-cuda-12.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.0",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         },
@@ -1832,7 +1832,7 @@
           "name": "Vulkan Omnivoice (x64)",
           "asset": "omnivoice-win-vulkan.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.0",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         }
@@ -2118,8 +2118,8 @@
           "purpose": "Core language model",
           "file": "omnivoice-base-Q8_0.gguf",
           "candidates": [
-            "omnivoice-base-Q8_0.gguf",
             "omnivoice-base-Q4_K_M.gguf",
+            "omnivoice-base-Q8_0.gguf",
             "omnivoice-base-BF16.gguf",
             "omnivoice-base-F32.gguf"
           ],
@@ -2128,11 +2128,11 @@
           "size": "656 MB",
           "variants": [
             {
-              "name": "omnivoice-base-Q8_0.gguf",
-              "size": "656 MB"
+              "name": "omnivoice-base-Q4_K_M.gguf"
             },
             {
-              "name": "omnivoice-base-Q4_K_M.gguf"
+              "name": "omnivoice-base-Q8_0.gguf",
+              "size": "656 MB"
             },
             {
               "name": "omnivoice-base-BF16.gguf"
@@ -2148,11 +2148,11 @@
               "repo": "OmniVoice-GGUF",
               "files": [
                 {
-                  "name": "omnivoice-base-Q8_0.gguf",
-                  "size": "656 MB"
+                  "name": "omnivoice-base-Q4_K_M.gguf"
                 },
                 {
-                  "name": "omnivoice-base-Q4_K_M.gguf"
+                  "name": "omnivoice-base-Q8_0.gguf",
+                  "size": "656 MB"
                 },
                 {
                   "name": "omnivoice-base-BF16.gguf"
@@ -2170,27 +2170,27 @@
           "purpose": "Audio tokenization",
           "file": "omnivoice-tokenizer-F32.gguf",
           "candidates": [
-            "omnivoice-tokenizer-F32.gguf",
-            "omnivoice-tokenizer-BF16.gguf",
+            "omnivoice-tokenizer-Q4_K_M.gguf",
             "omnivoice-tokenizer-Q8_0.gguf",
-            "omnivoice-tokenizer-Q4_K_M.gguf"
+            "omnivoice-tokenizer-BF16.gguf",
+            "omnivoice-tokenizer-F32.gguf"
           ],
           "modelKey": "Serveurperso/omnivoice-tokenizer",
           "modelId": "Serveurperso/OmniVoice-GGUF",
           "size": "734 MB",
           "variants": [
             {
-              "name": "omnivoice-tokenizer-F32.gguf",
-              "size": "734 MB"
-            },
-            {
-              "name": "omnivoice-tokenizer-BF16.gguf"
+              "name": "omnivoice-tokenizer-Q4_K_M.gguf"
             },
             {
               "name": "omnivoice-tokenizer-Q8_0.gguf"
             },
             {
-              "name": "omnivoice-tokenizer-Q4_K_M.gguf"
+              "name": "omnivoice-tokenizer-BF16.gguf"
+            },
+            {
+              "name": "omnivoice-tokenizer-F32.gguf",
+              "size": "734 MB"
             }
           ],
           "sources": [
@@ -2200,17 +2200,17 @@
               "repo": "OmniVoice-GGUF",
               "files": [
                 {
-                  "name": "omnivoice-tokenizer-F32.gguf",
-                  "size": "734 MB"
-                },
-                {
-                  "name": "omnivoice-tokenizer-BF16.gguf"
+                  "name": "omnivoice-tokenizer-Q4_K_M.gguf"
                 },
                 {
                   "name": "omnivoice-tokenizer-Q8_0.gguf"
                 },
                 {
-                  "name": "omnivoice-tokenizer-Q4_K_M.gguf"
+                  "name": "omnivoice-tokenizer-BF16.gguf"
+                },
+                {
+                  "name": "omnivoice-tokenizer-F32.gguf",
+                  "size": "734 MB"
                 }
               ]
             }
@@ -2251,11 +2251,11 @@
                 "repo": "OmniVoice-GGUF",
                 "files": [
                   {
-                    "name": "omnivoice-base-Q8_0.gguf",
-                    "size": "656 MB"
+                    "name": "omnivoice-base-Q4_K_M.gguf"
                   },
                   {
-                    "name": "omnivoice-base-Q4_K_M.gguf"
+                    "name": "omnivoice-base-Q8_0.gguf",
+                    "size": "656 MB"
                   },
                   {
                     "name": "omnivoice-base-BF16.gguf"
@@ -2280,17 +2280,17 @@
                 "repo": "OmniVoice-GGUF",
                 "files": [
                   {
-                    "name": "omnivoice-tokenizer-F32.gguf",
-                    "size": "734 MB"
-                  },
-                  {
-                    "name": "omnivoice-tokenizer-BF16.gguf"
+                    "name": "omnivoice-tokenizer-Q4_K_M.gguf"
                   },
                   {
                     "name": "omnivoice-tokenizer-Q8_0.gguf"
                   },
                   {
-                    "name": "omnivoice-tokenizer-Q4_K_M.gguf"
+                    "name": "omnivoice-tokenizer-BF16.gguf"
+                  },
+                  {
+                    "name": "omnivoice-tokenizer-F32.gguf",
+                    "size": "734 MB"
                   }
                 ]
               }
@@ -4430,14 +4430,6 @@
           "default": -1,
           "description": "Random seed for reproducibility. -1 for random."
         },
-        "length_scale": {
-          "name": "Length Scale",
-          "type": "float",
-          "min": 0.25,
-          "max": 4.0,
-          "default": 1.0,
-          "description": "Duration multiplier. Values above 1.0 speak slower; below 1.0 speak faster."
-        },
         "max_codec_steps": {
           "name": "Max Codec Steps",
           "type": "int",
@@ -4496,7 +4488,6 @@
             "voice",
             "temperature",
             "seed",
-            "length_scale",
             "max_codec_steps"
           ]
         }
@@ -4770,14 +4761,6 @@
           "default": -1,
           "description": "Random seed for reproducibility. -1 for random."
         },
-        "length_scale": {
-          "name": "Length Scale",
-          "type": "float",
-          "min": 0.25,
-          "max": 4.0,
-          "default": 1.0,
-          "description": "Duration multiplier. Values above 1.0 speak slower; below 1.0 speak faster."
-        },
         "max_codec_steps": {
           "name": "Max Codec Steps",
           "type": "int",
@@ -4838,7 +4821,6 @@
           "parameters": [
             "temperature",
             "seed",
-            "length_scale",
             "max_codec_steps"
           ]
         }

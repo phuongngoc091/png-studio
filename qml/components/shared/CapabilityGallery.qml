@@ -1267,8 +1267,11 @@ Rectangle {
                                 if (modelData.installState !== undefined) return modelData.installState;
                                 return 0;
                             }
+                            property string effectiveVersion: modelData.id === root.pendingRuntimeId && root.pendingRuntimeVersion !== ""
+                                                              ? root.pendingRuntimeVersion
+                                                              : (modelData.version || "")
                             property bool selected: modelData.id === root.pendingRuntimeId && installState === 3
-                            property var download: root.activeDownload(modelData.asset, modelData.id, modelData.version)
+                            property var download: root.activeDownload(modelData.asset, modelData.id, runtimeRow.effectiveVersion)
 
                             RowLayout {
                                 id: runtimeLayout
@@ -1322,11 +1325,11 @@ Rectangle {
                                         color: Qt.rgba(1, 1, 1, 0.035)
                                         border.color: Qt.rgba(1, 1, 1, 0.08)
                                         border.width: 1
-                                        visible: !!modelData.version
+                                        visible: runtimeRow.effectiveVersion !== ""
                                         Text {
                                             id: runtimeVersionText
                                             anchors.centerIn: parent
-                                            text: modelData.version || ""
+                                            text: runtimeRow.effectiveVersion
                                             color: Theme.textSecondary
                                             font.pixelSize: 9
                                             font.bold: true
@@ -1371,7 +1374,7 @@ Rectangle {
                                 PrimaryButton {
                                     text: {
                                         if (installState === 3) return runtimeRow.selected ? qsTr("Selected") : qsTr("Use");
-                                        if (installState === 1) return root.downloadProgressText(modelData.asset, modelData.id, modelData.version);
+                                        if (installState === 1) return root.downloadProgressText(modelData.asset, modelData.id, runtimeRow.effectiveVersion);
                                         if (installState === 2) return qsTr("Installing...");
                                         return qsTr("Download");
                                     }

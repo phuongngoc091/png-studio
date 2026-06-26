@@ -52,6 +52,32 @@ bool isVoxCpm2FullPrecisionModel(const QString &modelPath, qint64 modelBytes)
     return modelBytes >= fullPrecisionBytes;
 }
 
+QString progressLabelForStage(const QString &stage)
+{
+    if (stage.isEmpty()) {
+        return QStringLiteral("Generating audio");
+    }
+    if (stage == QStringLiteral("tts_begin")) {
+        return QStringLiteral("Preparing synthesis");
+    }
+    if (stage == QStringLiteral("maskgit")) {
+        return QStringLiteral("Decoding semantic tokens");
+    }
+    if (stage == QStringLiteral("codec_decode")) {
+        return QStringLiteral("Rendering waveform");
+    }
+    if (stage == QStringLiteral("postprocess")) {
+        return QStringLiteral("Finalizing audio");
+    }
+
+    QString label = stage;
+    label.replace(QLatin1Char('_'), QLatin1Char(' '));
+    if (!label.isEmpty()) {
+        label[0] = label[0].toUpper();
+    }
+    return label;
+}
+
 } // namespace
 
 TtsEngine::TtsEngine(QObject *parent)
@@ -65,6 +91,7 @@ TtsEngine::TtsEngine(QObject *parent)
     connect(m_worker, &TtsWorker::modelLoaded, this, &TtsEngine::onWorkerModelLoaded);
     connect(m_worker, &TtsWorker::finished, this, &TtsEngine::onWorkerFinished);
     connect(m_worker, &TtsWorker::errorOccurred, this, &TtsEngine::onWorkerError);
+    connect(m_worker, &TtsWorker::progress, this, &TtsEngine::onWorkerProgress);
 
     m_cpuTimer = new QTimer(this);
     m_cpuTimer->setInterval(1000);
@@ -496,6 +523,11 @@ void TtsEngine::designVoice(const QString &text, const QVariantMap &settings)
     dispatch(EventSynthesize{text, 0, 1.0f, normalizedSettings});
 }
 
+void TtsEngine::cancelProcessing()
+{
+    dispatch(EventCancelProcessing{});
+}
+
 void TtsEngine::onWorkerModelLoaded(bool success, const QString &error, const QVariantList &schema)
 {
     dispatch(EventWorkerLoaded{success, error, schema});
@@ -509,6 +541,27 @@ void TtsEngine::onWorkerFinished(const QVector<float> &samples, int sampleRate)
 void TtsEngine::onWorkerError(const QString &error)
 {
     dispatch(EventWorkerError{error});
+}
+
+void TtsEngine::onWorkerProgress(int current, int total, const QString &stage, int chunkIndex, int chunkCount)
+{
+    if (!isProcessing()) {
+        return;
+    }
+
+    QString label = progressLabelForStage(stage);
+    if (chunkCount > 1 && chunkIndex >= 0) {
+        label += QStringLiteral(" (%1/%2)").arg(chunkIndex + 1).arg(chunkCount);
+    }
+
+    if (total <= 0) {
+        setGenerationProgress(m_generationProgress, true, label);
+        return;
+    }
+
+    const int clampedCurrent = qBound(0, current, total);
+    const int percent = qBound(0, static_cast<int>(std::round((double(clampedCurrent) * 100.0) / double(total))), 100);
+    setGenerationProgress(percent, false, label);
 }
 
 void TtsEngine::dispatch(const EngineEvent &event)
@@ -637,6 +690,7 @@ void TtsEngine::dispatch(const EngineEvent &event)
         },
         [this](StateReady&, const EventSynthesize& e) {
             m_isCloneAction = false;
+            resetGenerationProgress();
             applyState(StateProcessing{});
             QMetaObject::invokeMethod(m_worker, "synthesize", Qt::QueuedConnection,
                                       Q_ARG(QString, e.text), Q_ARG(int, e.speakerId),
@@ -644,6 +698,7 @@ void TtsEngine::dispatch(const EngineEvent &event)
         },
         [this](StateReady&, const EventCloneVoice& e) {
             m_isCloneAction = true;
+            resetGenerationProgress();
             applyState(StateProcessing{});
             QMetaObject::invokeMethod(m_worker, "cloneVoice", Qt::QueuedConnection,
                                        Q_ARG(QString, e.text), Q_ARG(QString, e.referencePath),
@@ -653,9 +708,32 @@ void TtsEngine::dispatch(const EngineEvent &event)
 
         // --- State: Processing ---
         [this](StateProcessing& s, const EventUnload&) {
-            s.cancelRequested = true;
+            s.unloadRequested = true;
+            QMetaObject::invokeMethod(m_worker, "cancelProcessing", Qt::DirectConnection);
+        },
+        [this](StateProcessing& s, const EventCancelProcessing&) {
+            s.stopRequested = true;
+            QMetaObject::invokeMethod(m_worker, "cancelProcessing", Qt::DirectConnection);
         },
         [this](StateProcessing& s, const EventWorkerFinished& e) {
+            if (s.stopRequested) {
+                applyState(StateReady{});
+                return;
+            }
+
+            if (s.unloadRequested) {
+                QMetaObject::invokeMethod(m_worker, "unloadVoice", Qt::QueuedConnection);
+                m_memoryBaselineArmed = false;
+                if (m_estimatedRamBytes != 0 || m_estimatedVramBytes != 0) {
+                    m_estimatedRamBytes = 0;
+                    m_estimatedVramBytes = 0;
+                    emit memoryUsageChanged();
+                }
+                clearVoiceConfigTracking();
+                applyState(StateUnloaded{});
+                return;
+            }
+
             m_sampleRate = e.sampleRate;
             m_lastSamples = e.samples;
             m_lastSamplePreview.clear();
@@ -677,23 +755,15 @@ void TtsEngine::dispatch(const EngineEvent &event)
             emit sampleRateChanged();
             emit synthesisFinished(m_lastPcm, e.sampleRate);
 
-            if (s.cancelRequested) {
-                QMetaObject::invokeMethod(m_worker, "unloadVoice", Qt::QueuedConnection);
-                m_memoryBaselineArmed = false;
-                if (m_estimatedRamBytes != 0 || m_estimatedVramBytes != 0) {
-                    m_estimatedRamBytes = 0;
-                    m_estimatedVramBytes = 0;
-                    emit memoryUsageChanged();
-                }
-                clearVoiceConfigTracking();
-                applyState(StateUnloaded{});
-            } else {
-                applyState(StateReady{});
-            }
+            applyState(StateReady{});
         },
         [this](StateProcessing& s, const EventWorkerError& e) {
-            emit errorOccurred(e.error);
-            if (s.cancelRequested) {
+            if (s.stopRequested) {
+                applyState(StateReady{});
+                return;
+            }
+
+            if (s.unloadRequested) {
                 QMetaObject::invokeMethod(m_worker, "unloadVoice", Qt::QueuedConnection);
                 m_memoryBaselineArmed = false;
                 if (m_estimatedRamBytes != 0 || m_estimatedVramBytes != 0) {
@@ -704,6 +774,7 @@ void TtsEngine::dispatch(const EngineEvent &event)
                 clearVoiceConfigTracking();
                 applyState(StateUnloaded{});
             } else {
+                emit errorOccurred(e.error);
                 applyState(StateReady{});
             }
         },
@@ -766,6 +837,28 @@ void TtsEngine::clearVoiceConfigTracking()
 {
     m_loadingVoiceSignature.clear();
     m_loadedVoiceSignature.clear();
+}
+
+void TtsEngine::resetGenerationProgress()
+{
+    setGenerationProgress(0, true, QStringLiteral("Generating audio"));
+}
+
+void TtsEngine::setGenerationProgress(int progress, bool estimated, const QString &label)
+{
+    const int clamped = qBound(0, progress, 100);
+    const QString effectiveLabel = label.isEmpty() ? QStringLiteral("Generating audio") : label;
+
+    if (m_generationProgress == clamped &&
+        m_generationProgressEstimated == estimated &&
+        m_generationProgressLabel == effectiveLabel) {
+        return;
+    }
+
+    m_generationProgress = clamped;
+    m_generationProgressEstimated = estimated;
+    m_generationProgressLabel = effectiveLabel;
+    emit generationProgressChanged();
 }
 
 void TtsEngine::updateCpuUsage()

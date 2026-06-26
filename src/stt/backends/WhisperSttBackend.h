@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SttBackend.h"
+#include <atomic>
 
 struct whisper_context;
 
@@ -12,6 +13,7 @@ public:
 
     bool loadModel(const QString &modelPath, bool useGpu, const QString &runtimePath, QString &error) override;
     void unloadModel() override;
+    void cancelProcessing() override;
     bool transcribe(const QVector<float> &samples,
                     const QString &language,
                     int threads,
@@ -23,6 +25,7 @@ public:
 
 private:
     whisper_context *m_ctx = nullptr;
+    std::atomic<bool> m_abort {false};
 };
 
 } // namespace LAStudio

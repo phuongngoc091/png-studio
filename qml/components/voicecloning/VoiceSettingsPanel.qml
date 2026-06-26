@@ -16,6 +16,7 @@ ColumnLayout {
     property bool preprocessPrompt: true
     property bool randomSeed: true
     property int customSeed: 42
+    property bool locked: false
 
     property var capabilitySchema: []
     property var basicSchema: []
@@ -151,6 +152,7 @@ ColumnLayout {
                     placeholderTextColor: Theme.textSecondary
                     selectionColor: Theme.accent
                     selectedTextColor: "#ffffff"
+                    enabled: !root.locked
                     background: Rectangle {
                         color: Qt.rgba(1, 1, 1, 0.035)
                         radius: 7
@@ -171,6 +173,7 @@ ColumnLayout {
                 visible: root.basicSchema.length > 0
 
                 ModelParameterControls {
+                    enabled: !root.locked
                     schema: root.basicSchema
                     dynamicSettings: root.dynamicSettings
                     onParameterChanged: function(parameterId, value) { root.updateDynamicSetting(parameterId, value) }
@@ -185,6 +188,7 @@ ColumnLayout {
                 onToggled: root.advancedOpen = !root.advancedOpen
 
                 ModelParameterControls {
+                    enabled: !root.locked
                     schema: root.advancedSchema
                     dynamicSettings: root.dynamicSettings
                     onParameterChanged: function(parameterId, value) { root.updateDynamicSetting(parameterId, value) }
@@ -199,6 +203,7 @@ ColumnLayout {
                     id: denoiseToggle
                     text: qsTr("Denoise")
                     checked: true
+                    enabled: !root.locked
                     onCheckedChanged: {
                         root.denoise = checked
                         root.settingsChanged()
@@ -209,6 +214,7 @@ ColumnLayout {
                     id: preprocessToggle
                     text: qsTr("Preprocess prompt")
                     checked: true
+                    enabled: !root.locked
                     onCheckedChanged: {
                         root.preprocessPrompt = checked
                         root.settingsChanged()
@@ -219,6 +225,7 @@ ColumnLayout {
                     id: randomSeedToggle
                     text: qsTr("Random seed")
                     checked: true
+                    enabled: !root.locked
                     onCheckedChanged: {
                         root.randomSeed = checked
                         root.settingsChanged()
@@ -229,6 +236,7 @@ ColumnLayout {
                     id: customSeedInput
                     Layout.fillWidth: true
                     visible: !randomSeedToggle.checked
+                    enabled: !root.locked
                     text: "42"
                     color: Theme.textPrimary
                     placeholderTextColor: Theme.textSecondary
