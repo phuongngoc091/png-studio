@@ -27,6 +27,7 @@ set(TEST_SOURCES
     ../src/controllers/HistoryService.cpp
     ../src/controllers/AudioPreviewService.cpp
     ../src/controllers/StudioActions.cpp
+    ../src/controllers/VoiceClonePresetService.cpp
     ../src/controllers/VoiceDesignPresetService.cpp
     ../src/controllers/ModelLifecycleController.cpp
     ../src/controllers/SttModelSession.cpp
@@ -93,6 +94,10 @@ target_link_libraries(LAStudioUnitTests PRIVATE
     CURL::libcurl
     dxgi
 )
+
+if(WIN32)
+    target_link_libraries(LAStudioUnitTests PRIVATE shell32)
+endif()
 
 add_test(NAME LAStudioUnitTests COMMAND LAStudioUnitTests)
 

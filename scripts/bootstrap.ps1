@@ -13,6 +13,7 @@ param(
     [string] $Preset = "windows-msvc-release",
     [string] $QtRoot,
     [string] $VcpkgRoot,
+    [string] $Version,
     [switch] $AllowMingwFallback,
     [switch] $Clean,
     [switch] $SkipDeploy
@@ -183,8 +184,8 @@ Write-Host ">> Preset: $effectivePreset" -ForegroundColor DarkGray
 
 $buildScript = Join-Path $PSScriptRoot "build.ps1"
 if ($Clean) {
-    & $buildScript -Preset $effectivePreset -QtRoot $resolvedQtRoot -VcpkgRoot $resolvedVcpkgRoot -Clean -SkipDeploy:$SkipDeploy
+    & $buildScript -Preset $effectivePreset -QtRoot $resolvedQtRoot -VcpkgRoot $resolvedVcpkgRoot -Version $Version -Clean -SkipDeploy:$SkipDeploy
 } else {
-    & $buildScript -Preset $effectivePreset -QtRoot $resolvedQtRoot -VcpkgRoot $resolvedVcpkgRoot -SkipDeploy:$SkipDeploy
+    & $buildScript -Preset $effectivePreset -QtRoot $resolvedQtRoot -VcpkgRoot $resolvedVcpkgRoot -Version $Version -SkipDeploy:$SkipDeploy
 }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

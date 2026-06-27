@@ -19,6 +19,17 @@
 
 #include <cmath>
 
+#ifdef Q_OS_WIN
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 namespace LAStudio {
 namespace {
 
@@ -47,6 +58,52 @@ QVersionNumber parsedVersion(const QString &version)
 {
     return QVersionNumber::fromString(cleanVersion(version));
 }
+
+#ifdef Q_OS_WIN
+QString windowsShellExecuteErrorText(DWORD errorCode)
+{
+    switch (errorCode) {
+    case ERROR_CANCELLED:
+        return QObject::tr("Windows elevation was cancelled.");
+    case ERROR_FILE_NOT_FOUND:
+    case ERROR_PATH_NOT_FOUND:
+        return QObject::tr("Downloaded installer was not found.");
+    case ERROR_ACCESS_DENIED:
+        return QObject::tr("Windows denied permission to start the installer.");
+    default:
+        return QObject::tr("Windows failed to start the installer. Error code: %1").arg(errorCode);
+    }
+}
+
+bool startWindowsInstallerElevated(const QString &installerPath,
+                                   const QString &arguments,
+                                   QString *errorMessage)
+{
+    const QString nativeInstaller = QDir::toNativeSeparators(installerPath);
+    const QString nativeWorkDir = QDir::toNativeSeparators(QFileInfo(installerPath).absolutePath());
+
+    SHELLEXECUTEINFOW info = {};
+    info.cbSize = sizeof(info);
+    info.fMask = SEE_MASK_NOCLOSEPROCESS;
+    info.lpVerb = L"runas";
+    info.lpFile = reinterpret_cast<LPCWSTR>(nativeInstaller.utf16());
+    info.lpParameters = reinterpret_cast<LPCWSTR>(arguments.utf16());
+    info.lpDirectory = reinterpret_cast<LPCWSTR>(nativeWorkDir.utf16());
+    info.nShow = SW_SHOWNORMAL;
+
+    if (!ShellExecuteExW(&info)) {
+        if (errorMessage) {
+            *errorMessage = windowsShellExecuteErrorText(GetLastError());
+        }
+        return false;
+    }
+
+    if (info.hProcess) {
+        CloseHandle(info.hProcess);
+    }
+    return true;
+}
+#endif
 
 } // namespace
 
@@ -124,16 +181,27 @@ void AppUpdateService::installDownloadedUpdate()
         return;
     }
 
+    Logger::info(QStringLiteral("Updater"),
+                 QStringLiteral("Starting downloaded installer: %1").arg(m_downloadedInstallerPath));
+
 #ifdef Q_OS_WIN
-    const QString nativeInstaller = QDir::toNativeSeparators(m_downloadedInstallerPath);
-    const QString command = QStringLiteral("timeout /t 2 /nobreak >nul && \"%1\"").arg(nativeInstaller);
-    const bool started = QProcess::startDetached(QStringLiteral("cmd.exe"), {QStringLiteral("/C"), command});
+    const QString installerLogPath = QDir::toNativeSeparators(
+        installerDownloadDir() + QStringLiteral("/install-%1.log").arg(m_latestVersion));
+    const QString arguments = QStringLiteral(
+        "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /LOG=\"%1\"")
+        .arg(installerLogPath);
+    QString startError;
+    const bool started = startWindowsInstallerElevated(m_downloadedInstallerPath, arguments, &startError);
 #else
     const bool started = QProcess::startDetached(m_downloadedInstallerPath, {});
 #endif
 
     if (!started) {
+#ifdef Q_OS_WIN
+        setErrorMessage(startError.isEmpty() ? tr("Failed to start the update installer.") : startError);
+#else
         setErrorMessage(tr("Failed to start the update installer."));
+#endif
         return;
     }
 
@@ -263,6 +331,8 @@ void AppUpdateService::handleReleaseReply(QNetworkReply *reply, const QString &c
     }
 
     if (bestRelease.isEmpty()) {
+        Logger::info(QStringLiteral("Updater"),
+                     QStringLiteral("No app update found. Current version: %1").arg(currentVersion()));
         setStatusMessage(tr("LA Studio is up to date."));
         emit updateInfoChanged();
         return;
@@ -276,7 +346,15 @@ void AppUpdateService::handleReleaseReply(QNetworkReply *reply, const QString &c
     Logger::info(QStringLiteral("Updater"),
                  QStringLiteral("Update available: %1 (%2)").arg(m_latestVersion, m_installerUrl.toString()));
 
-    setStatusMessage(tr("LA Studio v%1 is available.").arg(m_latestVersion));
+    const QString existingInstaller = existingDownloadedInstallerPath(m_latestVersion, m_installerFileName);
+    if (!existingInstaller.isEmpty()) {
+        m_downloadedInstallerPath = existingInstaller;
+        m_downloadProgress = 1.0;
+        setStatusMessage(tr("LA Studio v%1 is ready to install.").arg(m_latestVersion));
+        emit downloadStateChanged();
+    } else {
+        setStatusMessage(tr("LA Studio v%1 is available.").arg(m_latestVersion));
+    }
     emit updateInfoChanged();
 }
 
@@ -310,6 +388,28 @@ void AppUpdateService::updateDownloadProgress()
 QString AppUpdateService::installerDownloadDir() const
 {
     return PathUtils::dataDir() + QStringLiteral("/updates");
+}
+
+QString AppUpdateService::existingDownloadedInstallerPath(const QString &version, const QString &filename) const
+{
+    if (!m_downloads || version.isEmpty() || filename.isEmpty()) return QString();
+
+    const QVariantList downloads = m_downloads->allDownloads();
+    for (const QVariant &value : downloads) {
+        const QVariantMap item = value.toMap();
+        const QVariantMap metadata = item.value(QStringLiteral("metadata")).toMap();
+        if (metadata.value(QStringLiteral("type")).toString() != QString::fromLatin1(UpdateMetadataType)) continue;
+        if (metadata.value(QStringLiteral("version")).toString() != version) continue;
+        if (item.value(QStringLiteral("filename")).toString() != filename) continue;
+        if (item.value(QStringLiteral("status")).toString() != QStringLiteral("completed")) continue;
+
+        const QString localPath = item.value(QStringLiteral("localPath")).toString();
+        if (QFileInfo::exists(localPath)) {
+            return localPath;
+        }
+    }
+
+    return QString();
 }
 
 } // namespace LAStudio

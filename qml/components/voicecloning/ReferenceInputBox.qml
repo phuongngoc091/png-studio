@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import LAStudio
 import "../base"
+import "../shared"
 
 // Component for reference voice input with transcript
 ColumnLayout {
@@ -15,6 +16,9 @@ ColumnLayout {
     property bool showTips: true
     property bool showHeader: true
     property bool locked: false
+    property string familyId: ""
+    property var savedVoices: []
+    property int selectedSavedVoiceIndex: -1
 
     signal audioCleared()
     signal playClicked()
@@ -24,6 +28,53 @@ ColumnLayout {
         AppController.preview.requestWavSamples(root.audioPath)
     }
 
+    onReferenceTextChanged: {
+        if (refTextEdit.text !== root.referenceText)
+            refTextEdit.text = root.referenceText
+    }
+
+    onFamilyIdChanged: reloadSavedVoices()
+    Component.onCompleted: reloadSavedVoices()
+
+    Connections {
+        target: AppController.voiceClonePresets
+        function onPresetsChanged(familyId) {
+            if (familyId === root.familyId)
+                root.reloadSavedVoices()
+        }
+    }
+
+    function reloadSavedVoices() {
+        root.savedVoices = root.familyId !== "" ? AppController.voiceClonePresets.presetsForFamily(root.familyId) : []
+        root.selectedSavedVoiceIndex = -1
+    }
+
+    function defaultVoiceName() {
+        if (root.audioPath !== "")
+            return VoiceCloningUtils.fileNameFromPath(root.audioPath)
+        return "Cloned voice"
+    }
+
+    function loadSavedVoice(index) {
+        if (root.locked || index < 0 || index >= root.savedVoices.length) return
+        var voice = root.savedVoices[index]
+        root.selectedSavedVoiceIndex = index
+        root.audioPath = voice.audioPath || ""
+        root.referenceText = voice.referenceText || ""
+    }
+
+    function saveCurrentVoice() {
+        if (root.locked || root.familyId === "" || root.audioPath === "") return
+        libraryDialog.initialMode = "reference"
+        libraryDialog.open()
+        Qt.callLater(libraryDialog.applyCurrentReference)
+    }
+
+    function manageVoices() {
+        if (root.familyId === "") return
+        libraryDialog.initialMode = "reference"
+        libraryDialog.open()
+    }
     spacing: Theme.paddingLarge
     Layout.fillHeight: false
 
@@ -34,6 +85,67 @@ ColumnLayout {
         color: Theme.textPrimary
         font.pixelSize: Theme.fontMedium
         font.bold: true
+    }
+
+    ColumnLayout {
+        Layout.fillWidth: true
+        spacing: Theme.paddingSmall
+        visible: root.familyId !== ""
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Theme.paddingSmall
+
+            LineIcon {
+                name: "spark"
+                color: Theme.textSecondary
+                Layout.preferredWidth: 14
+                Layout.preferredHeight: 14
+            }
+
+            Text {
+                text: "Saved Voices"
+                color: Theme.textPrimary
+                font.pixelSize: Theme.fontSmall
+                font.bold: true
+                Layout.fillWidth: true
+            }
+        }
+
+        AppComboBox {
+            id: savedVoiceCombo
+            Layout.fillWidth: true
+            model: root.savedVoices
+            textRole: "name"
+            secondaryTextRole: "originalAudioName"
+            currentIndex: root.selectedSavedVoiceIndex
+            enabled: !root.locked && root.savedVoices.length > 0
+            onActivated: function(index) { root.loadSavedVoice(index) }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Theme.paddingSmall
+
+            PrimaryButton {
+                text: "Save Current"
+                quiet: true
+                implicitHeight: 34
+                implicitWidth: 120
+                enabled: !root.locked && root.audioPath !== ""
+                onClicked: root.saveCurrentVoice()
+            }
+
+            PrimaryButton {
+                text: "Manage"
+                iconName: "settings"
+                quiet: true
+                implicitHeight: 34
+                implicitWidth: 105
+                enabled: root.familyId !== ""
+                onClicked: root.manageVoices()
+            }
+        }
     }
 
     // Input tabs box
@@ -224,6 +336,18 @@ ColumnLayout {
         Layout.fillHeight: true
     }
 
+    VoiceLibraryDialog {
+        id: libraryDialog
+        parent: Overlay.overlay
+        familyId: root.familyId
+        currentReferenceAudioPath: root.audioPath
+        currentReferenceText: root.referenceText
+        onReferenceVoiceSelected: function(audioPath, referenceText, name) {
+            if (root.locked) return
+            root.audioPath = audioPath
+            root.referenceText = referenceText
+        }
+    }
     Loader {
         id: txtFileDialogLoader
         active: false

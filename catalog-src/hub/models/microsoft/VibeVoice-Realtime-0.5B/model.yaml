@@ -29,13 +29,85 @@ base:
         user: cstr
         repo: vibevoice-realtime-0.5b-GGUF
         files:
+          - name: vibevoice-voice-de-Spk0_man.gguf
+            speaker: Spk0 (Male)
+            language: German
+          - name: vibevoice-voice-de-Spk1_woman.gguf
+            speaker: Spk1 (Female)
+            language: German
           - name: vibevoice-voice-emma.gguf
             size: 2-6 MB
+            speaker: Emma (Female)
+            language: English (alias of en-Emma_woman)
           - name: vibevoice-voice-en-Carter_man.gguf
+            speaker: Carter (Male)
+            language: English
+          - name: vibevoice-voice-en-Davis_man.gguf
+            speaker: Davis (Male)
+            language: English
           - name: vibevoice-voice-en-Emma_woman.gguf
-          - name: vibevoice-voice-de-Spk1_woman.gguf
+            speaker: Emma (Female)
+            language: English
+          - name: vibevoice-voice-en-Frank_man.gguf
+            speaker: Frank (Male)
+            language: English
+          - name: vibevoice-voice-en-Grace_woman.gguf
+            speaker: Grace (Female)
+            language: English
+          - name: vibevoice-voice-en-Mike_man.gguf
+            speaker: Mike (Male)
+            language: English
+          - name: vibevoice-voice-fr-Spk0_man.gguf
+            speaker: Spk0 (Male)
+            language: French
           - name: vibevoice-voice-fr-Spk1_woman.gguf
+            speaker: Spk1 (Female)
+            language: French
+          - name: vibevoice-voice-in-Samuel_man.gguf
+            speaker: Samuel (Male)
+            language: Indian English
+          - name: vibevoice-voice-it-Spk0_woman.gguf
+            speaker: Spk0 (Female)
+            language: Italian
+          - name: vibevoice-voice-it-Spk1_man.gguf
+            speaker: Spk1 (Male)
+            language: Italian
+          - name: vibevoice-voice-jp-Spk0_man.gguf
+            speaker: Spk0 (Male)
+            language: Japanese
           - name: vibevoice-voice-jp-Spk1_woman.gguf
+            speaker: Spk1 (Female)
+            language: Japanese
+          - name: vibevoice-voice-kr-Spk0_woman.gguf
+            speaker: Spk0 (Female)
+            language: Korean
+          - name: vibevoice-voice-kr-Spk1_man.gguf
+            speaker: Spk1 (Male)
+            language: Korean
+          - name: vibevoice-voice-nl-Spk0_man.gguf
+            speaker: Spk0 (Male)
+            language: Dutch
+          - name: vibevoice-voice-nl-Spk1_woman.gguf
+            speaker: Spk1 (Female)
+            language: Dutch
+          - name: vibevoice-voice-pl-Spk0_man.gguf
+            speaker: Spk0 (Male)
+            language: Polish
+          - name: vibevoice-voice-pl-Spk1_woman.gguf
+            speaker: Spk1 (Female)
+            language: Polish
+          - name: vibevoice-voice-pt-Spk0_woman.gguf
+            speaker: Spk0 (Female)
+            language: Portuguese
+          - name: vibevoice-voice-pt-Spk1_man.gguf
+            speaker: Spk1 (Male)
+            language: Portuguese
+          - name: vibevoice-voice-sp-Spk0_woman.gguf
+            speaker: Spk0 (Female)
+            language: Spanish
+          - name: vibevoice-voice-sp-Spk1_man.gguf
+            speaker: Spk1 (Male)
+            language: Spanish
 metadataOverrides:
   domain: tts
   architectures:

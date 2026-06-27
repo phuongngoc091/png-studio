@@ -290,6 +290,7 @@ StudioShell {
                                     showTips: true
                                     showHeader: true
                                     locked: root.inputsLocked
+                                    familyId: root.family ? root.family.id : ""
                                     isPlaying: root.playingType === "reference"
                                     onAudioPathChanged: {
                                         root.referenceAudioPath = referenceBox.audioPath

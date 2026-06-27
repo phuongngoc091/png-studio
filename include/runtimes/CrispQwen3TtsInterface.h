@@ -25,9 +25,13 @@ public:
     }
 
     void unload() {
+#ifdef Q_OS_WIN
+        crispUnloadLibraryAndDependencies(m_lib, m_preloadedDlls);
+#else
         if (m_lib.isLoaded()) {
             m_lib.unload();
         }
+#endif
         crispasr_session_open_with_params = nullptr;
         crispasr_session_close = nullptr;
         crispasr_session_set_codec_path = nullptr;
@@ -55,7 +59,7 @@ public:
             if (m_lib.fileName() == cleanLibPath) {
                 return true;
             }
-            m_lib.unload();
+            unload();
         }
 
         m_errorString.clear();
@@ -68,7 +72,8 @@ public:
         crispPrependRuntimeDirsToPath(runtimeDirs);
 
 #ifdef Q_OS_WIN
-        QVector<HMODULE> preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
+        crispReleasePreloadedRuntimeDlls(m_preloadedDlls);
+        m_preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
         SetDllDirectoryW((LPCWSTR)dir.utf16());
 #endif
 
@@ -77,13 +82,15 @@ public:
         bool ok = m_lib.load();
 
 #ifdef Q_OS_WIN
-        crispReleasePreloadedRuntimeDlls(preloadedDlls);
         SetDllDirectoryW(NULL);
 #endif
 
         if (!ok) {
             m_errorString = m_lib.errorString();
             Logger::error("CrispQwen3Tts", "Failed to load library: " + m_errorString);
+#ifdef Q_OS_WIN
+            crispReleasePreloadedRuntimeDlls(m_preloadedDlls);
+#endif
             qputenv("PATH", oldPath);
             return false;
         }
@@ -115,7 +122,11 @@ public:
         if (!ok) {
             m_errorString = QStringLiteral("Failed to resolve one or more required session symbols for Qwen3-TTS.");
             Logger::error("CrispQwen3Tts", m_errorString);
+#ifdef Q_OS_WIN
+            crispUnloadLibraryAndDependencies(m_lib, m_preloadedDlls);
+#else
             m_lib.unload();
+#endif
         } else {
             Logger::info("CrispQwen3Tts", "Session symbols resolved successfully.");
         }
@@ -162,6 +173,9 @@ private:
     CrispQwen3TtsInterface() = default;
     QLibrary m_lib;
     QString m_errorString;
+#ifdef Q_OS_WIN
+    QVector<HMODULE> m_preloadedDlls;
+#endif
 };
 
 } // namespace LAStudio

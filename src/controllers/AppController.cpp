@@ -16,6 +16,7 @@
 #include <QGuiApplication>
 #include <QClipboard>
 #include "core/Logger.h"
+#include <QTimer>
 
 namespace LAStudio {
 
@@ -53,6 +54,7 @@ AppController::AppController(QObject *parent)
     m_modelsMigration = new ModelsPathMigrationService(m_settings, m_models, m_downloads, m_stt, m_tts, this);
     m_files     = new FileAccessService(this);
     m_downloadInstall = new DownloadInstallService(m_downloads, m_models, m_runtimes, this);
+    m_voiceClonePresets = new VoiceClonePresetService(this);
     m_voiceDesignPresets = new VoiceDesignPresetService(this);
     m_sttSession = new SttSessionController(this);
     m_updates = new AppUpdateService(m_downloads, this);
@@ -60,6 +62,7 @@ AppController::AppController(QObject *parent)
     connect(m_preview, &AudioPreviewService::errorOccurred, this, &AppController::onError);
     connect(m_history, &HistoryService::errorOccurred, this, &AppController::onError);
     connect(m_downloadInstall, &DownloadInstallService::errorOccurred, this, &AppController::onError);
+    connect(m_voiceClonePresets, &VoiceClonePresetService::errorOccurred, this, &AppController::onError);
     connect(m_voiceDesignPresets, &VoiceDesignPresetService::errorOccurred, this, &AppController::onError);
     connect(m_updates, &AppUpdateService::errorOccurred, this, &AppController::onError);
 
@@ -72,6 +75,12 @@ AppController::AppController(QObject *parent)
     connect(m_settings, &Settings::modelsPathChanged, this, [this]() {
         m_models->setModelsRoot(m_settings->modelsPath());
         m_models->scanLocalModels();
+    });
+
+    QTimer::singleShot(2000, this, [this]() {
+        if (m_updates) {
+            m_updates->checkForUpdates(QStringLiteral("stable"));
+        }
     });
 }
 

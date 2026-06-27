@@ -14,6 +14,7 @@ param(
     [string] $Preset = "windows-msvc-release",
     [string] $QtRoot,
     [string] $VcpkgRoot,
+    [string] $Version,
     [switch] $Clean,
     [switch] $SkipDeploy
 )
@@ -22,6 +23,8 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
+
+. (Join-Path $PSScriptRoot "cmake_helpers.ps1")
 
 function Test-Command {
     param([string] $Name)
@@ -114,6 +117,32 @@ function Get-QtKitName {
         return "mingw_64"
     }
     return "msvc2022_64"
+}
+
+function Get-SourceAppVersion {
+    $cmakePath = Join-Path $RepoRoot "CMakeLists.txt"
+    $match = Select-String -LiteralPath $cmakePath -Pattern 'set\(LASTUDIO_VERSION\s+"([^"]+)"' | Select-Object -First 1
+    if ($null -eq $match) {
+        throw "Could not find LASTUDIO_VERSION in $cmakePath."
+    }
+    return $match.Matches[0].Groups[1].Value
+}
+
+function Normalize-AppVersion {
+    param([string] $Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        $Value = Get-SourceAppVersion
+    } else {
+        $Value = $Value.Trim()
+        if ($Value.StartsWith("v")) {
+            $Value = $Value.Substring(1)
+        }
+    }
+    if ($Value -notmatch '^\d+\.\d+\.\d+$') {
+        throw "Version must use MAJOR.MINOR.PATCH format; got '$Value'."
+    }
+    return $Value
 }
 
 function Ensure-MsvcEnvironment {
@@ -209,6 +238,7 @@ if ($Preset -like "*mingw*") {
 
 $QtRoot = Resolve-QtRoot -Candidate $QtRoot
 $VcpkgRoot = Resolve-VcpkgRoot -Candidate $VcpkgRoot
+$Version = Normalize-AppVersion -Value $Version
 
 $cmakeArgs = @()
 $kitName = Get-QtKitName -BuildPreset $Preset
@@ -247,6 +277,7 @@ $env:VCPKG_DEFAULT_TRIPLET = ""
 
 $cmakeArgs += "-DCMAKE_TOOLCHAIN_FILE=$($toolchainFile.Replace('\', '/'))"
 $cmakeArgs += "-DVCPKG_ROOT=$($VcpkgRoot.Replace('\', '/'))"
+$cmakeArgs += "-DLASTUDIO_VERSION=$Version"
 
 if ($Preset -like "*mingw*") {
     $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic"
@@ -262,6 +293,7 @@ if ($Clean) {
 }
 
 $buildDir = Join-Path $RepoRoot "out\build\$Preset"
+Remove-StaleCMakeBuildDirectory -BuildDirectory $buildDir -ExpectedSourceDirectory $RepoRoot
 
 Write-Host ">> Configuring CMake preset: $Preset" -ForegroundColor Cyan
 cmake --preset $Preset $cmakeArgs

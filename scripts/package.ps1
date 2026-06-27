@@ -22,15 +22,7 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
 
-if (-not [string]::IsNullOrWhiteSpace($Version)) {
-    $Version = $Version.Trim()
-    if ($Version.StartsWith("v")) {
-        $Version = $Version.Substring(1)
-    }
-    if ($Version -notmatch '^\d+\.\d+\.\d+$') {
-        throw "Version must use MAJOR.MINOR.PATCH format; got '$Version'."
-    }
-}
+. (Join-Path $PSScriptRoot "cmake_helpers.ps1")
 
 # Helper: Test if command exists
 function Test-Command {
@@ -93,6 +85,32 @@ function Ensure-MsvcEnvironment {
     }
 }
 
+function Get-SourceAppVersion {
+    $cmakePath = Join-Path $RepoRoot "CMakeLists.txt"
+    $match = Select-String -LiteralPath $cmakePath -Pattern 'set\(LASTUDIO_VERSION\s+"([^"]+)"' | Select-Object -First 1
+    if ($null -eq $match) {
+        throw "Could not find LASTUDIO_VERSION in $cmakePath."
+    }
+    return $match.Matches[0].Groups[1].Value
+}
+
+function Normalize-AppVersion {
+    param([string] $Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        $Value = Get-SourceAppVersion
+    } else {
+        $Value = $Value.Trim()
+        if ($Value.StartsWith("v")) {
+            $Value = $Value.Substring(1)
+        }
+    }
+    if ($Value -notmatch '^\d+\.\d+\.\d+$') {
+        throw "Version must use MAJOR.MINOR.PATCH format; got '$Value'."
+    }
+    return $Value
+}
+
 
 
 # Helper: Find Qt path
@@ -135,6 +153,7 @@ function Resolve-VcpkgRoot {
 function Find-Iscc {
     if (Test-Command "iscc") { return "iscc" }
     $paths = @(
+        (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe"),
         "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
         "C:\Program Files\Inno Setup 6\ISCC.exe",
         "C:\Program Files (x86)\Inno Setup 5\ISCC.exe",
@@ -231,6 +250,7 @@ if ($Preset -like "*mingw*") {
 # 1. Resolve build dependencies
 $QtRoot = Resolve-QtRoot -Candidate $QtRoot
 $VcpkgRoot = Resolve-VcpkgRoot -Candidate $VcpkgRoot
+$Version = Normalize-AppVersion -Value $Version
 $kitName = if ($Preset -like "*mingw*") { "mingw_64" } else { "msvc2022_64" }
 
 if ([string]::IsNullOrWhiteSpace($QtRoot)) {
@@ -257,6 +277,9 @@ New-Item -ItemType Directory -Path $stageDir -Force | Out-Null
 # 3. Configure, Build and Install via CMake
 Write-Host ">> Configuring CMake..." -ForegroundColor Cyan
 $toolchainFile = Join-Path $VcpkgRoot "scripts\buildsystems\vcpkg.cmake"
+$buildDir = Join-Path $RepoRoot "out\build\$Preset"
+Remove-StaleCMakeBuildDirectory -BuildDirectory $buildDir -ExpectedSourceDirectory $RepoRoot
+
 $cmakeArgs = @(
     "--preset", $Preset,
     "-DCMAKE_INSTALL_PREFIX=$($stageDir.Replace('\', '/'))",
@@ -270,9 +293,7 @@ if ($Preset -like "*mingw*") {
     $vcpkgTriplet = "x64-windows"
 }
 $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=$vcpkgTriplet"
-if (-not [string]::IsNullOrWhiteSpace($Version)) {
-    $cmakeArgs += "-DLASTUDIO_VERSION=$Version"
-}
+$cmakeArgs += "-DLASTUDIO_VERSION=$Version"
 
 $env:VCPKG_ROOT = $VcpkgRoot
 & cmake @cmakeArgs
@@ -283,7 +304,6 @@ Write-Host ">> Building application..." -ForegroundColor Cyan
 if ($LASTEXITCODE -ne 0) { throw "CMake build failed." }
 
 Write-Host ">> Installing to staging folder..." -ForegroundColor Cyan
-$buildDir = Join-Path $RepoRoot "out\build\$Preset"
 & cmake --install $buildDir
 if ($LASTEXITCODE -ne 0) { throw "CMake install failed." }
 

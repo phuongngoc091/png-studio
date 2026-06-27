@@ -70,6 +70,7 @@ private:
     void handleReleaseReply(QNetworkReply *reply, const QString &channel);
     void updateDownloadProgress();
     QString installerDownloadDir() const;
+    QString existingDownloadedInstallerPath(const QString &version, const QString &filename) const;
 
     DownloadManager *m_downloads = nullptr;
     QNetworkAccessManager *m_network = nullptr;

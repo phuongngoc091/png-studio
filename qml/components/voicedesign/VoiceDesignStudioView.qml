@@ -195,6 +195,8 @@ StudioShell {
                 VoicePresetPanel {
                     id: presetPanel
                     familyId: root.selectedFamilyId
+                    currentDesignName: root.selectedPresetName
+                    currentDesignDescription: voiceDescriptionText.text
                     onPresetSelected: function(description, name) {
                         if (root.inputsLocked) return
                         voiceDescriptionText.text = description

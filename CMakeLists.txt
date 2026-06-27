@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 # This is the single source of truth for the application version. Release
 # automation may override it with -DLASTUDIO_VERSION=<major.minor.patch>.
-set(LASTUDIO_VERSION "0.1.3" CACHE STRING "LA Studio application version")
+set(LASTUDIO_VERSION "0.1.4" CACHE STRING "LA Studio application version")
 if(NOT LASTUDIO_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
     message(FATAL_ERROR "LASTUDIO_VERSION must use MAJOR.MINOR.PATCH format; got '${LASTUDIO_VERSION}'")
 endif()
@@ -80,6 +80,7 @@ set(LASTUDIO_SOURCES
     src/controllers/AudioPreviewService.cpp
     src/controllers/HistoryService.cpp
     src/controllers/HistoryRepository.cpp
+    src/controllers/VoiceClonePresetService.cpp
     src/controllers/VoiceDesignPresetService.cpp
     src/controllers/DownloadInstallService.cpp
     src/controllers/ModelsPathMigrator.cpp
@@ -149,6 +150,7 @@ set(LASTUDIO_HEADERS
     src/controllers/AudioPreviewService.h
     src/controllers/HistoryService.h
     src/controllers/HistoryRepository.h
+    src/controllers/VoiceClonePresetService.h
     src/controllers/VoiceDesignPresetService.h
     src/controllers/DownloadInstallService.h
     src/controllers/ModelsPathMigrator.h
@@ -234,6 +236,7 @@ qt_add_qml_module(LAStudio
         qml/components/shared/StudioShell.qml
         qml/components/shared/StudioPageFrame.qml
         qml/components/shared/StudioRouteRegistry.qml
+        qml/components/shared/VoiceLibraryDialog.qml
         qml/components/shared/PromptTagPicker.qml
         qml/components/shared/AudioInputSourcePicker.qml
         qml/components/shared/settings/CollapsibleSettingsSection.qml
@@ -301,6 +304,10 @@ target_link_libraries(LAStudio PRIVATE
     Qt6::Sql
     CURL::libcurl
 )
+
+if(WIN32)
+    target_link_libraries(LAStudio PRIVATE shell32)
+endif()
 
 # Unit tests build.
 if(BUILD_TESTING)

@@ -23,6 +23,7 @@
 #include "ModelsPathMigrationService.h"
 #include "FileAccessService.h"
 #include "DownloadInstallService.h"
+#include "VoiceClonePresetService.h"
 #include "VoiceDesignPresetService.h"
 #include "SttSessionController.h"
 #include "AppUpdateService.h"
@@ -54,6 +55,7 @@ class AppController : public QObject {
     Q_PROPERTY(ModelsPathMigrationService* modelsMigration READ modelsMigration CONSTANT)
     Q_PROPERTY(FileAccessService* files READ files CONSTANT)
     Q_PROPERTY(DownloadInstallService* downloadInstall READ downloadInstall CONSTANT)
+    Q_PROPERTY(VoiceClonePresetService* voiceClonePresets READ voiceClonePresets CONSTANT)
     Q_PROPERTY(VoiceDesignPresetService* voiceDesignPresets READ voiceDesignPresets CONSTANT)
     Q_PROPERTY(SttSessionController* sttSession READ sttSession CONSTANT)
     Q_PROPERTY(AppUpdateService* updates READ updates CONSTANT)
@@ -88,6 +90,7 @@ public:
     ModelsPathMigrationService* modelsMigration() const { return m_modelsMigration; }
     FileAccessService* files() const { return m_files; }
     DownloadInstallService* downloadInstall() const { return m_downloadInstall; }
+    VoiceClonePresetService* voiceClonePresets() const { return m_voiceClonePresets; }
     VoiceDesignPresetService* voiceDesignPresets() const { return m_voiceDesignPresets; }
     SttSessionController* sttSession() const { return m_sttSession; }
     AppUpdateService* updates() const { return m_updates; }
@@ -130,6 +133,7 @@ private:
     ModelsPathMigrationService* m_modelsMigration = nullptr;
     FileAccessService* m_files = nullptr;
     DownloadInstallService* m_downloadInstall = nullptr;
+    VoiceClonePresetService* m_voiceClonePresets = nullptr;
     VoiceDesignPresetService* m_voiceDesignPresets = nullptr;
     SttSessionController* m_sttSession = nullptr;
     AppUpdateService* m_updates = nullptr;

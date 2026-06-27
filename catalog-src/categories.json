@@ -330,18 +330,312 @@
                 "name": "Voice: Emma (Female)",
                 "file": "vibevoice-voice-emma.gguf",
                 "size": "2-6 MB",
+                "speaker": "Emma (Female)",
+                "language": "English (alias of en-Emma_woman)",
                 "tags": [
                   "voice",
-                  "female"
+                  "female",
+                  "english"
                 ]
               },
               {
-                "name": "Voice: Carter (Male)",
-                "file": "vibevoice-voice-en-Carter_man.gguf",
+                "name": "Voice: Emma (Female) - English",
+                "file": "vibevoice-voice-en-Emma_woman.gguf",
                 "size": "2-6 MB",
+                "speaker": "Emma (Female)",
+                "language": "English",
                 "tags": [
                   "voice",
-                  "male"
+                  "female",
+                  "english"
+                ]
+              },
+              {
+                "name": "Voice: Carter (Male) - English",
+                "file": "vibevoice-voice-en-Carter_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Carter (Male)",
+                "language": "English",
+                "tags": [
+                  "voice",
+                  "male",
+                  "english"
+                ]
+              },
+              {
+                "name": "Voice: Davis (Male) - English",
+                "file": "vibevoice-voice-en-Davis_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Davis (Male)",
+                "language": "English",
+                "tags": [
+                  "voice",
+                  "male",
+                  "english"
+                ]
+              },
+              {
+                "name": "Voice: Frank (Male) - English",
+                "file": "vibevoice-voice-en-Frank_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Frank (Male)",
+                "language": "English",
+                "tags": [
+                  "voice",
+                  "male",
+                  "english"
+                ]
+              },
+              {
+                "name": "Voice: Grace (Female) - English",
+                "file": "vibevoice-voice-en-Grace_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Grace (Female)",
+                "language": "English",
+                "tags": [
+                  "voice",
+                  "female",
+                  "english"
+                ]
+              },
+              {
+                "name": "Voice: Mike (Male) - English",
+                "file": "vibevoice-voice-en-Mike_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Mike (Male)",
+                "language": "English",
+                "tags": [
+                  "voice",
+                  "male",
+                  "english"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Male) - German",
+                "file": "vibevoice-voice-de-Spk0_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Male)",
+                "language": "German",
+                "tags": [
+                  "voice",
+                  "male",
+                  "german"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Female) - German",
+                "file": "vibevoice-voice-de-Spk1_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Female)",
+                "language": "German",
+                "tags": [
+                  "voice",
+                  "female",
+                  "german"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Male) - French",
+                "file": "vibevoice-voice-fr-Spk0_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Male)",
+                "language": "French",
+                "tags": [
+                  "voice",
+                  "male",
+                  "french"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Female) - French",
+                "file": "vibevoice-voice-fr-Spk1_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Female)",
+                "language": "French",
+                "tags": [
+                  "voice",
+                  "female",
+                  "french"
+                ]
+              },
+              {
+                "name": "Voice: Samuel (Male) - Indian English",
+                "file": "vibevoice-voice-in-Samuel_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Samuel (Male)",
+                "language": "Indian English",
+                "tags": [
+                  "voice",
+                  "male",
+                  "indian english"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Female) - Italian",
+                "file": "vibevoice-voice-it-Spk0_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Female)",
+                "language": "Italian",
+                "tags": [
+                  "voice",
+                  "female",
+                  "italian"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Male) - Italian",
+                "file": "vibevoice-voice-it-Spk1_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Male)",
+                "language": "Italian",
+                "tags": [
+                  "voice",
+                  "male",
+                  "italian"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Male) - Japanese",
+                "file": "vibevoice-voice-jp-Spk0_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Male)",
+                "language": "Japanese",
+                "tags": [
+                  "voice",
+                  "male",
+                  "japanese"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Female) - Japanese",
+                "file": "vibevoice-voice-jp-Spk1_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Female)",
+                "language": "Japanese",
+                "tags": [
+                  "voice",
+                  "female",
+                  "japanese"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Female) - Korean",
+                "file": "vibevoice-voice-kr-Spk0_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Female)",
+                "language": "Korean",
+                "tags": [
+                  "voice",
+                  "female",
+                  "korean"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Male) - Korean",
+                "file": "vibevoice-voice-kr-Spk1_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Male)",
+                "language": "Korean",
+                "tags": [
+                  "voice",
+                  "male",
+                  "korean"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Male) - Dutch",
+                "file": "vibevoice-voice-nl-Spk0_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Male)",
+                "language": "Dutch",
+                "tags": [
+                  "voice",
+                  "male",
+                  "dutch"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Female) - Dutch",
+                "file": "vibevoice-voice-nl-Spk1_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Female)",
+                "language": "Dutch",
+                "tags": [
+                  "voice",
+                  "female",
+                  "dutch"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Male) - Polish",
+                "file": "vibevoice-voice-pl-Spk0_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Male)",
+                "language": "Polish",
+                "tags": [
+                  "voice",
+                  "male",
+                  "polish"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Female) - Polish",
+                "file": "vibevoice-voice-pl-Spk1_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Female)",
+                "language": "Polish",
+                "tags": [
+                  "voice",
+                  "female",
+                  "polish"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Female) - Portuguese",
+                "file": "vibevoice-voice-pt-Spk0_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Female)",
+                "language": "Portuguese",
+                "tags": [
+                  "voice",
+                  "female",
+                  "portuguese"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Male) - Portuguese",
+                "file": "vibevoice-voice-pt-Spk1_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Male)",
+                "language": "Portuguese",
+                "tags": [
+                  "voice",
+                  "male",
+                  "portuguese"
+                ]
+              },
+              {
+                "name": "Voice: Spk0 (Female) - Spanish",
+                "file": "vibevoice-voice-sp-Spk0_woman.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk0 (Female)",
+                "language": "Spanish",
+                "tags": [
+                  "voice",
+                  "female",
+                  "spanish"
+                ]
+              },
+              {
+                "name": "Voice: Spk1 (Male) - Spanish",
+                "file": "vibevoice-voice-sp-Spk1_man.gguf",
+                "size": "2-6 MB",
+                "speaker": "Spk1 (Male)",
+                "language": "Spanish",
+                "tags": [
+                  "voice",
+                  "male",
+                  "spanish"
                 ]
               }
             ]

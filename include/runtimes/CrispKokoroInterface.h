@@ -138,9 +138,13 @@ public:
     }
 
     void unload() {
+#ifdef Q_OS_WIN
+        crispUnloadLibraryAndDependencies(m_lib, m_preloadedDlls);
+#else
         if (m_lib.isLoaded()) {
             m_lib.unload();
         }
+#endif
         crispasr_session_open_with_params = nullptr;
         crispasr_session_open_explicit = nullptr;
         crispasr_session_close = nullptr;
@@ -163,7 +167,7 @@ public:
                 configureKokoroPhonemizer(cleanLibPath);
                 return true;
             }
-            m_lib.unload();
+            unload();
         }
 
         m_errorString.clear();
@@ -184,7 +188,8 @@ public:
         configureKokoroPhonemizer(cleanLibPath);
 
         #ifdef Q_OS_WIN
-        QVector<HMODULE> preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
+        crispReleasePreloadedRuntimeDlls(m_preloadedDlls);
+        m_preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
         SetDllDirectoryW((LPCWSTR)dir.utf16());
         #endif
 
@@ -193,7 +198,7 @@ public:
         bool ok = m_lib.load();
 
         #ifdef Q_OS_WIN
-        crispReleasePreloadedRuntimeDlls(preloadedDlls);
+        SetDllDirectoryW(NULL);
         #endif
 
         if (!ok) {
@@ -201,7 +206,7 @@ public:
             Logger::error("CrispKokoro", "Failed to load library: " + m_errorString);
             qputenv("PATH", oldPath);
         #ifdef Q_OS_WIN
-            SetDllDirectoryW(NULL);
+            crispReleasePreloadedRuntimeDlls(m_preloadedDlls);
         #endif
             return false;
         }
@@ -238,7 +243,11 @@ public:
         if (!ok) {
             m_errorString = QStringLiteral("Failed to resolve one or more required session symbols.");
             Logger::error("CrispKokoro", m_errorString);
+#ifdef Q_OS_WIN
+            crispUnloadLibraryAndDependencies(m_lib, m_preloadedDlls);
+#else
             m_lib.unload();
+#endif
         } else {
             Logger::info("CrispKokoro", "Session symbols resolved successfully.");
         }
@@ -443,6 +452,9 @@ private:
 
     QLibrary m_lib;
     QString m_errorString;
+#ifdef Q_OS_WIN
+    QVector<HMODULE> m_preloadedDlls;
+#endif
     bool m_kokoroPhonemizerAvailable = false;
     QString m_kokoroPhonemizerPath;
     QString m_kokoroPhonemizerError;

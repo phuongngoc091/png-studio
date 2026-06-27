@@ -21,6 +21,8 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
 
+. (Join-Path $PSScriptRoot "cmake_helpers.ps1")
+
 function Test-Command {
     param([string] $Name)
     return [bool](Get-Command $Name -ErrorAction SilentlyContinue)
@@ -171,6 +173,7 @@ $qtBin = Join-Path $resolvedQtRoot "$kit\bin"
 Add-PathIfExists -PathEntry $qtBin
 
 $buildDir = Join-Path $RepoRoot "out\build\$Preset"
+Remove-StaleCMakeBuildDirectory -BuildDirectory $buildDir -ExpectedSourceDirectory $RepoRoot
 
 # 1. Build unit tests if requested
 if (-not $NoBuild) {

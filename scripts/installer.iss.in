@@ -37,3 +37,4 @@ Name: "{autodesktop}\LA Studio"; Filename: "{app}\bin\LA Studio.exe"; Tasks: des
 
 [Run]
 Filename: "{app}\bin\LA Studio.exe"; Description: "{cm:LaunchProgram,LA Studio}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\LA Studio.exe"; Flags: nowait skipifnotsilent

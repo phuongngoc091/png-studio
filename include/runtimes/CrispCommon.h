@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QFileInfo>
+#include <QLibrary>
 #include <QSet>
 #include <QString>
 #include <QStringList>
@@ -143,6 +144,14 @@ inline void crispReleasePreloadedRuntimeDlls(QVector<HMODULE>& handles)
         FreeLibrary(*it);
     }
     handles.clear();
+}
+
+inline void crispUnloadLibraryAndDependencies(QLibrary& library, QVector<HMODULE>& handles)
+{
+    if (library.isLoaded()) {
+        library.unload();
+    }
+    crispReleasePreloadedRuntimeDlls(handles);
 }
 #endif
 

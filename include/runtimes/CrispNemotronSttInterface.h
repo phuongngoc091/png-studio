@@ -30,7 +30,11 @@ public:
 
     void unload()
     {
+#ifdef Q_OS_WIN
+        crispUnloadLibraryAndDependencies(m_lib, m_preloadedDlls);
+#else
         if (m_lib.isLoaded()) m_lib.unload();
+#endif
         crispasr_session_open_with_params = nullptr;
         crispasr_session_close = nullptr;
         crispasr_session_transcribe_lang = nullptr;
@@ -58,18 +62,21 @@ public:
         crispPrependRuntimeDirsToPath(runtimeDirs);
 #ifdef Q_OS_WIN
         const QFileInfo fileInfo(cleanLibPath);
-        QVector<HMODULE> preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
+        crispReleasePreloadedRuntimeDlls(m_preloadedDlls);
+        m_preloadedDlls = crispPreloadRuntimeDlls(cleanLibPath, runtimeDirs);
         SetDllDirectoryW(reinterpret_cast<LPCWSTR>(fileInfo.absolutePath().utf16()));
 #endif
         m_lib.setFileName(cleanLibPath);
         m_lib.setLoadHints(QLibrary::ExportExternalSymbolsHint);
         const bool loaded = m_lib.load();
 #ifdef Q_OS_WIN
-        crispReleasePreloadedRuntimeDlls(preloadedDlls);
         SetDllDirectoryW(nullptr);
 #endif
         if (!loaded) {
             m_errorString = m_lib.errorString();
+#ifdef Q_OS_WIN
+            crispReleasePreloadedRuntimeDlls(m_preloadedDlls);
+#endif
             qputenv("PATH", oldPath);
             return false;
         }
@@ -90,7 +97,11 @@ public:
                         crispasr_session_result_segment_t1 && crispasr_session_result_free;
         if (!ok) {
             m_errorString = QStringLiteral("CrispASR v0.8.0 or later is required for Nemotron STT.");
+#ifdef Q_OS_WIN
+            crispUnloadLibraryAndDependencies(m_lib, m_preloadedDlls);
+#else
             m_lib.unload();
+#endif
         }
         return ok;
     }
@@ -122,6 +133,9 @@ private:
     CrispNemotronSttInterface() = default;
     QLibrary m_lib;
     QString m_errorString;
+#ifdef Q_OS_WIN
+    QVector<HMODULE> m_preloadedDlls;
+#endif
 };
 
 } // namespace LAStudio

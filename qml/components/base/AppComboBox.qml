@@ -143,6 +143,38 @@ ComboBox {
         return clean;
     }
 
+    function getVariantInfo(filename) {
+        if (!root.modelRequirement || !root.modelRequirement.variants) return null;
+        var variants = root.modelRequirement.variants;
+        for (var i = 0; i < variants.length; i++) {
+            var v = variants[i];
+            var vName = v.name || v.file || "";
+            if (vName === filename) {
+                return v;
+            }
+        }
+        return null;
+    }
+
+    function getVariantDisplayName(filename) {
+        var info = getVariantInfo(filename);
+        if (info) {
+            var label = "";
+            if (info.speaker) {
+                label = info.speaker;
+                if (info.language) {
+                    label += " (" + info.language + ")";
+                }
+            } else if (info.language) {
+                label = info.language;
+            }
+            if (label !== "") {
+                return label;
+            }
+        }
+        return root.getCleanedName(filename);
+    }
+
     implicitHeight: 40
 
     background: Rectangle {
@@ -159,12 +191,12 @@ ComboBox {
             const primary = root.primaryTextFor(item)
             if (root.isModelSelector) {
                 var quant = root.getQuantization(primary)
-                var clean = root.getCleanedName(primary)
+                var displayName = root.getVariantDisplayName(primary)
                 var size = root.estimateSize(primary, root.defaultFile, root.defaultSize)
                 if (quant !== "") {
-                    return clean + " [" + quant + "]  ·  " + size
+                    return displayName + " [" + quant + "]  ·  " + size
                 }
-                return clean + "  ·  " + size
+                return displayName + "  ·  " + size
             }
             const secondary = root.secondaryTextFor(item)
             if (primary !== "" && secondary !== "") return primary + "  ·  " + secondary
@@ -445,6 +477,7 @@ ComboBox {
             spacing: Theme.paddingSmall
 
             property string filename: ""
+            property var variantInfo: root.getVariantInfo(filename)
             
             Rectangle {
                 visible: filename.toLowerCase().endsWith(".gguf")
@@ -464,7 +497,7 @@ ComboBox {
             }
             
             Text {
-                text: root.getCleanedName(filename)
+                text: variantInfo && variantInfo.speaker ? variantInfo.speaker : root.getCleanedName(filename)
                 color: Theme.textPrimary
                 font.pixelSize: Theme.fontSmall
                 font.bold: true
@@ -473,14 +506,51 @@ ComboBox {
                 verticalAlignment: Text.AlignVCenter
             }
             
+            // Language column
             Item {
-                Layout.preferredWidth: 65
+                visible: variantInfo && variantInfo.language !== undefined && variantInfo.language !== ""
+                Layout.preferredWidth: visible ? 110 : 0
+                Layout.preferredHeight: 22
+                Layout.alignment: Qt.AlignVCenter
+                
+                Rectangle {
+                    anchors.fill: parent
+                    radius: 6
+                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08)
+                    border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3)
+                    border.width: 1
+                    
+                    RowLayout {
+                        anchors.centerIn: parent
+                        spacing: 4
+                        
+                        LineIcon {
+                            name: "globe"
+                            color: Theme.accent
+                            Layout.preferredWidth: 10
+                            Layout.preferredHeight: 10
+                        }
+                        
+                        Text {
+                            text: variantInfo ? variantInfo.language : ""
+                            color: Theme.accent
+                            font.pixelSize: 10
+                            font.bold: true
+                            elide: Text.ElideRight
+                            Layout.maximumWidth: 80
+                        }
+                    }
+                }
+            }
+
+            Item {
+                visible: root.getQuantization(filename) !== ""
+                Layout.preferredWidth: visible ? 65 : 0
                 Layout.preferredHeight: 18
                 Layout.alignment: Qt.AlignVCenter
                 
                 Rectangle {
                     anchors.fill: parent
-                    visible: root.getQuantization(filename) !== ""
                     radius: 4
                     color: "transparent"
                     border.color: Qt.rgba(1, 1, 1, 0.15)
@@ -499,7 +569,7 @@ ComboBox {
             
             // Suitability column
             Item {
-                Layout.preferredWidth: 100
+                Layout.preferredWidth: root.isModelSuitable(filename, root.modelFamily, root.modelRequirement) ? 24 : 100
                 Layout.preferredHeight: 22
                 Layout.alignment: Qt.AlignVCenter
                 
@@ -549,7 +619,7 @@ ComboBox {
                                     Layout.preferredWidth: 10
                                     Layout.preferredHeight: 10
                                 }
-                                                              Text {
+                                Text {
                                     text: qsTr("Likely too large")
                                     color: Theme.danger
                                     font.pixelSize: 10
@@ -563,13 +633,13 @@ ComboBox {
 
             // Downloaded column
             Item {
-                Layout.preferredWidth: 85
+                visible: root.isDownloaded(filename)
+                Layout.preferredWidth: visible ? 85 : 0
                 Layout.preferredHeight: 22
                 Layout.alignment: Qt.AlignVCenter
                 
                 Loader {
                     anchors.centerIn: parent
-                    visible: root.isDownloaded(filename)
                     sourceComponent: downloadedComponent
                     
                     Component {

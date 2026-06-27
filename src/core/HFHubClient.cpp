@@ -22,6 +22,7 @@ struct DownloadContext {
     QString identifier;
     QString filename;
     QFile *file;
+    qint64 resumeOffset = 0;
     qint64 lastUpdate = 0;
 };
 
@@ -60,13 +61,34 @@ int HFHubClient::progressCallback(void *clientp, curl_off_t dltotal, curl_off_t 
     QString id = ctx->identifier;
     QString fn = ctx->filename;
     HFHubClient *client = ctx->client;
+    const qint64 bytesReceived = ctx->resumeOffset + static_cast<qint64>(dlnow);
+    const qint64 bytesTotal = dltotal > 0
+        ? ctx->resumeOffset + static_cast<qint64>(dltotal)
+        : 0;
     QMetaObject::invokeMethod(client, [=]() {
         emit client->downloadProgress(
             id, fn,
-            static_cast<qint64>(dlnow),
-            static_cast<qint64>(dltotal));
+            bytesReceived,
+            bytesTotal);
     }, Qt::QueuedConnection);
     return 0;
+}
+
+static bool isRetryableDownloadError(CURLcode code)
+{
+    switch (code) {
+    case CURLE_PARTIAL_FILE:
+    case CURLE_OPERATION_TIMEDOUT:
+    case CURLE_RECV_ERROR:
+    case CURLE_SEND_ERROR:
+    case CURLE_COULDNT_CONNECT:
+    case CURLE_COULDNT_RESOLVE_HOST:
+    case CURLE_COULDNT_RESOLVE_PROXY:
+    case CURLE_GOT_NOTHING:
+        return true;
+    default:
+        return false;
+    }
 }
 
 void HFHubClient::searchModels(const QString &query, const QString &task, bool whisperOnly)
@@ -216,29 +238,6 @@ void HFHubClient::internalDownload(const QString &url,
         const QString localPath = destDir + QStringLiteral("/") + filename;
         const QString tempPath = localPath + QStringLiteral(".download");
 
-        QFile *file = new QFile(tempPath);
-        if (!file->open(QIODevice::WriteOnly)) {
-            delete file;
-            QMetaObject::invokeMethod(this, [=]() {
-                emit downloadError(identifier, filename,
-                                   QStringLiteral("Cannot open file for writing: ") + tempPath);
-            }, Qt::QueuedConnection);
-            return;
-        }
-
-        CURL *curl = curl_easy_init();
-        if (!curl) {
-            file->close();
-            delete file;
-            QMetaObject::invokeMethod(this, [=]() {
-                emit downloadError(identifier, filename,
-                                   QStringLiteral("Failed to initialize curl"));
-            }, Qt::QueuedConnection);
-            return;
-        }
-
-        DownloadContext ctx{this, identifier, filename, file};
-
         auto fileWriter = [](char *ptr, size_t size, size_t nmemb, void *userdata) -> size_t {
             auto *f = static_cast<QFile *>(userdata);
             qint64 written = f->write(ptr, static_cast<qint64>(size * nmemb));
@@ -246,33 +245,93 @@ void HFHubClient::internalDownload(const QString &url,
         };
 
         QByteArray urlBytes = url.toUtf8();
-        curl_easy_setopt(curl, CURLOPT_URL, urlBytes.constData());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
-                         static_cast<size_t(*)(char*,size_t,size_t,void*)>(fileWriter));
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
-        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &ctx);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "LAStudio/0.1");
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-        curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
-
-        CURLcode res = curl_easy_perform(curl);
+        constexpr int maxAttempts = 4;
+        CURLcode res = CURLE_OK;
         long responseCode = 0;
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
-        curl_easy_cleanup(curl);
-        file->close();
+        QString err;
 
-        if (res != CURLE_OK || responseCode >= 400 || QFileInfo(tempPath).size() == 0) {
-            QFile::remove(tempPath);
-            QString err;
+        for (int attempt = 1; attempt <= maxAttempts; ++attempt) {
+            const qint64 resumeOffset = QFileInfo(tempPath).size();
+            QFile file(tempPath);
+            const QIODevice::OpenMode mode = resumeOffset > 0
+                ? (QIODevice::WriteOnly | QIODevice::Append)
+                : QIODevice::WriteOnly;
+
+            if (!file.open(mode)) {
+                QMetaObject::invokeMethod(this, [=]() {
+                    emit downloadError(identifier, filename,
+                                       QStringLiteral("Cannot open file for writing: ") + tempPath);
+                }, Qt::QueuedConnection);
+                return;
+            }
+
+            CURL *curl = curl_easy_init();
+            if (!curl) {
+                file.close();
+                QMetaObject::invokeMethod(this, [=]() {
+                    emit downloadError(identifier, filename,
+                                       QStringLiteral("Failed to initialize curl"));
+                }, Qt::QueuedConnection);
+                return;
+            }
+
+            DownloadContext ctx{this, identifier, filename, &file, resumeOffset};
+
+            curl_easy_setopt(curl, CURLOPT_URL, urlBytes.constData());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
+                             static_cast<size_t(*)(char*,size_t,size_t,void*)>(fileWriter));
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+            curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
+            curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &ctx);
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_easy_setopt(curl, CURLOPT_USERAGENT, "LAStudio/0.1");
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+            curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30L);
+            if (resumeOffset > 0) {
+                curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE,
+                                 static_cast<curl_off_t>(resumeOffset));
+            }
+
+            res = curl_easy_perform(curl);
+            responseCode = 0;
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
+            curl_easy_cleanup(curl);
+            file.close();
+
+            if (res == CURLE_RANGE_ERROR && resumeOffset > 0) {
+                QFile::remove(tempPath);
+                if (attempt < maxAttempts) {
+                    continue;
+                }
+            }
+
+            if (res == CURLE_OK && responseCode < 400 && QFileInfo(tempPath).size() > 0) {
+                err.clear();
+                break;
+            }
+
             if (responseCode >= 400) {
                 err = QStringLiteral("HTTP %1 while downloading %2").arg(responseCode).arg(url);
             } else if (res != CURLE_OK) {
                 err = QString::fromUtf8(curl_easy_strerror(res));
             } else {
                 err = QStringLiteral("Downloaded file is empty: %1").arg(url);
+            }
+
+            if (!isRetryableDownloadError(res) || attempt == maxAttempts) {
+                break;
+            }
+
+            QThread::msleep(static_cast<unsigned long>(attempt * 500));
+        }
+
+        if (res != CURLE_OK || responseCode >= 400 || QFileInfo(tempPath).size() == 0) {
+            if (!isRetryableDownloadError(res)) {
+                QFile::remove(tempPath);
+            } else if (QFileInfo(tempPath).size() > 0) {
+                err += QStringLiteral(" (partial download saved; retry to resume)");
             }
             QMetaObject::invokeMethod(this, [=]() {
                 emit downloadError(identifier, filename, err);
@@ -291,7 +350,6 @@ void HFHubClient::internalDownload(const QString &url,
                 }, Qt::QueuedConnection);
             }
         }
-        delete file;
     });
 }
 

@@ -14,8 +14,24 @@ ApplicationWindow {
     flags: Qt.Window | Qt.FramelessWindowHint
     readonly property string appName: Qt.application.name && Qt.application.name.length > 0 ? Qt.application.name : "LA Studio"
     readonly property string appVersion: Qt.application.version
+    property string dismissedUpdateVersion: ""
     title: appName + " - " + appVersion
     color: Theme.background
+
+    function updateBannerActionText() {
+        if (AppController.updates.downloading) return qsTr("Downloading...")
+        if (AppController.updates.downloaded) return qsTr("Install")
+        return qsTr("Download")
+    }
+
+    function runUpdateBannerAction() {
+        dismissedUpdateVersion = ""
+        if (AppController.updates.downloaded) {
+            installUpdateDialog.open()
+        } else if (AppController.updates.updateAvailable) {
+            AppController.updates.downloadUpdate()
+        }
+    }
 
     // Error toast
     Popup {
@@ -82,6 +98,15 @@ ApplicationWindow {
         y: root.height - height - 16
     }
 
+    ConfirmationDialog {
+        id: installUpdateDialog
+        titleText: qsTr("Install update")
+        messageText: qsTr("LA Studio will close and start the installer. Your app data and downloaded models will stay in the app home directory.")
+        confirmText: qsTr("Install")
+        cancelText: qsTr("Cancel")
+        onConfirmed: AppController.updates.installDownloadedUpdate()
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
@@ -90,6 +115,96 @@ ApplicationWindow {
             window: root
             appName: root.appName
             appVersion: root.appVersion
+        }
+
+        Rectangle {
+            id: updateBanner
+
+            readonly property bool dismissed: AppController.updates.latestVersion !== "" && root.dismissedUpdateVersion === AppController.updates.latestVersion
+
+            visible: AppController.updates.updateAvailable && !dismissed
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? 56 : 0
+            color: Qt.rgba(1.0, 0.65, 0.15, 0.13)
+            border.color: Qt.rgba(1.0, 0.65, 0.15, 0.35)
+            border.width: visible ? 1 : 0
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: Theme.paddingLarge
+                anchors.rightMargin: Theme.paddingLarge
+                spacing: Theme.paddingMedium
+
+                LineIcon {
+                    name: AppController.updates.downloaded ? "check" : "download"
+                    color: AppController.updates.downloaded ? Theme.success : Theme.warning
+                    Layout.preferredWidth: 22
+                    Layout.preferredHeight: 22
+                    strokeWidth: 2.0
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 3
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: AppController.updates.downloaded
+                              ? qsTr("LA Studio v%1 is ready to install").arg(AppController.updates.latestVersion)
+                              : qsTr("LA Studio v%1 is available").arg(AppController.updates.latestVersion)
+                        color: Theme.textPrimary
+                        font.pixelSize: Theme.fontMedium
+                        font.bold: true
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        visible: !AppController.updates.downloading
+                        text: qsTr("Update now, or keep working and install it later from Settings.")
+                        color: Theme.textSecondary
+                        font.pixelSize: Theme.fontSmall
+                        elide: Text.ElideRight
+                    }
+
+                    ProgressBar {
+                        visible: AppController.updates.downloading
+                        from: 0
+                        to: 1
+                        value: AppController.updates.downloadProgress
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 6
+                    }
+                }
+
+                PrimaryButton {
+                    text: qsTr("Release notes")
+                    iconName: "external-link"
+                    quiet: true
+                    implicitWidth: 130
+                    implicitHeight: 32
+                    visible: AppController.updates.releaseUrl !== ""
+                    onClicked: Qt.openUrlExternally(AppController.updates.releaseUrl)
+                }
+
+                PrimaryButton {
+                    text: root.updateBannerActionText()
+                    iconName: AppController.updates.downloaded ? "check" : "download"
+                    implicitWidth: 120
+                    implicitHeight: 32
+                    enabled: !AppController.updates.downloading
+                    onClicked: root.runUpdateBannerAction()
+                }
+
+                PrimaryButton {
+                    text: qsTr("Later")
+                    quiet: true
+                    implicitWidth: 78
+                    implicitHeight: 32
+                    visible: !AppController.updates.downloading
+                    onClicked: root.dismissedUpdateVersion = AppController.updates.latestVersion
+                }
+            }
         }
 
         RowLayout {
