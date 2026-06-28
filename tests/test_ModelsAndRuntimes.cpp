@@ -56,6 +56,47 @@ void TestModelsAndRuntimes::testModelManagerConcreteModelDir()
     QVERIFY(models.hasFile(QStringLiteral("cstr/legacy-GGUF"), QStringLiteral("legacy.gguf")));
 }
 
+void TestModelsAndRuntimes::testModelManagerResolvesSplitVirtualModelFiles()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString modelsRoot = tempDir.filePath(QStringLiteral("models"));
+    const QString codecDir = QDir(modelsRoot).absoluteFilePath(QStringLiteral("pnnbao-ump/VieNeu-Codec"));
+    const QString ggufDir = QDir(modelsRoot).absoluteFilePath(QStringLiteral("pnnbao-ump/VieNeu-TTS-v2-Turbo-GGUF"));
+    QVERIFY(QDir().mkpath(codecDir));
+    QVERIFY(QDir().mkpath(ggufDir));
+
+    auto writeFile = [](const QString &path, const QByteArray &data) {
+        QFile file(path);
+        if (!file.open(QIODevice::WriteOnly)) {
+            return false;
+        }
+        file.write(data);
+        return true;
+    };
+
+    QVERIFY(writeFile(QDir(codecDir).absoluteFilePath(QStringLiteral(".la-info.json")),
+                      R"({"id":"vieneu-tts-v2-turbo","task":"tts"})"));
+    QVERIFY(writeFile(QDir(codecDir).absoluteFilePath(QStringLiteral("vieneu_encoder.onnx")), "encoder"));
+    QVERIFY(writeFile(QDir(codecDir).absoluteFilePath(QStringLiteral("vieneu_decoder.onnx")), "decoder"));
+    QVERIFY(writeFile(QDir(ggufDir).absoluteFilePath(QStringLiteral(".la-info.json")),
+                      R"({"id":"vieneu-tts-v2-turbo","task":"tts"})"));
+    QVERIFY(writeFile(QDir(ggufDir).absoluteFilePath(QStringLiteral("vieneu-tts-v2-turbo.gguf")), "gguf"));
+    QVERIFY(writeFile(QDir(ggufDir).absoluteFilePath(QStringLiteral("voices.json")), "{}"));
+
+    ModelManager models;
+    models.setModelsRoot(modelsRoot);
+    models.scanLocalModels();
+
+    QCOMPARE(QFileInfo(models.filePath(QStringLiteral("pnnbao-ump/VieNeu-TTS-v2-Turbo-GGUF"),
+                                       QStringLiteral("vieneu-tts-v2-turbo.gguf"))).absoluteFilePath(),
+             QFileInfo(QDir(ggufDir).absoluteFilePath(QStringLiteral("vieneu-tts-v2-turbo.gguf"))).absoluteFilePath());
+    QCOMPARE(QFileInfo(models.filePath(QStringLiteral("pnnbao-ump/VieNeu-Codec"),
+                                       QStringLiteral("vieneu_encoder.onnx"))).absoluteFilePath(),
+             QFileInfo(QDir(codecDir).absoluteFilePath(QStringLiteral("vieneu_encoder.onnx"))).absoluteFilePath());
+}
+
 void TestModelsAndRuntimes::testCapabilityFamilyModelSuitability()
 {
     qDebug() << "--- START: testCapabilityFamilyModelSuitability ---";

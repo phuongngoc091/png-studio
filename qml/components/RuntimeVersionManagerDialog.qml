@@ -57,7 +57,7 @@ Dialog {
             { version: "v0.1.2" }
         ]
         if (engineId.indexOf("speech-lm-tts") !== -1) return [
-            { version: "v0.1.0" }
+            { version: "v0.1.1" }
         ]
         if (engineId.indexOf("crispasr") !== -1) return [
             { version: "v0.8.4" }

@@ -43,6 +43,8 @@ bool SpeechLmBackend::load(const QVariantMap &config, QString &error, QVariantLi
     QString decoderPath = PathUtils::toNativeShortPath(config.value("decoder").toString());
     QString voicesPath = PathUtils::toNativeShortPath(config.value("voices").toString());
     QString runtimePath = PathUtils::toNativeShortPath(config.value("runtimePath").toString());
+    const QString pipelineProfile = config.value(QStringLiteral("pipelineProfile")).toString();
+    m_useAbiV2 = pipelineProfile == QStringLiteral("vieneu-v3-onnx");
 
     QString resolvedVoicesPath = voicesPath;
     if (resolvedVoicesPath.isEmpty() && !modelPath.isEmpty()) {
@@ -156,21 +158,66 @@ bool SpeechLmBackend::load(const QVariantMap &config, QString &error, QVariantLi
         return false;
     }
 
-    QByteArray modelPathBytes = modelPath.toUtf8();
-    QByteArray encoderPathBytes = encoderPath.toUtf8();
-    QByteArray decoderPathBytes = decoderPath.toUtf8();
-    QByteArray voicesPathBytes = resolvedVoicesPath.toUtf8();
+    if (m_useAbiV2) {
+        if (!slm.slm_init_v2_default_params || !slm.slm_init_v2 || !slm.slm_tts_v2_default_params || !slm.slm_synthesize_v2) {
+            error = QStringLiteral("Selected SpeechLM runtime does not expose ABI v2 required for VieNeu-TTS v3 ONNX.");
+            Logger::error("SpeechLmBackend", error);
+            unload();
+            return false;
+        }
 
-    slm_init_params params;
-    slm.slm_init_default_params(&params);
-    params.model_path = modelPathBytes.constData();
-    params.encoder_path = encoderPathBytes.isEmpty() ? nullptr : encoderPathBytes.constData();
-    params.decoder_path = decoderPathBytes.isEmpty() ? nullptr : decoderPathBytes.constData();
-    params.voices_json_path = voicesPathBytes.isEmpty() ? nullptr : voicesPathBytes.constData();
-    params.n_ctx = 2048;
-    params.n_threads = recommendedThreadCount();
+        QString configPath = PathUtils::toNativeShortPath(config.value(QStringLiteral("config")).toString());
+        QString tokenizerPath = PathUtils::toNativeShortPath(config.value(QStringLiteral("tokenizer")).toString());
+        QString prefillPath = PathUtils::toNativeShortPath(config.value(QStringLiteral("prefill")).toString());
+        QString codecDecodePath = PathUtils::toNativeShortPath(config.value(QStringLiteral("codec_decode")).toString());
 
-    m_context = slm.slm_init(&params);
+        const QString modelDir = !configPath.isEmpty()
+            ? QFileInfo(configPath).absolutePath()
+            : QFileInfo(modelPath).absolutePath();
+        const QString onnxDir = !prefillPath.isEmpty()
+            ? QFileInfo(prefillPath).absolutePath()
+            : QFileInfo(modelPath).absolutePath();
+        const QString codecDir = !codecDecodePath.isEmpty()
+            ? QFileInfo(codecDecodePath).absolutePath()
+            : QFileInfo(decoderPath).absolutePath();
+
+        QByteArray profileBytes = QByteArrayLiteral("vieneu-v3-onnx");
+        QByteArray modelDirBytes = PathUtils::toNativeShortPath(modelDir).toUtf8();
+        QByteArray onnxDirBytes = PathUtils::toNativeShortPath(onnxDir).toUtf8();
+        QByteArray codecDirBytes = PathUtils::toNativeShortPath(codecDir).toUtf8();
+        QByteArray configPathBytes = configPath.toUtf8();
+        QByteArray tokenizerPathBytes = tokenizerPath.toUtf8();
+        QByteArray voicesPathBytes = resolvedVoicesPath.toUtf8();
+
+        slm_init_params_v2 params;
+        slm.slm_init_v2_default_params(&params);
+        params.profile = profileBytes.constData();
+        params.model_dir = modelDirBytes.isEmpty() ? nullptr : modelDirBytes.constData();
+        params.onnx_dir = onnxDirBytes.isEmpty() ? nullptr : onnxDirBytes.constData();
+        params.codec_dir = codecDirBytes.isEmpty() ? nullptr : codecDirBytes.constData();
+        params.config_path = configPathBytes.isEmpty() ? nullptr : configPathBytes.constData();
+        params.tokenizer_path = tokenizerPathBytes.isEmpty() ? nullptr : tokenizerPathBytes.constData();
+        params.voices_json_path = voicesPathBytes.isEmpty() ? nullptr : voicesPathBytes.constData();
+        params.n_threads = recommendedThreadCount();
+
+        m_context = slm.slm_init_v2(&params);
+    } else {
+        QByteArray modelPathBytes = modelPath.toUtf8();
+        QByteArray encoderPathBytes = encoderPath.toUtf8();
+        QByteArray decoderPathBytes = decoderPath.toUtf8();
+        QByteArray voicesPathBytes = resolvedVoicesPath.toUtf8();
+
+        slm_init_params params;
+        slm.slm_init_default_params(&params);
+        params.model_path = modelPathBytes.constData();
+        params.encoder_path = encoderPathBytes.isEmpty() ? nullptr : encoderPathBytes.constData();
+        params.decoder_path = decoderPathBytes.isEmpty() ? nullptr : decoderPathBytes.constData();
+        params.voices_json_path = voicesPathBytes.isEmpty() ? nullptr : voicesPathBytes.constData();
+        params.n_ctx = 2048;
+        params.n_threads = recommendedThreadCount();
+
+        m_context = slm.slm_init(&params);
+    }
     if (!m_context) {
         error = QString::fromUtf8(slm.slm_last_error());
         Logger::error("SpeechLmBackend", "Failed to initialize SpeechLM TTS model: " + error);
@@ -195,6 +242,7 @@ void SpeechLmBackend::unload()
         m_context = nullptr;
     }
     SpeechLmTtsInterface::instance().unload();
+    m_useAbiV2 = false;
 }
 
 bool SpeechLmBackend::synthesize(const QString &text, float speed, const QVariantMap &settings, 
@@ -208,47 +256,43 @@ bool SpeechLmBackend::synthesize(const QString &text, float speed, const QVarian
     }
 
     QByteArray textBytes = text.toUtf8();
-    slm_tts_params params;
-    slm.slm_tts_default_params(&params);
-    params.text = textBytes.constData();
-
     QByteArray voiceIdBytes;
-    if (settings.contains(QStringLiteral("voice"))) {
-        voiceIdBytes = settings.value(QStringLiteral("voice")).toString().toUtf8();
-        params.voice_id = voiceIdBytes.constData();
-    }
-
-    if (settings.contains(QStringLiteral("temperature"))) {
-        params.temperature = settings.value(QStringLiteral("temperature")).toFloat();
-    }
-    if (settings.contains(QStringLiteral("top_k"))) {
-        params.top_k = settings.value(QStringLiteral("top_k")).toInt();
-    }
-    if (settings.contains(QStringLiteral("max_chars"))) {
-        params.max_chars = settings.value(QStringLiteral("max_chars")).toInt();
-    }
-    if (settings.contains(QStringLiteral("max_tokens"))) {
-        params.max_tokens = settings.value(QStringLiteral("max_tokens")).toInt();
-    }
-    if (settings.contains(QStringLiteral("skip_normalize"))) {
-        params.skip_normalize = settings.value(QStringLiteral("skip_normalize")).toBool();
-    }
-    if (settings.contains(QStringLiteral("skip_phonemize"))) {
-        params.skip_phonemize = settings.value(QStringLiteral("skip_phonemize")).toBool();
-    }
-    if (settings.contains(QStringLiteral("apply_watermark"))) {
-        params.apply_watermark = settings.value(QStringLiteral("apply_watermark")).toBool();
-    }
-
     slm_audio out;
     memset(&out, 0, sizeof(out));
-    Logger::info("SpeechLmBackend", QString("Calling SpeechLM TTS synthesize: textLength=%1, voice=%2, temperature=%3, topK=%4, maxTokens=%5")
-                 .arg(text.length())
-                 .arg(QString::fromUtf8(voiceIdBytes))
-                 .arg(params.temperature)
-                 .arg(params.top_k)
-                 .arg(params.max_tokens));
-    int status = slm.slm_synthesize((struct slm_context*)m_context, &params, &out);
+    int status = -1;
+    if (m_useAbiV2) {
+        slm_tts_params_v2 params;
+        slm.slm_tts_v2_default_params(&params);
+        params.text = textBytes.constData();
+        if (settings.contains(QStringLiteral("voice"))) {
+            voiceIdBytes = settings.value(QStringLiteral("voice")).toString().toUtf8();
+            params.voice_id = voiceIdBytes.constData();
+        }
+        if (settings.contains(QStringLiteral("temperature"))) params.temperature = settings.value(QStringLiteral("temperature")).toFloat();
+        if (settings.contains(QStringLiteral("top_k"))) params.top_k = settings.value(QStringLiteral("top_k")).toInt();
+        if (settings.contains(QStringLiteral("top_p"))) params.top_p = settings.value(QStringLiteral("top_p")).toFloat();
+        if (settings.contains(QStringLiteral("max_new_frames"))) params.max_new_frames = settings.value(QStringLiteral("max_new_frames")).toInt();
+        if (settings.contains(QStringLiteral("repetition_penalty"))) params.repetition_penalty = settings.value(QStringLiteral("repetition_penalty")).toFloat();
+        if (settings.contains(QStringLiteral("max_chars"))) params.max_chars = settings.value(QStringLiteral("max_chars")).toInt();
+        if (settings.contains(QStringLiteral("apply_watermark"))) params.apply_watermark = settings.value(QStringLiteral("apply_watermark")).toBool();
+        status = slm.slm_synthesize_v2((struct slm_context*)m_context, &params, &out);
+    } else {
+        slm_tts_params params;
+        slm.slm_tts_default_params(&params);
+        params.text = textBytes.constData();
+        if (settings.contains(QStringLiteral("voice"))) {
+            voiceIdBytes = settings.value(QStringLiteral("voice")).toString().toUtf8();
+            params.voice_id = voiceIdBytes.constData();
+        }
+        if (settings.contains(QStringLiteral("temperature"))) params.temperature = settings.value(QStringLiteral("temperature")).toFloat();
+        if (settings.contains(QStringLiteral("top_k"))) params.top_k = settings.value(QStringLiteral("top_k")).toInt();
+        if (settings.contains(QStringLiteral("max_chars"))) params.max_chars = settings.value(QStringLiteral("max_chars")).toInt();
+        if (settings.contains(QStringLiteral("max_tokens"))) params.max_tokens = settings.value(QStringLiteral("max_tokens")).toInt();
+        if (settings.contains(QStringLiteral("skip_normalize"))) params.skip_normalize = settings.value(QStringLiteral("skip_normalize")).toBool();
+        if (settings.contains(QStringLiteral("skip_phonemize"))) params.skip_phonemize = settings.value(QStringLiteral("skip_phonemize")).toBool();
+        if (settings.contains(QStringLiteral("apply_watermark"))) params.apply_watermark = settings.value(QStringLiteral("apply_watermark")).toBool();
+        status = slm.slm_synthesize((struct slm_context*)m_context, &params, &out);
+    }
     Logger::info("SpeechLmBackend", QString("SpeechLM TTS synthesize returned: status=%1, samples=%2, sampleRate=%3")
                  .arg(status)
                  .arg(out.n_samples)
@@ -285,6 +329,42 @@ bool SpeechLmBackend::cloneVoice(const QString &text, const QString &referencePa
     if (!slm.isLoaded() || !m_context) {
         error = QStringLiteral("SpeechLM TTS runtime was unloaded unexpectedly.");
         return false;
+    }
+
+    if (m_useAbiV2) {
+        QByteArray textBytes = text.toUtf8();
+        QByteArray refPathBytes = QDir::toNativeSeparators(PathUtils::toNativeShortPath(referencePath)).toUtf8();
+
+        slm_tts_params_v2 params;
+        slm.slm_tts_v2_default_params(&params);
+        params.text = textBytes.constData();
+        params.ref_audio_path = refPathBytes.constData();
+        if (settings.contains(QStringLiteral("temperature"))) params.temperature = settings.value(QStringLiteral("temperature")).toFloat();
+        if (settings.contains(QStringLiteral("top_k"))) params.top_k = settings.value(QStringLiteral("top_k")).toInt();
+        if (settings.contains(QStringLiteral("top_p"))) params.top_p = settings.value(QStringLiteral("top_p")).toFloat();
+        if (settings.contains(QStringLiteral("max_new_frames"))) params.max_new_frames = settings.value(QStringLiteral("max_new_frames")).toInt();
+        if (settings.contains(QStringLiteral("repetition_penalty"))) params.repetition_penalty = settings.value(QStringLiteral("repetition_penalty")).toFloat();
+        if (settings.contains(QStringLiteral("max_chars"))) params.max_chars = settings.value(QStringLiteral("max_chars")).toInt();
+        if (settings.contains(QStringLiteral("apply_watermark"))) params.apply_watermark = settings.value(QStringLiteral("apply_watermark")).toBool();
+
+        slm_audio out;
+        memset(&out, 0, sizeof(out));
+        int status = slm.slm_synthesize_v2((struct slm_context*)m_context, &params, &out);
+        if (status != 0) {
+            error = QString::fromUtf8(slm.slm_last_error());
+            Logger::error("SpeechLmBackend", "Failed to synthesize VieNeu v3 cloned voice: " + error);
+            return false;
+        }
+        if (!isValidRuntimeAudio(out)) {
+            slm.slm_audio_free(&out);
+            error = QStringLiteral("SpeechLM TTS returned an invalid or empty audio buffer.");
+            return false;
+        }
+        samples.resize(out.n_samples);
+        memcpy(samples.data(), out.samples, sizeof(float) * out.n_samples);
+        sampleRate = out.sample_rate;
+        slm.slm_audio_free(&out);
+        return true;
     }
 
     QByteArray refPathBytes = QDir::toNativeSeparators(PathUtils::toNativeShortPath(referencePath)).toUtf8();

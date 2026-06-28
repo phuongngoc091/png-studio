@@ -49,6 +49,32 @@ struct slm_tts_params {
     bool          apply_watermark;
 };
 
+struct slm_init_params_v2 {
+    int          abi_version;
+    const char * profile;
+    const char * model_dir;
+    const char * onnx_dir;
+    const char * codec_dir;
+    const char * config_path;
+    const char * tokenizer_path;
+    const char * voices_json_path;
+    int          n_threads;
+};
+
+struct slm_tts_params_v2 {
+    int          abi_version;
+    const char * text;
+    const char * voice_id;
+    const char * ref_audio_path;
+    float        temperature;
+    int          top_k;
+    float        top_p;
+    int          max_new_frames;
+    float        repetition_penalty;
+    int          max_chars;
+    bool         apply_watermark;
+};
+
 typedef const char * (*slm_version_fn)(void);
 typedef const char * (*slm_last_error_fn)(void);
 typedef void (*slm_audio_free_fn)(struct slm_audio * a);
@@ -57,6 +83,10 @@ typedef struct slm_context * (*slm_init_fn)(const struct slm_init_params * param
 typedef void (*slm_free_fn)(struct slm_context * slm);
 typedef void (*slm_tts_default_params_fn)(struct slm_tts_params * p);
 typedef int (*slm_synthesize_fn)(struct slm_context * slm, const struct slm_tts_params * params, struct slm_audio * out);
+typedef void (*slm_init_v2_default_params_fn)(struct slm_init_params_v2 * p);
+typedef struct slm_context * (*slm_init_v2_fn)(const struct slm_init_params_v2 * params);
+typedef void (*slm_tts_v2_default_params_fn)(struct slm_tts_params_v2 * p);
+typedef int (*slm_synthesize_v2_fn)(struct slm_context * slm, const struct slm_tts_params_v2 * params, struct slm_audio * out);
 typedef int (*slm_encode_reference_fn)(struct slm_context * slm, const char * ref_audio_path, float * out_embedding_128);
 typedef int (*slm_list_preset_voices_fn)(struct slm_context * slm, char * out_json, int max_len);
 typedef int (*slm_set_preset_voice_fn)(struct slm_context * slm, const char * voice_id);
@@ -80,6 +110,10 @@ public:
         slm_free = nullptr;
         slm_tts_default_params = nullptr;
         slm_synthesize = nullptr;
+        slm_init_v2_default_params = nullptr;
+        slm_init_v2 = nullptr;
+        slm_tts_v2_default_params = nullptr;
+        slm_synthesize_v2 = nullptr;
         slm_encode_reference = nullptr;
         slm_list_preset_voices = nullptr;
         slm_set_preset_voice = nullptr;
@@ -121,6 +155,10 @@ public:
         slm_free = resolve<slm_free_fn>("slm_free", "vn_free");
         slm_tts_default_params = resolve<slm_tts_default_params_fn>("slm_tts_default_params", "vn_tts_default_params");
         slm_synthesize = resolve<slm_synthesize_fn>("slm_synthesize", "vn_synthesize");
+        slm_init_v2_default_params = reinterpret_cast<slm_init_v2_default_params_fn>(m_lib.resolve("slm_init_v2_default_params"));
+        slm_init_v2 = reinterpret_cast<slm_init_v2_fn>(m_lib.resolve("slm_init_v2"));
+        slm_tts_v2_default_params = reinterpret_cast<slm_tts_v2_default_params_fn>(m_lib.resolve("slm_tts_v2_default_params"));
+        slm_synthesize_v2 = reinterpret_cast<slm_synthesize_v2_fn>(m_lib.resolve("slm_synthesize_v2"));
         slm_encode_reference = resolve<slm_encode_reference_fn>("slm_encode_reference", "vn_encode_reference");
         slm_list_preset_voices = resolve<slm_list_preset_voices_fn>("slm_list_preset_voices", "vn_list_preset_voices");
         slm_set_preset_voice = resolve<slm_set_preset_voice_fn>("slm_set_preset_voice", "vn_set_preset_voice");
@@ -151,6 +189,10 @@ public:
     slm_free_fn slm_free = nullptr;
     slm_tts_default_params_fn slm_tts_default_params = nullptr;
     slm_synthesize_fn slm_synthesize = nullptr;
+    slm_init_v2_default_params_fn slm_init_v2_default_params = nullptr;
+    slm_init_v2_fn slm_init_v2 = nullptr;
+    slm_tts_v2_default_params_fn slm_tts_v2_default_params = nullptr;
+    slm_synthesize_v2_fn slm_synthesize_v2 = nullptr;
     slm_encode_reference_fn slm_encode_reference = nullptr;
     slm_list_preset_voices_fn slm_list_preset_voices = nullptr;
     slm_set_preset_voice_fn slm_set_preset_voice = nullptr;

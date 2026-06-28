@@ -644,7 +644,8 @@ bool ModelManager::hasFile(const QString &modelId, const QString &filename) cons
             (dirName.compare(repoTail, Qt::CaseInsensitive) == 0) ||
             (dirName.compare(repoTailNoGguf, Qt::CaseInsensitive) == 0);
         if (idMatch) {
-            if (m.files.contains(filename)) {
+            const QString candidatePath = QDir(m.path).absoluteFilePath(filename);
+            if (m.files.contains(filename) && QFileInfo::exists(candidatePath)) {
                 return true;
             }
         }
@@ -677,8 +678,9 @@ QString ModelManager::filePath(const QString &modelId, const QString &filename) 
             (dirName.compare(repoTail, Qt::CaseInsensitive) == 0) ||
             (dirName.compare(repoTailNoGguf, Qt::CaseInsensitive) == 0);
         if (idMatch) {
-            if (m.files.contains(filename)) {
-                return QDir(m.path).absoluteFilePath(filename);
+            const QString candidatePath = QDir(m.path).absoluteFilePath(filename);
+            if (m.files.contains(filename) && QFileInfo::exists(candidatePath)) {
+                return candidatePath;
             }
         }
     }

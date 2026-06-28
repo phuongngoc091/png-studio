@@ -38,6 +38,11 @@
           "reason": "Vietnamese-focused TTS model for LA Studio speech workflows."
         },
         {
+          "familyId": "vieneu-tts-v3-turbo",
+          "modelId": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+          "reason": "48 kHz VieNeu v3 Turbo ONNX package for Vietnamese-English TTS and reference-audio cloning."
+        },
+        {
           "familyId": "omnivoice",
           "modelId": "k2-fsa/OmniVoice",
           "reason": "High quality multilingual TTS, voice cloning, and voice design package."
@@ -3966,7 +3971,7 @@
           "name": "CPU speech-lm-tts.cpp (x64)",
           "asset": "speech-lm-tts-win-cpu.zip",
           "library": "speechlm-tts.dll",
-          "version": "v0.1.0",
+          "version": "v0.1.1",
           "source": "https://github.com/dduongtrandai/speech-lm-tts.cpp/releases/download/"
         }
       ],
@@ -4290,6 +4295,694 @@
         }
       },
       "modelPath": "pnnbao-ump/VieNeu-TTS-v2-Turbo"
+    },
+    {
+      "id": "vieneu-tts-v3-turbo",
+      "localDir": "vieneu-tts-v3-turbo",
+      "shortName": "VN3",
+      "title": "VieNeu-TTS v3 Turbo",
+      "subtitle": "48 kHz Vietnamese-English TTS & cloning",
+      "description": "VieNeu-TTS v3 Turbo is a Vietnamese-English TTS model with preset voices, reference-audio cloning, and a CPU ONNX runtime path.",
+      "accent": "#ff9100",
+      "capabilities": [
+        "tts",
+        "voice-cloning"
+      ],
+      "supportsTts": true,
+      "supportsCloning": true,
+      "tags": [
+        "ONNX",
+        "Vietnamese",
+        "Voice Cloning",
+        "48 kHz"
+      ],
+      "strengths": [
+        "CPU ONNX runtime path",
+        "Built-in preset voices",
+        "Reference-audio cloning",
+        "English-Vietnamese code switching"
+      ],
+      "weaknesses": [
+        "Early access upstream model",
+        "Native C++ generation support is still under active implementation"
+      ],
+      "supportedLanguages": [
+        {
+          "text": "Vietnamese (vi)",
+          "value": "vi"
+        },
+        {
+          "text": "English (en)",
+          "value": "en"
+        }
+      ],
+      "parameterDefinitions": {
+        "voice": {
+          "name": "Voice",
+          "type": "choice",
+          "description": "Select a VieNeu v3 preset voice when voices_v3_turbo.json is installed."
+        },
+        "temperature": {
+          "name": "Temperature",
+          "type": "float",
+          "min": 0.1,
+          "max": 2.0,
+          "default": 0.8,
+          "description": "Randomness of generation. Recommended: around 0.8 for v3 Turbo."
+        },
+        "top_k": {
+          "name": "Top K",
+          "type": "int",
+          "min": 1,
+          "max": 100,
+          "default": 25,
+          "description": "Limit token selection to top K candidates."
+        },
+        "top_p": {
+          "name": "Top P",
+          "type": "float",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.95,
+          "description": "Nucleus sampling threshold."
+        },
+        "max_new_frames": {
+          "name": "Max New Frames",
+          "type": "int",
+          "min": 16,
+          "max": 1200,
+          "default": 300,
+          "description": "Maximum generated acoustic frames per chunk.",
+          "advanced": true
+        },
+        "repetition_penalty": {
+          "name": "Repetition Penalty",
+          "type": "float",
+          "min": 1.0,
+          "max": 2.0,
+          "default": 1.2,
+          "description": "Penalize repeated audio codes.",
+          "advanced": true
+        },
+        "max_chars": {
+          "name": "Max Chars",
+          "type": "int",
+          "min": 50,
+          "max": 1000,
+          "default": 384,
+          "description": "Maximum characters per text segment.",
+          "advanced": true
+        },
+        "apply_watermark": {
+          "name": "Apply Watermark",
+          "type": "bool",
+          "default": true,
+          "description": "Request watermarking when supported by the runtime.",
+          "advanced": true
+        }
+      },
+      "runtimes": [
+        {
+          "id": "speech-lm-tts.cpp-win-x86_64-cpu",
+          "engineFamily": "speech-lm-tts.cpp",
+          "backend": "speech-lm-tts.cpp",
+          "pipelineProfile": "vieneu-v3-onnx",
+          "label": "CPU",
+          "name": "CPU speech-lm-tts.cpp VieNeu v3 ONNX (x64)",
+          "asset": "speech-lm-tts-win-cpu.zip",
+          "library": "speechlm-tts.dll",
+          "version": "v0.1.1",
+          "source": "https://github.com/dduongtrandai/speech-lm-tts.cpp/releases/download/"
+        }
+      ],
+      "studio": {
+        "tts": {
+          "layout": "tts",
+          "action": "synthesize",
+          "inputs": [
+            "text"
+          ],
+          "parameters": [
+            "voice",
+            "temperature",
+            "top_k",
+            "top_p",
+            "max_new_frames",
+            "repetition_penalty",
+            "max_chars",
+            "apply_watermark"
+          ]
+        },
+        "voice-cloning": {
+          "layout": "voice-cloning",
+          "action": "clone",
+          "inputs": [
+            "text",
+            "ref_audio"
+          ],
+          "parameters": [
+            "temperature",
+            "top_k",
+            "top_p",
+            "max_new_frames",
+            "repetition_penalty",
+            "max_chars",
+            "apply_watermark"
+          ]
+        }
+      },
+      "modelId": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+      "requiredFiles": [
+        {
+          "role": "config",
+          "name": "VieNeu v3 Config",
+          "purpose": "Model architecture and token id configuration",
+          "file": "config.json",
+          "candidates": [
+            "config.json"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-config",
+          "size": "1.6 KB",
+          "variants": [
+            {
+              "name": "config.json",
+              "size": "1.6 KB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "config.json",
+                  "size": "1.6 KB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "tokenizer",
+          "name": "VieNeu v3 Tokenizer",
+          "purpose": "Byte-level BPE phoneme tokenizer",
+          "file": "tokenizer.json",
+          "candidates": [
+            "tokenizer.json"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-tokenizer",
+          "size": "22 KB",
+          "variants": [
+            {
+              "name": "tokenizer.json",
+              "size": "22 KB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "tokenizer.json",
+                  "size": "22 KB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "prefill",
+          "name": "VieNeu v3 Prefill ONNX",
+          "purpose": "Transformer prompt prefill graph",
+          "file": "onnx/vieneu_prefill.onnx",
+          "candidates": [
+            "onnx/vieneu_prefill.onnx"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-prefill",
+          "size": "324 KB",
+          "variants": [
+            {
+              "name": "onnx/vieneu_prefill.onnx",
+              "size": "324 KB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "onnx/vieneu_prefill.onnx",
+                  "size": "324 KB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "decode_step",
+          "name": "VieNeu v3 Decode Step ONNX",
+          "purpose": "Autoregressive transformer decode step graph",
+          "file": "onnx/vieneu_decode_step.onnx",
+          "candidates": [
+            "onnx/vieneu_decode_step.onnx"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-decode-step",
+          "size": "306 KB",
+          "variants": [
+            {
+              "name": "onnx/vieneu_decode_step.onnx",
+              "size": "306 KB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "onnx/vieneu_decode_step.onnx",
+                  "size": "306 KB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "acoustic",
+          "name": "VieNeu v3 Acoustic ONNX",
+          "purpose": "Cached acoustic token generation graph",
+          "file": "onnx/vieneu_acoustic_cached.onnx",
+          "candidates": [
+            "onnx/vieneu_acoustic_cached.onnx"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-acoustic",
+          "size": "14 MB",
+          "variants": [
+            {
+              "name": "onnx/vieneu_acoustic_cached.onnx",
+              "size": "14 MB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "onnx/vieneu_acoustic_cached.onnx",
+                  "size": "14 MB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "backbone_data",
+          "name": "VieNeu v3 Shared ONNX Data",
+          "purpose": "External ONNX tensor data for the transformer graphs",
+          "file": "onnx/vieneu_backbone_shared.data",
+          "candidates": [
+            "onnx/vieneu_backbone_shared.data"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-shared-data",
+          "size": "396 MB",
+          "variants": [
+            {
+              "name": "onnx/vieneu_backbone_shared.data",
+              "size": "396 MB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "onnx/vieneu_backbone_shared.data",
+                  "size": "396 MB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "heads",
+          "name": "VieNeu v3 Heads NPZ",
+          "purpose": "Text/audio embeddings and tied output heads",
+          "file": "onnx/vieneu_v3_heads.npz",
+          "candidates": [
+            "onnx/vieneu_v3_heads.npz"
+          ],
+          "modelKey": "pnnbao-ump/vieneu-v3-heads",
+          "size": "25 MB",
+          "variants": [
+            {
+              "name": "onnx/vieneu_v3_heads.npz",
+              "size": "25 MB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "pnnbao-ump",
+              "repo": "VieNeu-TTS-v3-Turbo",
+              "files": [
+                {
+                  "name": "onnx/vieneu_v3_heads.npz",
+                  "size": "25 MB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "codec_decode",
+          "name": "MOSS Audio Tokenizer Decoder ONNX",
+          "purpose": "Decode generated MOSS audio codes into 48 kHz waveform",
+          "file": "moss_audio_tokenizer_decode_full.onnx",
+          "candidates": [
+            "moss_audio_tokenizer_decode_full.onnx"
+          ],
+          "modelKey": "openmoss/moss-codec-decode",
+          "modelId": "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX",
+          "size": "unknown",
+          "variants": [
+            {
+              "name": "moss_audio_tokenizer_decode_full.onnx",
+              "size": "unknown"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "OpenMOSS-Team",
+              "repo": "MOSS-Audio-Tokenizer-Nano-ONNX",
+              "files": [
+                {
+                  "name": "moss_audio_tokenizer_decode_full.onnx",
+                  "size": "unknown"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "codec_encode",
+          "name": "MOSS Audio Tokenizer Encoder ONNX",
+          "purpose": "Encode reference audio into MOSS audio codes for voice cloning",
+          "file": "moss_audio_tokenizer_encode.onnx",
+          "candidates": [
+            "moss_audio_tokenizer_encode.onnx"
+          ],
+          "modelKey": "openmoss/moss-codec-encode",
+          "modelId": "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX",
+          "size": "unknown",
+          "variants": [
+            {
+              "name": "moss_audio_tokenizer_encode.onnx",
+              "size": "unknown"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "OpenMOSS-Team",
+              "repo": "MOSS-Audio-Tokenizer-Nano-ONNX",
+              "files": [
+                {
+                  "name": "moss_audio_tokenizer_encode.onnx",
+                  "size": "unknown"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metadataOverrides": {
+        "domain": "tts",
+        "architectures": [
+          "vieneu-v3-turbo"
+        ],
+        "compatibilityTypes": [
+          "onnx"
+        ],
+        "paramsStrings": [
+          "131M"
+        ],
+        "capabilities": [
+          "tts",
+          "voice-cloning"
+        ],
+        "vision": false
+      },
+      "modelYaml": {
+        "model": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+        "base": [
+          {
+            "key": "pnnbao-ump/vieneu-v3-config",
+            "role": "config",
+            "name": "VieNeu v3 Config",
+            "purpose": "Model architecture and token id configuration",
+            "defaultFile": "config.json",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "config.json",
+                    "size": "1.6 KB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "pnnbao-ump/vieneu-v3-tokenizer",
+            "role": "tokenizer",
+            "name": "VieNeu v3 Tokenizer",
+            "purpose": "Byte-level BPE phoneme tokenizer",
+            "defaultFile": "tokenizer.json",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "tokenizer.json",
+                    "size": "22 KB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "pnnbao-ump/vieneu-v3-prefill",
+            "role": "prefill",
+            "name": "VieNeu v3 Prefill ONNX",
+            "purpose": "Transformer prompt prefill graph",
+            "defaultFile": "onnx/vieneu_prefill.onnx",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "onnx/vieneu_prefill.onnx",
+                    "size": "324 KB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "pnnbao-ump/vieneu-v3-decode-step",
+            "role": "decode_step",
+            "name": "VieNeu v3 Decode Step ONNX",
+            "purpose": "Autoregressive transformer decode step graph",
+            "defaultFile": "onnx/vieneu_decode_step.onnx",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "onnx/vieneu_decode_step.onnx",
+                    "size": "306 KB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "pnnbao-ump/vieneu-v3-acoustic",
+            "role": "acoustic",
+            "name": "VieNeu v3 Acoustic ONNX",
+            "purpose": "Cached acoustic token generation graph",
+            "defaultFile": "onnx/vieneu_acoustic_cached.onnx",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "onnx/vieneu_acoustic_cached.onnx",
+                    "size": "14 MB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "pnnbao-ump/vieneu-v3-shared-data",
+            "role": "backbone_data",
+            "name": "VieNeu v3 Shared ONNX Data",
+            "purpose": "External ONNX tensor data for the transformer graphs",
+            "defaultFile": "onnx/vieneu_backbone_shared.data",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "onnx/vieneu_backbone_shared.data",
+                    "size": "396 MB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "pnnbao-ump/vieneu-v3-heads",
+            "role": "heads",
+            "name": "VieNeu v3 Heads NPZ",
+            "purpose": "Text/audio embeddings and tied output heads",
+            "defaultFile": "onnx/vieneu_v3_heads.npz",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "pnnbao-ump",
+                "repo": "VieNeu-TTS-v3-Turbo",
+                "files": [
+                  {
+                    "name": "onnx/vieneu_v3_heads.npz",
+                    "size": "25 MB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "openmoss/moss-codec-decode",
+            "role": "codec_decode",
+            "name": "MOSS Audio Tokenizer Decoder ONNX",
+            "purpose": "Decode generated MOSS audio codes into 48 kHz waveform",
+            "defaultFile": "moss_audio_tokenizer_decode_full.onnx",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "OpenMOSS-Team",
+                "repo": "MOSS-Audio-Tokenizer-Nano-ONNX",
+                "files": [
+                  {
+                    "name": "moss_audio_tokenizer_decode_full.onnx",
+                    "size": "unknown"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "openmoss/moss-codec-encode",
+            "role": "codec_encode",
+            "name": "MOSS Audio Tokenizer Encoder ONNX",
+            "purpose": "Encode reference audio into MOSS audio codes for voice cloning",
+            "defaultFile": "moss_audio_tokenizer_encode.onnx",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "OpenMOSS-Team",
+                "repo": "MOSS-Audio-Tokenizer-Nano-ONNX",
+                "files": [
+                  {
+                    "name": "moss_audio_tokenizer_encode.onnx",
+                    "size": "unknown"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metadataOverrides": {
+          "domain": "tts",
+          "architectures": [
+            "vieneu-v3-turbo"
+          ],
+          "compatibilityTypes": [
+            "onnx"
+          ],
+          "paramsStrings": [
+            "131M"
+          ],
+          "capabilities": [
+            "tts",
+            "voice-cloning"
+          ],
+          "vision": false
+        }
+      },
+      "stats": {
+        "upstreamModelId": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+        "likesModelId": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+        "downloadModelIds": [
+          "pnnbao-ump/VieNeu-TTS-v3-Turbo"
+        ],
+        "policy": {
+          "downloads": "upstream-hf-model",
+          "likes": "upstream-hf-model"
+        }
+      },
+      "hubFiles": {
+        "manifest": {
+          "schemaVersion": "1.0.0",
+          "id": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+          "publisher": "pnnbao-ump",
+          "name": "VieNeu-TTS-v3-Turbo",
+          "title": "VieNeu-TTS v3 Turbo",
+          "task": "text-to-speech",
+          "source": "https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo",
+          "license": "apache-2.0",
+          "runtimeFormat": "onnx",
+          "downloadSources": [
+            "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+            "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX"
+          ]
+        },
+        "readme": {
+          "filename": "README.md",
+          "content": "# VieNeu-TTS v3 Turbo\n\nVieNeu-TTS v3 Turbo is a 48 kHz Vietnamese-English text-to-speech model from Pham Nguyen Ngoc Bao. The upstream SDK runs v3 Turbo on CPU through ONNX Runtime and on GPU through PyTorch.\n\n## LA Studio Notes\n\nLA Studio targets the CPU ONNX path through `speech-lm-tts.cpp` with `pipelineProfile: vieneu-v3-onnx`.\n\nRequired upstream components:\n\n- VieNeu v3 model ONNX graphs and metadata from `pnnbao-ump/VieNeu-TTS-v3-Turbo`\n- MOSS Audio Tokenizer Nano ONNX codec files from `OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX`\n\nThe native C++ runtime consumes local files only. It does not download model files at runtime.\n"
+        },
+        "thumbnail": {
+          "filename": "thumbnail.webp",
+          "mimeType": "image/webp",
+          "base64": "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"
+        }
+      },
+      "modelPath": "pnnbao-ump/VieNeu-TTS-v3-Turbo"
     },
     {
       "id": "qwen3-tts-0.6b-base",

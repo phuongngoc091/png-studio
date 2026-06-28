@@ -153,7 +153,7 @@ laStudio:
       name: CPU speech-lm-tts.cpp (x64)
       asset: speech-lm-tts-win-cpu.zip
       library: speechlm-tts.dll
-      version: v0.1.0
+      version: v0.1.1
       source: https://github.com/dduongtrandai/speech-lm-tts.cpp/releases/download/
   studio:
     tts:

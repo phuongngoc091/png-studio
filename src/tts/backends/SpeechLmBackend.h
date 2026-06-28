@@ -17,6 +17,7 @@ public:
 
 private:
     void *m_context = nullptr;
+    bool m_useAbiV2 = false;
 };
 
 } // namespace LAStudio

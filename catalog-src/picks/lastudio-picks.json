@@ -34,6 +34,11 @@
       "reason": "Vietnamese-focused TTS model for LA Studio speech workflows."
     },
     {
+      "familyId": "vieneu-tts-v3-turbo",
+      "modelId": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+      "reason": "48 kHz VieNeu v3 Turbo ONNX package for Vietnamese-English TTS and reference-audio cloning."
+    },
+    {
       "familyId": "omnivoice",
       "modelId": "k2-fsa/OmniVoice",
       "reason": "High quality multilingual TTS, voice cloning, and voice design package."

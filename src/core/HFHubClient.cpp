@@ -237,6 +237,7 @@ void HFHubClient::internalDownload(const QString &url,
         QDir().mkpath(destDir);
         const QString localPath = destDir + QStringLiteral("/") + filename;
         const QString tempPath = localPath + QStringLiteral(".download");
+        QDir().mkpath(QFileInfo(localPath).absolutePath());
 
         auto fileWriter = [](char *ptr, size_t size, size_t nmemb, void *userdata) -> size_t {
             auto *f = static_cast<QFile *>(userdata);

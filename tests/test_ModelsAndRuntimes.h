@@ -9,6 +9,7 @@ class TestModelsAndRuntimes : public QObject {
 private slots:
     void cleanupTestCase();
     void testModelManagerConcreteModelDir();
+    void testModelManagerResolvesSplitVirtualModelFiles();
     void testCapabilityFamilyModelSuitability();
     void testVoiceDesignFamiliesExposeRuntimeOptions();
     void testQwen3TtsUsesAutomaticFrameLimit();

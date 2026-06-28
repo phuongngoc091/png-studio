@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+  "publisher": "pnnbao-ump",
+  "name": "VieNeu-TTS-v3-Turbo",
+  "title": "VieNeu-TTS v3 Turbo",
+  "task": "text-to-speech",
+  "source": "https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo",
+  "license": "apache-2.0",
+  "runtimeFormat": "onnx",
+  "downloadSources": [
+    "pnnbao-ump/VieNeu-TTS-v3-Turbo",
+    "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX"
+  ]
+}
