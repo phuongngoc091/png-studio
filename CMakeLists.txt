@@ -75,6 +75,7 @@ set(LASTUDIO_SOURCES
     src/tts/backends/VoxCpm2Backend.cpp
     src/tts/backends/VibevoiceBackend.cpp
     src/tts/backends/SpeechLmBackend.cpp
+    src/tts/backends/VieneuTtsBackend.cpp
     src/tts/backends/OmnivoiceBackend.cpp
     src/controllers/AppController.cpp
     src/controllers/AudioPreviewService.cpp
@@ -113,6 +114,7 @@ set(LASTUDIO_HEADERS
     include/runtimes/CrispVoxCpm2Interface.h
     include/runtimes/CrispVibeVoiceInterface.h
     include/runtimes/SpeechLmTtsInterface.h
+    include/runtimes/VieneuTtsInterface.h
     include/runtimes/CrispQwen3SttInterface.h
     include/runtimes/CrispNemotronSttInterface.h
     src/core/RuntimeManager.h
@@ -145,6 +147,7 @@ set(LASTUDIO_HEADERS
     src/tts/backends/VoxCpm2Backend.h
     src/tts/backends/VibevoiceBackend.h
     src/tts/backends/SpeechLmBackend.h
+    src/tts/backends/VieneuTtsBackend.h
     src/tts/backends/OmnivoiceBackend.h
     src/controllers/AppController.h
     src/controllers/AudioPreviewService.h
@@ -267,6 +270,7 @@ qt_add_qml_module(LAStudio
         data/language-sets/whisper-v1.json
         data/language-sets/nemotron-3.5-v1.json
         data/language-sets/default.json
+        data/vieneu/voices_v3_turbo.json
         icons/app_icon.ico
         icons/app_icon_16.png
         icons/app_icon_32.png
@@ -303,6 +307,7 @@ target_link_libraries(LAStudio PRIVATE
     Qt6::Concurrent
     Qt6::Sql
     CURL::libcurl
+    ZLIB::ZLIB
 )
 
 if(WIN32)

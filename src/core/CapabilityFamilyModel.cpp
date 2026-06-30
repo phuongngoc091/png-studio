@@ -144,6 +144,38 @@ QString compactCount(qint64 value)
     return QLocale().toString(value);
 }
 
+qint64 parseSizeBytes(const QString &sizeText)
+{
+    const QString text = sizeText.trimmed();
+    if (text.isEmpty() || text.compare(QStringLiteral("unknown"), Qt::CaseInsensitive) == 0)
+        return 0;
+
+    static const QRegularExpression regex(
+        QStringLiteral("^([\\d.]+)\\s*(B|KB|MB|GB|TB)$"),
+        QRegularExpression::CaseInsensitiveOption);
+    const QRegularExpressionMatch match = regex.match(text);
+    if (!match.hasMatch())
+        return 0;
+
+    bool ok = false;
+    const double value = match.captured(1).toDouble(&ok);
+    if (!ok || value <= 0)
+        return 0;
+
+    const QString unit = match.captured(2).toUpper();
+    double multiplier = 1.0;
+    if (unit == QStringLiteral("KB"))
+        multiplier = 1024.0;
+    else if (unit == QStringLiteral("MB"))
+        multiplier = 1024.0 * 1024.0;
+    else if (unit == QStringLiteral("GB"))
+        multiplier = 1024.0 * 1024.0 * 1024.0;
+    else if (unit == QStringLiteral("TB"))
+        multiplier = 1024.0 * 1024.0 * 1024.0 * 1024.0;
+
+    return static_cast<qint64>(value * multiplier);
+}
+
 QVariantMap statBadge(const QString &label, qint64 value, const QString &tone, const QString &source)
 {
     QVariantMap item = badge(label, compactCount(value), tone);
@@ -783,7 +815,45 @@ bool CapabilityFamilyModel::isFileInstalled(const QVariantMap &family, const QSt
     if (family.isEmpty() || fileName.isEmpty()) return false;
     QString modelId = req.value(QStringLiteral("modelId")).toString();
     if (modelId.isEmpty()) modelId = family.value(QStringLiteral("modelId")).toString();
-    return hasFamilyFile(family, modelId, fileName);
+    if (!hasFamilyFile(family, modelId, fileName)) return false;
+
+    QString path = m_models ? m_models->filePath(modelId, fileName) : QString();
+    if (path.isEmpty()) {
+        QString localDir = family.value(QStringLiteral("localDir")).toString();
+        if (!localDir.isEmpty() && m_models) {
+            path = QDir(m_models->concreteModelDir(localDir)).absoluteFilePath(fileName);
+        }
+    }
+    if (path.isEmpty() || !QFileInfo::exists(path)) {
+        return false;
+    }
+    if (!fileName.endsWith(QStringLiteral(".npz"), Qt::CaseInsensitive)) {
+        return true;
+    }
+
+    QString defFile = req.value(QStringLiteral("file")).toString();
+    if (defFile.isEmpty()) defFile = family.value(QStringLiteral("file")).toString();
+
+    QString defSize = req.value(QStringLiteral("size")).toString();
+    if (defSize.isEmpty()) defSize = family.value(QStringLiteral("size")).toString();
+
+    const qint64 expectedBytes = parseSizeBytes(estimateSize(fileName, defFile, defSize));
+    if (expectedBytes <= 0) {
+        return true;
+    }
+
+    const qint64 actualBytes = QFileInfo(path).size();
+    const double minimumRatio = 0.65;
+    if (actualBytes >= static_cast<qint64>(expectedBytes * minimumRatio)) {
+        return true;
+    }
+
+    Logger::warning(QStringLiteral("CapabilityFamilyModel"),
+                    QStringLiteral("Model file appears incomplete: %1 (%2 bytes, expected about %3 bytes)")
+                    .arg(path)
+                    .arg(actualBytes)
+                    .arg(expectedBytes));
+    return false;
 }
 
 void CapabilityFamilyModel::updateItems()
@@ -972,10 +1042,14 @@ void CapabilityFamilyModel::updateItems()
             if (reqModelId.isEmpty()) {
                 reqModelId = sourceModelId;
             }
-            int installState = 0; // NotInstalled
+            const bool validInstalledFile = isFileInstalled(family, selectedFile, req);
+            int installState = validInstalledFile ? 3 : 0; // Installed / NotInstalled
             AppController *app = AppController::instance();
             if (app && app->downloadInstall()) {
                 installState = app->downloadInstall()->modelFileState(reqModelId, selectedFile);
+            }
+            if (installState == 3 && !validInstalledFile) {
+                installState = 0;
             }
             foundInstalled = (installState == 3); // Installed
 

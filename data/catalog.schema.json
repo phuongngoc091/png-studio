@@ -529,6 +529,9 @@
         "modelVersion": {
           "type": "string"
         },
+        "disabledReason": {
+          "type": "string"
+        },
         "dependencyDownloads": {
           "type": "array",
           "items": {

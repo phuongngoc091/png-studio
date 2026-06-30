@@ -60,6 +60,21 @@ QString progressLabelForStage(const QString &stage)
     if (stage == QStringLiteral("tts_begin")) {
         return QStringLiteral("Preparing synthesis");
     }
+    if (stage == QStringLiteral("prepare")) {
+        return QStringLiteral("Preparing synthesis");
+    }
+    if (stage == QStringLiteral("prefill")) {
+        return QStringLiteral("Running prompt prefill");
+    }
+    if (stage == QStringLiteral("generate_frame")) {
+        return QStringLiteral("Generating speech frames");
+    }
+    if (stage == QStringLiteral("decode_audio")) {
+        return QStringLiteral("Rendering waveform");
+    }
+    if (stage == QStringLiteral("complete")) {
+        return QStringLiteral("Synthesis complete");
+    }
     if (stage == QStringLiteral("maskgit")) {
         return QStringLiteral("Decoding semantic tokens");
     }
@@ -286,6 +301,7 @@ QVariantList TtsEngine::buildSchemaForRuntime(const QString &runtimePath) const
     bool isKokoro = runtimePath.contains("crispasr", Qt::CaseInsensitive) || runtimePath.contains("kokoro", Qt::CaseInsensitive);
     bool isSpeechLmTts = runtimePath.contains("speech-lm", Qt::CaseInsensitive) ||
                          runtimePath.contains("speechlm", Qt::CaseInsensitive) ||
+                         runtimePath.contains("vieneu", Qt::CaseInsensitive) ||
                          runtimePath.contains("slm", Qt::CaseInsensitive);
 
     QVariantList schema;

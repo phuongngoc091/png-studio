@@ -33,6 +33,8 @@ Dialog {
             return "https://github.com/dduongtrandai/vibevoice.cpp/releases/download/"
         if (engineId.indexOf("omnivoice") !== -1)
             return "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/"
+        if (engineId.indexOf("vieneu-tts") !== -1)
+            return "https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/"
         if (engineId.indexOf("speech-lm-tts") !== -1)
             return "https://github.com/dduongtrandai/speech-lm-tts.cpp/releases/download/"
         if (engineId.indexOf("crispasr") !== -1)
@@ -55,6 +57,9 @@ Dialog {
         ]
         if (engineId.indexOf("omnivoice") !== -1) return [
             { version: "v0.1.2" }
+        ]
+        if (engineId.indexOf("vieneu-tts") !== -1) return [
+            { version: "v0.1.0" }
         ]
         if (engineId.indexOf("speech-lm-tts") !== -1) return [
             { version: "v0.1.1" }
@@ -115,6 +120,7 @@ Dialog {
     function fallbackAsset() {
         if (engineId.indexOf("vibevoice") !== -1) return "vibevoice-win-cpu.zip"
         if (engineId.indexOf("omnivoice") !== -1) return "omnivoice-win-cpu.zip"
+        if (engineId.indexOf("vieneu-tts") !== -1) return "vieneu-tts-win-cpu.zip"
         if (engineId.indexOf("speech-lm-tts") !== -1) return "speech-lm-tts-win-cpu.zip"
         if (engineId.indexOf("crispasr") !== -1) return "libcrispasr-windows-x86_64.tar.gz"
         if (engineId.indexOf("whisper") !== -1) return "whisper-win-cpu.zip"

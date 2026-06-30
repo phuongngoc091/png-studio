@@ -66,6 +66,9 @@ ResolvedConfiguration StudioConfigurationResolver::resolve(const StudioConfigura
     for (const QVariant &rtVal : runtimes) {
         QVariantMap rt = rtVal.toMap();
         if (rt.value(QStringLiteral("id")).toString() == config.runtimeId) {
+            if (!rt.value(QStringLiteral("disabledReason")).toString().trimmed().isEmpty()) {
+                return {};
+            }
             QString backend = rt.value(QStringLiteral("backend")).toString();
             if (backend.isEmpty()) backend = rt.value(QStringLiteral("engineFamily")).toString();
             res.resolvedPaths.insert(QStringLiteral("backend"), backend);

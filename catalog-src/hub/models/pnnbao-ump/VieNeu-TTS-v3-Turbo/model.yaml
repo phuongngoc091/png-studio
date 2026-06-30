@@ -1,119 +1,133 @@
-model: pnnbao-ump/VieNeu-TTS-v3-Turbo
+model: lastudio-community/VieNeu-TTS-v3-Turbo-CPP
 base:
-  - key: pnnbao-ump/vieneu-v3-config
+  - key: lastudio-community/vieneu-v3-config
     role: config
     name: VieNeu v3 Config
     purpose: Model architecture and token id configuration
     defaultFile: config.json
     sources:
       - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: config.json
             size: 1.6 KB
-  - key: pnnbao-ump/vieneu-v3-tokenizer
+  - key: lastudio-community/vieneu-v3-tokenizer
     role: tokenizer
     name: VieNeu v3 Tokenizer
     purpose: Byte-level BPE phoneme tokenizer
     defaultFile: tokenizer.json
     sources:
       - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: tokenizer.json
             size: 22 KB
-  - key: pnnbao-ump/vieneu-v3-prefill
-    role: prefill
-    name: VieNeu v3 Prefill ONNX
-    purpose: Transformer prompt prefill graph
-    defaultFile: onnx/vieneu_prefill.onnx
+  - key: lastudio-community/vieneu-v3-native-backbone
+    role: model
+    name: VieNeu v3 Native Backbone GGUF
+    purpose: Native semantic backbone for the v3_native pipeline
+    defaultFile: backbone.gguf
     sources:
       - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
         files:
-          - name: onnx/vieneu_prefill.onnx
-            size: 324 KB
-  - key: pnnbao-ump/vieneu-v3-decode-step
-    role: decode_step
-    name: VieNeu v3 Decode Step ONNX
-    purpose: Autoregressive transformer decode step graph
-    defaultFile: onnx/vieneu_decode_step.onnx
-    sources:
-      - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
-        files:
-          - name: onnx/vieneu_decode_step.onnx
-            size: 306 KB
-  - key: pnnbao-ump/vieneu-v3-acoustic
-    role: acoustic
-    name: VieNeu v3 Acoustic ONNX
-    purpose: Cached acoustic token generation graph
-    defaultFile: onnx/vieneu_acoustic_cached.onnx
-    sources:
-      - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
-        files:
-          - name: onnx/vieneu_acoustic_cached.onnx
-            size: 14 MB
-  - key: pnnbao-ump/vieneu-v3-shared-data
-    role: backbone_data
-    name: VieNeu v3 Shared ONNX Data
-    purpose: External ONNX tensor data for the transformer graphs
-    defaultFile: onnx/vieneu_backbone_shared.data
-    sources:
-      - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
-        files:
-          - name: onnx/vieneu_backbone_shared.data
-            size: 396 MB
-  - key: pnnbao-ump/vieneu-v3-heads
+          - name: backbone.gguf
+            size: 398 MB
+  - key: lastudio-community/vieneu-v3-heads
     role: heads
-    name: VieNeu v3 Heads NPZ
-    purpose: Text/audio embeddings and tied output heads
-    defaultFile: onnx/vieneu_v3_heads.npz
+    name: VieNeu v3 Native Heads NPZ
+    purpose: Text/audio embeddings and tied output heads for the v3_native pipeline
+    defaultFile: vieneu_v3_heads.npz
     sources:
       - type: huggingface
-        user: pnnbao-ump
-        repo: VieNeu-TTS-v3-Turbo
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
         files:
-          - name: onnx/vieneu_v3_heads.npz
-            size: 25 MB
-  - key: openmoss/moss-codec-decode
+          - name: vieneu_v3_heads.npz
+            size: 49 MB
+  - key: lastudio-community/vieneu-v3-native-acoustic
+    role: acoustic
+    name: VieNeu v3 Native Acoustic NPZ
+    purpose: Local acoustic decoder weights for the v3_native pipeline
+    defaultFile: acoustic/vieneu_acoustic_weights.npz
+    sources:
+      - type: huggingface
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
+        files:
+          - name: acoustic/vieneu_acoustic_weights.npz
+            size: 54 MB
+  - key: lastudio-community/moss-codec-decode
     role: codec_decode
     name: MOSS Audio Tokenizer Decoder ONNX
     purpose: Decode generated MOSS audio codes into 48 kHz waveform
-    defaultFile: moss_audio_tokenizer_decode_full.onnx
+    defaultFile: codec/moss_audio_tokenizer_decode_full.onnx
     sources:
       - type: huggingface
-        user: OpenMOSS-Team
-        repo: MOSS-Audio-Tokenizer-Nano-ONNX
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
         files:
-          - name: moss_audio_tokenizer_decode_full.onnx
-            size: unknown
-  - key: openmoss/moss-codec-encode
+          - name: codec/moss_audio_tokenizer_decode_full.onnx
+            size: 666 KB
+  - key: lastudio-community/moss-codec-decode-data
+    role: codec_decode_data
+    name: MOSS Audio Tokenizer Decoder Shared Data
+    purpose: External ONNX tensor data required by the MOSS decoder graph
+    defaultFile: codec/moss_audio_tokenizer_decode_shared.data
+    sources:
+      - type: huggingface
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
+        files:
+          - name: codec/moss_audio_tokenizer_decode_shared.data
+            size: 44.2 MB
+  - key: lastudio-community/moss-codec-encode
     role: codec_encode
     name: MOSS Audio Tokenizer Encoder ONNX
     purpose: Encode reference audio into MOSS audio codes for voice cloning
-    defaultFile: moss_audio_tokenizer_encode.onnx
+    defaultFile: codec/moss_audio_tokenizer_encode.onnx
     sources:
       - type: huggingface
-        user: OpenMOSS-Team
-        repo: MOSS-Audio-Tokenizer-Nano-ONNX
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
         files:
-          - name: moss_audio_tokenizer_encode.onnx
-            size: unknown
+          - name: codec/moss_audio_tokenizer_encode.onnx
+            size: 797 KB
+  - key: lastudio-community/moss-codec-encode-data
+    role: codec_encode_data
+    name: MOSS Audio Tokenizer Encoder Data
+    purpose: External ONNX tensor data required by the MOSS encoder graph
+    defaultFile: codec/moss_audio_tokenizer_encode.data
+    sources:
+      - type: huggingface
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
+        files:
+          - name: codec/moss_audio_tokenizer_encode.data
+            size: 44.5 MB
+  - key: lastudio-community/vieneu-v3-voices
+    role: voices
+    name: VieNeu v3 Preset Voices
+    purpose: Preset voice definitions for the v3_native pipeline
+    defaultFile: voices_v3_turbo.json
+    sources:
+      - type: huggingface
+        user: lastudio-community
+        repo: VieNeu-TTS-v3-Turbo-CPP
+        files:
+          - name: voices_v3_turbo.json
+            size: 115 KB
 metadataOverrides:
   domain: tts
   architectures:
     - vieneu-v3-turbo
   compatibilityTypes:
-    - onnx
+    - gguf
+    - npz
+    - onnx-codec
   paramsStrings:
     - 131M
   capabilities:
@@ -127,7 +141,7 @@ laStudio:
   shortName: VN3
   title: VieNeu-TTS v3 Turbo
   subtitle: 48 kHz Vietnamese-English TTS & cloning
-  description: VieNeu-TTS v3 Turbo is a Vietnamese-English TTS model with preset voices, reference-audio cloning, and a CPU ONNX runtime path.
+  description: VieNeu-TTS v3 Turbo is a Vietnamese-English TTS model with preset voices, reference-audio cloning, and the v3_native C++ runtime pipeline.
   accent: "#ff9100"
   capabilities:
     - tts
@@ -135,18 +149,20 @@ laStudio:
   supportsTts: true
   supportsCloning: true
   tags:
-    - ONNX
+    - GGUF
+    - Native
     - Vietnamese
     - Voice Cloning
     - 48 kHz
   strengths:
-    - CPU ONNX runtime path
+    - Native C++ runtime path
+    - Exact inference progress reporting
     - Built-in preset voices
     - Reference-audio cloning
     - English-Vietnamese code switching
   weaknesses:
     - Early access upstream model
-    - Native C++ generation support is still under active implementation
+    - GPU runtime packages are large
   supportedLanguages:
     - text: Vietnamese (vi)
       value: vi
@@ -156,34 +172,34 @@ laStudio:
     voice:
       name: Voice
       type: choice
-      description: Select a VieNeu v3 preset voice when voices_v3_turbo.json is installed.
+      description: Select a built-in VieNeu v3 preset voice.
     temperature:
       name: Temperature
       type: float
       min: 0.1
       max: 2.0
-      default: 0.8
-      description: "Randomness of generation. Recommended: around 0.8 for v3 Turbo."
+      default: 0.45
+      description: "Randomness of generation. Lower values are more stable for short preset-voice prompts."
     top_k:
       name: Top K
       type: int
       min: 1
       max: 100
-      default: 25
+      default: 15
       description: Limit token selection to top K candidates.
     top_p:
       name: Top P
       type: float
       min: 0.0
       max: 1.0
-      default: 0.95
+      default: 0.85
       description: Nucleus sampling threshold.
     max_new_frames:
       name: Max New Frames
       type: int
       min: 16
       max: 1200
-      default: 300
+      default: 160
       description: Maximum generated acoustic frames per chunk.
       advanced: true
     repetition_penalty:
@@ -209,16 +225,36 @@ laStudio:
       description: Request watermarking when supported by the runtime.
       advanced: true
   runtimes:
-    - id: speech-lm-tts.cpp-win-x86_64-cpu
-      engineFamily: speech-lm-tts.cpp
-      backend: speech-lm-tts.cpp
-      pipelineProfile: vieneu-v3-onnx
+    - id: vieneu-tts-win-x86_64-cpu
+      engineFamily: vieneu-tts
+      backend: vieneu-tts
+      pipelineProfile: vieneu-v3-native
       label: CPU
-      name: CPU speech-lm-tts.cpp VieNeu v3 ONNX (x64)
-      asset: speech-lm-tts-win-cpu.zip
-      library: speechlm-tts.dll
+      name: CPU VieNeu-TTS v3 Native Runtime (x64)
+      asset: vieneu-tts-win-cpu.zip
+      library: vieneu-tts.dll
       version: v0.1.1
-      source: https://github.com/dduongtrandai/speech-lm-tts.cpp/releases/download/
+      source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
+    - id: vieneu-tts-win-x86_64-cuda
+      engineFamily: vieneu-tts
+      backend: vieneu-tts
+      pipelineProfile: vieneu-v3-native
+      label: CUDA
+      name: CUDA 12 VieNeu-TTS v3 Native Runtime (x64)
+      asset: vieneu-tts-win-cuda-12.zip
+      library: vieneu-tts.dll
+      version: v0.1.1
+      source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
+    - id: vieneu-tts-win-x86_64-vulkan
+      engineFamily: vieneu-tts
+      backend: vieneu-tts
+      pipelineProfile: vieneu-v3-native
+      label: Vulkan
+      name: Vulkan VieNeu-TTS v3 Native Runtime (x64)
+      asset: vieneu-tts-win-vulkan.zip
+      library: vieneu-tts.dll
+      version: v0.1.1
+      source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
   studio:
     tts:
       layout: tts

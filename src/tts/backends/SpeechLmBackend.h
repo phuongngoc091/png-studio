@@ -1,7 +1,11 @@
 #pragma once
 #include "TtsBackend.h"
+#include <atomic>
+#include <functional>
 
 namespace LAStudio {
+
+struct vieneu_progress;
 
 class SpeechLmBackend : public TtsBackend {
 public:
@@ -14,10 +18,21 @@ public:
                     QVector<float> &samples, int &sampleRate, QString &error) override;
     bool cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings, 
                     QVector<float> &samples, int &sampleRate, QString &error) override;
+    void cancelProcessing() override;
+    void setProgressCallback(std::function<bool(int current,
+                                                int total,
+                                                const QString &stage,
+                                                int chunkIndex,
+                                                int chunkCount)> callback) override;
 
 private:
+    static void handleProgress(const vieneu_progress *progress, void *userData);
+
     void *m_context = nullptr;
     bool m_useAbiV2 = false;
+    bool m_useVieneuRuntime = false;
+    std::atomic<bool> m_cancelRequested {false};
+    std::function<bool(int current, int total, const QString &stage, int chunkIndex, int chunkCount)> m_progressCallback;
 };
 
 } // namespace LAStudio

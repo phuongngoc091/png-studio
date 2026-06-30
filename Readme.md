@@ -33,6 +33,10 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 
 ## Project Updates
 
+### 2026-07-01 - VieNeu-TTS-v3-Turbo Support
+
+LA Studio now supports **[VieNeu-TTS-v3-Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo)**, a high-fidelity 48 kHz Vietnamese-English text-to-speech model by Pham Nguyen Ngoc Bao. Integrated via the native `VieNeu-TTS.cpp` runtime, it offers hardware acceleration (CPU, CUDA, Vulkan) and real-time progress tracking. The entire pipeline runs completely offline on your hardware to ensure data privacy.
+
 ### 2026-06-23 - Nemotron-3.5 Streaming ASR
 
 LA Studio now supports NVIDIA **Nemotron-3.5 ASR Streaming 0.6B** for local multilingual speech-to-text through CrispASR. The Model Gallery can download the Q4_K or F16 GGUF model and compatible CrispASR v0.8.4 CPU, CUDA, or Vulkan runtime packages.
@@ -105,7 +109,7 @@ LA Studio is catalog-driven, so supported models can evolve without rewriting th
 | Category | Example model families |
 | --- | --- |
 | Speech-to-Text | Whisper, Qwen3-ASR 0.6B, Qwen3-ASR 1.7B |
-| Text-to-Speech | Kokoro 82M, VibeVoice Realtime, VieNeu-TTS v2 Turbo, Qwen3-TTS |
+| Text-to-Speech | Kokoro 82M, VibeVoice Realtime, VieNeu-TTS v2 Turbo, VieNeu-TTS v3 Turbo, Qwen3-TTS |
 | Voice Cloning | VoxCPM2, OmniVoice, Qwen3 custom voice packages |
 | Voice Design | VoxCPM2 voice design, Qwen3 voice design packages |
 
@@ -269,7 +273,7 @@ LA Studio exists because of the open-source runtime, tooling, and model ecosyste
 - [CrispASR](https://github.com/CrispStrobe/CrispASR) for GGUF runtime packages used by Qwen3-ASR, Qwen3-TTS, Kokoro, VoxCPM2, and VibeVoice workflows in LA Studio.
 - [omnivoice.cpp](https://github.com/dduongtrandai/omnivoice.cpp) and the [k2-fsa / sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) ecosystem for OmniVoice runtime integration.
 - [speech-lm-tts.cpp](https://github.com/dduongtrandai/speech-lm-tts.cpp) for VieNeu-TTS runtime integration.
-- The model authors and communities behind [Kokoro](https://github.com/hexgrad/kokoro), [Qwen speech models](https://github.com/QwenLM), [VoxCPM2](https://huggingface.co/openbmb/VoxCPM2), [VibeVoice](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B), [OmniVoice](https://huggingface.co/k2-fsa/OmniVoice), and [VieNeu-TTS](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2-Turbo).
+- The model authors and communities behind [Kokoro](https://github.com/hexgrad/kokoro), [Qwen speech models](https://github.com/QwenLM), [VoxCPM2](https://huggingface.co/openbmb/VoxCPM2), [VibeVoice](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B), [OmniVoice](https://huggingface.co/k2-fsa/OmniVoice), [VieNeu-TTS v2 Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2-Turbo), and [VieNeu-TTS-v3-Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo).
 
 Runtime packages and model files may have their own licenses, terms, and attribution requirements. Please review the upstream project and model licenses before redistributing any bundled runtime or model assets.
 

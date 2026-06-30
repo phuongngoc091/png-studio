@@ -36,7 +36,7 @@
     {
       "familyId": "vieneu-tts-v3-turbo",
       "modelId": "pnnbao-ump/VieNeu-TTS-v3-Turbo",
-      "reason": "48 kHz VieNeu v3 Turbo ONNX package for Vietnamese-English TTS and reference-audio cloning."
+      "reason": "48 kHz VieNeu v3 Turbo package for Vietnamese-English TTS, reference-audio cloning, and native runtime progress."
     },
     {
       "familyId": "omnivoice",

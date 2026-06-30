@@ -176,6 +176,118 @@ void TestModelsAndRuntimes::testVoiceDesignFamiliesExposeRuntimeOptions()
     }
 }
 
+void TestModelsAndRuntimes::testVieNeuV3CatalogIncludesMossExternalData()
+{
+    const QString oldCurrentPath = QDir::currentPath();
+    const auto restoreCurrentPath = qScopeGuard([oldCurrentPath]() {
+        QDir::setCurrent(oldCurrentPath);
+    });
+    const QString repoRoot = QDir(QFileInfo(QStringLiteral(__FILE__)).absolutePath() + QStringLiteral("/..")).absolutePath();
+    QVERIFY2(QDir::setCurrent(repoRoot), "Test must run from the repository root to load catalog and schema files");
+
+    CatalogManager catalog;
+    QVariantMap vieneuV3;
+    for (const QVariant &familyValue : catalog.ttsFamilies()) {
+        const QVariantMap family = familyValue.toMap();
+        if (family.value(QStringLiteral("id")).toString() == QStringLiteral("vieneu-tts-v3-turbo")) {
+            vieneuV3 = family;
+            break;
+        }
+    }
+
+    QVERIFY2(!vieneuV3.isEmpty(), "VieNeu-TTS v3 Turbo should be present in the catalog");
+    QCOMPARE(vieneuV3.value(QStringLiteral("modelId")).toString(),
+             QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP"));
+
+    QSet<QString> requiredFiles;
+    QMap<QString, QVariantMap> requirementsByFile;
+    for (const QVariant &reqValue : vieneuV3.value(QStringLiteral("requiredFiles")).toList()) {
+        const QVariantMap req = reqValue.toMap();
+        const QString file = req.value(QStringLiteral("file")).toString();
+        requiredFiles.insert(file);
+        requirementsByFile.insert(file, req);
+    }
+
+    QVERIFY2(requiredFiles.contains(QStringLiteral("backbone.gguf")),
+             "VieNeu-TTS v3 native pipeline must require the GGUF semantic backbone");
+    QVERIFY2(requiredFiles.contains(QStringLiteral("vieneu_v3_heads.npz")),
+             "VieNeu-TTS v3 native pipeline must require native heads at the model root");
+    QVERIFY2(requiredFiles.contains(QStringLiteral("acoustic/vieneu_acoustic_weights.npz")),
+             "VieNeu-TTS v3 native pipeline must require acoustic native weights");
+    QVERIFY2(requiredFiles.contains(QStringLiteral("voices_v3_turbo.json")),
+             "VieNeu-TTS v3 native pipeline should install the published preset voice definitions");
+    QVERIFY2(!requiredFiles.contains(QStringLiteral("onnx/vieneu_prefill.onnx")),
+             "VieNeu-TTS v3 native catalog should not require the ONNX prefill graph");
+    QVERIFY2(!requiredFiles.contains(QStringLiteral("onnx/vieneu_decode_step.onnx")),
+             "VieNeu-TTS v3 native catalog should not require the ONNX decode-step graph");
+    QVERIFY2(!requiredFiles.contains(QStringLiteral("onnx/vieneu_backbone_shared.data")),
+             "VieNeu-TTS v3 native catalog should not require ONNX external backbone data");
+    QVERIFY2(requiredFiles.contains(QStringLiteral("codec/moss_audio_tokenizer_decode_shared.data")),
+             "MOSS decoder ONNX external data must be installed with the decoder graph");
+    QVERIFY2(requiredFiles.contains(QStringLiteral("codec/moss_audio_tokenizer_encode.data")),
+             "MOSS encoder ONNX external data must be installed with the encoder graph");
+
+    const QString cppRepo = QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP");
+    for (const QString &file : requiredFiles) {
+        const QVariantMap req = requirementsByFile.value(file);
+        const QString reqModelId = req.value(QStringLiteral("modelId")).toString();
+        QVERIFY2(reqModelId.isEmpty() || reqModelId == cppRepo,
+                 qPrintable(QStringLiteral("VieNeu-TTS v3 native file %1 must download from the CPP-ready repo").arg(file)));
+    }
+
+    const QVariantList runtimes = vieneuV3.value(QStringLiteral("runtimes")).toList();
+    QVERIFY2(runtimes.size() >= 3, "VieNeu-TTS v3 should expose CPU, CUDA, and Vulkan runtime options");
+    for (const QVariant &runtimeValue : runtimes) {
+        const QVariantMap runtime = runtimeValue.toMap();
+        QCOMPARE(runtime.value(QStringLiteral("engineFamily")).toString(), QStringLiteral("vieneu-tts"));
+        QCOMPARE(runtime.value(QStringLiteral("backend")).toString(), QStringLiteral("vieneu-tts"));
+        QCOMPARE(runtime.value(QStringLiteral("library")).toString(), QStringLiteral("vieneu-tts.dll"));
+        QCOMPARE(runtime.value(QStringLiteral("version")).toString(), QStringLiteral("v0.1.1"));
+        QCOMPARE(runtime.value(QStringLiteral("pipelineProfile")).toString(), QStringLiteral("vieneu-v3-native"));
+        QVERIFY2(runtime.value(QStringLiteral("asset")).toString().startsWith(QStringLiteral("vieneu-tts-win-")),
+                 "VieNeu-TTS v3 runtime assets should come from VieNeu-TTS.cpp release archives");
+    }
+}
+
+void TestModelsAndRuntimes::testCapabilityFamilyModelRejectsIncompleteModelFiles()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString modelId = QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP");
+    const QString fileName = QStringLiteral("vieneu_v3_heads.npz");
+    ModelManager models;
+    models.setModelsRoot(tempDir.path());
+
+    const QString modelDir = models.concreteModelDir(modelId);
+    QVERIFY(QDir().mkpath(modelDir));
+    QFile headsFile(QDir(modelDir).absoluteFilePath(fileName));
+    QVERIFY(headsFile.open(QIODevice::WriteOnly));
+    headsFile.write("partial");
+    headsFile.close();
+
+    models.scanLocalModels();
+
+    CapabilityFamilyModel familyModel(&models, nullptr, nullptr, nullptr);
+    QVariantMap family;
+    family.insert(QStringLiteral("modelId"), modelId);
+    family.insert(QStringLiteral("localDir"), modelId);
+
+    QVariantMap requirement;
+    requirement.insert(QStringLiteral("file"), fileName);
+    requirement.insert(QStringLiteral("size"), QStringLiteral("25 MB"));
+
+    QVERIFY2(!familyModel.isFileInstalled(family, fileName, requirement),
+             "Tiny interrupted model files must not count as installed");
+
+    QVERIFY(headsFile.open(QIODevice::WriteOnly));
+    QVERIFY(headsFile.resize(20 * 1024 * 1024));
+    headsFile.close();
+
+    QVERIFY2(familyModel.isFileInstalled(family, fileName, requirement),
+             "Runtime-normalized NPZ files can be smaller than the original stored archive");
+}
+
 void TestModelsAndRuntimes::testQwen3TtsUsesAutomaticFrameLimit()
 {
     const QString oldCurrentPath = QDir::currentPath();

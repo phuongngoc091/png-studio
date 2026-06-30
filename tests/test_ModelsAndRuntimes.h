@@ -12,6 +12,8 @@ private slots:
     void testModelManagerResolvesSplitVirtualModelFiles();
     void testCapabilityFamilyModelSuitability();
     void testVoiceDesignFamiliesExposeRuntimeOptions();
+    void testVieNeuV3CatalogIncludesMossExternalData();
+    void testCapabilityFamilyModelRejectsIncompleteModelFiles();
     void testQwen3TtsUsesAutomaticFrameLimit();
     void testQwen3TtsDoesNotExposeUnsupportedLengthScale();
     void testLogViewServicePending();

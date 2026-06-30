@@ -4,6 +4,7 @@
 #include "VoxCpm2Backend.h"
 #include "VibevoiceBackend.h"
 #include "SpeechLmBackend.h"
+#include "VieneuTtsBackend.h"
 #include "OmnivoiceBackend.h"
 
 namespace LAStudio {
@@ -17,6 +18,8 @@ std::unique_ptr<TtsBackend> TtsBackendFactory::create(const QVariantMap &config)
     const QString familyId = config.value("familyId").toString();
 
     if (!backend.isEmpty()) {
+        if (backend.contains(QStringLiteral("vieneu")))
+            return std::make_unique<VieneuTtsBackend>();
         if (backend.contains(QStringLiteral("speech-lm")) || backend.contains(QStringLiteral("speechlm")))
             return std::make_unique<SpeechLmBackend>();
         if (backend.contains(QStringLiteral("qwen3-tts")))
@@ -32,10 +35,12 @@ std::unique_ptr<TtsBackend> TtsBackendFactory::create(const QVariantMap &config)
         return nullptr;
     }
 
+    bool isVieneu = runtimePath.contains("vieneu", Qt::CaseInsensitive) ||
+                    pipelineProfile.contains("vieneu", Qt::CaseInsensitive) ||
+                    familyId.contains("vieneu", Qt::CaseInsensitive);
+
     bool isSpeechLm = runtimePath.contains("speech-lm", Qt::CaseInsensitive) ||
-                      runtimePath.contains("speechlm", Qt::CaseInsensitive) ||
-                      pipelineProfile.contains("vieneu", Qt::CaseInsensitive) ||
-                      familyId.contains("vieneu", Qt::CaseInsensitive);
+                      runtimePath.contains("speechlm", Qt::CaseInsensitive);
 
     bool isQwen3 = runtimePath.contains("qwen3", Qt::CaseInsensitive) ||
                    modelPath.contains("qwen3-tts", Qt::CaseInsensitive) ||
@@ -54,6 +59,9 @@ std::unique_ptr<TtsBackend> TtsBackendFactory::create(const QVariantMap &config)
                   modelPath.contains("omnivoice", Qt::CaseInsensitive) ||
                   familyId.contains("omnivoice", Qt::CaseInsensitive);
 
+    if (isVieneu) {
+        return std::make_unique<VieneuTtsBackend>();
+    }
     if (isSpeechLm) {
         return std::make_unique<SpeechLmBackend>();
     }

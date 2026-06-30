@@ -200,12 +200,16 @@ public:
 private:
     SpeechLmTtsInterface() = default;
 
-    template<typename Fn>
-    Fn resolve(const char *primary, const char *legacy) {
+    template<typename Fn, typename... Names>
+    Fn resolve(const char *primary, Names... names) {
         if (auto fn = reinterpret_cast<Fn>(m_lib.resolve(primary))) {
             return fn;
         }
-        return reinterpret_cast<Fn>(m_lib.resolve(legacy));
+        if constexpr (sizeof...(names) == 0) {
+            return nullptr;
+        } else {
+            return resolve<Fn>(names...);
+        }
     }
 
     QLibrary m_lib;

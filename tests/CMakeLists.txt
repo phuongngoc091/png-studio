@@ -1,5 +1,5 @@
 find_package(Qt6 REQUIRED COMPONENTS Core Test Concurrent Sql Network Multimedia Quick)
-find_package(CURL REQUIRED)
+find_package(CURL CONFIG REQUIRED)
 
 set(TEST_SOURCES
     main.cpp

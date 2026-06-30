@@ -32,7 +32,11 @@ TtsSharedModelSession::TtsSharedModelSession(TtsEngine *engine, QObject *parent)
     if (m_engine) {
         connect(m_engine, &TtsEngine::stateChanged, this, &TtsSharedModelSession::onEngineStateChanged);
         connect(m_engine, &TtsEngine::errorOccurred, this, [this](const QString &err) {
-            m_lifecycle->onLoadError(err);
+            if (m_lifecycle->state() == ModelSessionState::Loading) {
+                m_lifecycle->onLoadError(err);
+            } else if (m_lifecycle->state() == ModelSessionState::Processing) {
+                m_lifecycle->onProcessingStateChanged(false);
+            }
         });
     }
 }
@@ -174,12 +178,14 @@ void TtsSharedModelSession::onEngineStateChanged()
 
     TtsEngine::State engState = m_engine->state();
 
-    if (engState == TtsEngine::Ready) {
+    if (engState == TtsEngine::Ready && m_lifecycle->state() == ModelSessionState::Loading) {
         if (!m_pendingOwner.isEmpty()) {
             m_activeOwner = m_pendingOwner;
             m_pendingOwner.clear();
         }
         m_lifecycle->onLoadSuccess();
+    } else if (engState == TtsEngine::Ready) {
+        m_lifecycle->onProcessingStateChanged(false);
     } else if (engState == TtsEngine::Unloaded) {
         m_activeOwner.clear();
         m_pendingOwner.clear();

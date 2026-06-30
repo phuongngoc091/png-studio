@@ -51,6 +51,14 @@ QVariantMap HardwareManager::runtimeCompatibility(const QVariantMap &runtime) co
     result.insert(QStringLiteral("title"), QStringLiteral("Compatible"));
     result.insert(QStringLiteral("detail"), QStringLiteral("Runs on the detected CPU."));
 
+    const QString disabledReason = runtime.value(QStringLiteral("disabledReason")).toString().trimmed();
+    if (!disabledReason.isEmpty()) {
+        result.insert(QStringLiteral("compatible"), false);
+        result.insert(QStringLiteral("title"), QStringLiteral("Unavailable"));
+        result.insert(QStringLiteral("detail"), disabledReason);
+        return result;
+    }
+
     if (haystack.contains(QStringLiteral("cuda"))) {
         const bool hasNvidiaGpu = std::any_of(m_gpus.cbegin(), m_gpus.cend(), [](const QVariant &gpuValue) {
             const QVariantMap gpu = gpuValue.toMap();
