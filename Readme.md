@@ -31,6 +31,11 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 [![Privacy](https://img.shields.io/badge/Privacy-Offline%20AI-success.svg)]()
 -->
 
+<br>
+<br>
+
+![LA Studio Overview](docs/screenshots/la-studio-home.PNG)
+
 </div>
 
 ---
