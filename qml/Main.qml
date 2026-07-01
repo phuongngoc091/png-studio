@@ -92,8 +92,24 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: AppController.workflows
+        function onOpenRequested(routeId) {
+            stack.currentIndex = StudioRouteRegistry.getIndex(routeId)
+            workflowsPopup.close()
+            downloadsPopup.close()
+            communityDialog.close()
+        }
+    }
+
     DownloadsPopup {
         id: downloadsPopup
+        x: sidebar.width + 8
+        y: root.height - height - 16
+    }
+
+    WorkflowPopup {
+        id: workflowsPopup
         x: sidebar.width + 8
         y: root.height - height - 16
     }
@@ -221,14 +237,17 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.preferredWidth: 64
                 currentIndex: stack.currentIndex
+                activitiesActive: workflowsPopup.opened
                 downloadsActive: downloadsPopup.opened
                 communityActive: communityDialog.opened
                 onNavigated: function(routeId) {
                     stack.currentIndex = StudioRouteRegistry.getIndex(routeId)
+                    workflowsPopup.close()
                     downloadsPopup.close()
                     communityDialog.close()
                 }
                 onCommunityClicked: {
+                    workflowsPopup.close()
                     downloadsPopup.close()
                     if (communityDialog.opened) {
                         communityDialog.close()
@@ -236,7 +255,17 @@ ApplicationWindow {
                         communityDialog.open()
                     }
                 }
+                onWorkflowsClicked: {
+                    downloadsPopup.close()
+                    communityDialog.close()
+                    if (workflowsPopup.opened) {
+                        workflowsPopup.close()
+                    } else {
+                        workflowsPopup.open()
+                    }
+                }
                 onDownloadsClicked: {
+                    workflowsPopup.close()
                     communityDialog.close()
                     if (downloadsPopup.opened) {
                         downloadsPopup.close()

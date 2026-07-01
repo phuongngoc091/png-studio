@@ -203,6 +203,16 @@ Canvas {
             ctx.lineTo(cx + 5 * u, cy)
             ctx.stroke()
             line(ctx, cx - 8 * u, cy + 9 * u, cx + 8 * u, cy + 9 * u)
+        } else if (name === "activity") {
+            ctx.beginPath()
+            ctx.moveTo(cx - 10 * u, cy)
+            ctx.lineTo(cx - 6 * u, cy)
+            ctx.lineTo(cx - 4 * u, cy - 6 * u)
+            ctx.lineTo(cx, cy + 7 * u)
+            ctx.lineTo(cx + 3 * u, cy - 3 * u)
+            ctx.lineTo(cx + 5 * u, cy)
+            ctx.lineTo(cx + 10 * u, cy)
+            ctx.stroke()
         } else if (name === "star") {
             ctx.beginPath()
             ctx.moveTo(cx, cy - 9 * u)

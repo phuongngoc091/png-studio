@@ -28,6 +28,7 @@
 #include "SttSessionController.h"
 #include "AppUpdateService.h"
 #include "ExampleManager.h"
+#include "WorkflowManager.h"
 
 #include "ModelSessionRegistry.h"
 
@@ -62,6 +63,7 @@ class AppController : public QObject {
     Q_PROPERTY(AppUpdateService* updates READ updates CONSTANT)
     Q_PROPERTY(ExampleManager* examples READ examples CONSTANT)
     Q_PROPERTY(ModelSessionRegistry* sessionRegistry READ sessionRegistry CONSTANT)
+    Q_PROPERTY(WorkflowManager* workflows READ workflows CONSTANT)
 
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
     Q_PROPERTY(QString logsDir READ logsDir CONSTANT)
@@ -98,6 +100,7 @@ public:
     AppUpdateService* updates() const { return m_updates; }
     ExampleManager* examples() const { return m_examples; }
     ModelSessionRegistry* sessionRegistry() const { return m_sessionRegistry; }
+    WorkflowManager* workflows() const { return m_workflows; }
 
     WaveformProvider* waveformProvider() const { return m_waveformProvider; }
 
@@ -142,6 +145,7 @@ private:
     AppUpdateService* m_updates = nullptr;
     ExampleManager* m_examples = nullptr;
     ModelSessionRegistry* m_sessionRegistry = nullptr;
+    WorkflowManager* m_workflows = nullptr;
 
     QString m_errorMessage;
 };

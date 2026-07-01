@@ -37,6 +37,7 @@ set(TEST_SOURCES
     ../src/controllers/StudioConfigurationResolver.cpp
     ../src/controllers/SttSessionController.cpp
     ../src/controllers/SttAudioDecoder.cpp
+    ../src/controllers/WorkflowManager.cpp
     ../src/core/LogViewService.cpp
     ../src/core/PathUtils.cpp
     ../src/core/Logger.cpp
@@ -70,6 +71,7 @@ set(TEST_SOURCES
     ../src/controllers/SttModelSession.h
     ../src/controllers/TtsSharedModelSession.h
     ../src/controllers/ModelSessionRegistry.h
+    ../src/controllers/WorkflowManager.h
 )
 
 add_executable(LAStudioUnitTests ${TEST_SOURCES})

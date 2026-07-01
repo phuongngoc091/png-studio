@@ -25,6 +25,18 @@ IModelSession *ModelSessionRegistry::sessionForCapability(const QString &capabil
     return nullptr;
 }
 
+QList<IModelSession *> ModelSessionRegistry::sessions() const
+{
+    QList<IModelSession *> out;
+    if (m_sttSession) {
+        out.append(m_sttSession);
+    }
+    if (m_ttsSession) {
+        out.append(m_ttsSession);
+    }
+    return out;
+}
+
 ResourceReleaseResult ModelSessionRegistry::prepareRuntimeRemoval(const QString &runtimeId,
                                                                    const QString &runtimeVersion)
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <QList>
 #include <QHash>
 #include "IModelSession.h"
 
@@ -23,6 +24,7 @@ public:
     ~ModelSessionRegistry() override = default;
 
     IModelSession *sessionForCapability(const QString &capabilityId) const;
+    QList<IModelSession *> sessions() const;
 
     ResourceReleaseResult prepareRuntimeRemoval(const QString &runtimeId,
                                                  const QString &runtimeVersion);

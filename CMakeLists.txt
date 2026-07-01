@@ -103,6 +103,7 @@ set(LASTUDIO_SOURCES
     src/controllers/StudioConfigurationResolver.cpp
     src/controllers/SttSessionController.cpp
     src/controllers/SttAudioDecoder.cpp
+    src/controllers/WorkflowManager.cpp
     src/core/LocalizationManager.cpp
 )
 
@@ -178,6 +179,7 @@ set(LASTUDIO_HEADERS
     src/controllers/StudioConfigurationResolver.h
     src/controllers/SttSessionController.h
     src/controllers/SttAudioDecoder.h
+    src/controllers/WorkflowManager.h
     src/core/LocalizationManager.h
 )
 
@@ -231,6 +233,7 @@ qt_add_qml_module(LAStudio
         qml/components/ModelDetailsView.qml
         qml/components/DownloadProgressBar.qml
         qml/components/DownloadsPopup.qml
+        qml/components/WorkflowPopup.qml
         qml/components/CommunityDialog.qml
         qml/components/BottomLogPanel.qml
         qml/components/voicecloning/VoiceSettingsPanel.qml

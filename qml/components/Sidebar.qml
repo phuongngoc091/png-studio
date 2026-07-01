@@ -9,11 +9,13 @@ Rectangle {
 
     property int currentIndex: 0
     property bool isCollapsed: true
+    property bool activitiesActive: false
     property bool downloadsActive: false
     property bool communityActive: false
 
     signal navigated(string routeId)
     signal communityClicked()
+    signal workflowsClicked()
     signal downloadsClicked()
 
     color: Qt.darker(Theme.background, 1.02)
@@ -133,6 +135,95 @@ Rectangle {
         }
 
         Item { Layout.fillHeight: true }
+
+        Item {
+            id: workflowsItem
+            Layout.fillWidth: true
+            Layout.preferredHeight: 46
+
+            readonly property bool isActive: root.activitiesActive
+            readonly property int activeCount: AppController.workflows.sessionCount + AppController.workflows.runningCount
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                width: 3
+                height: workflowsItem.isActive ? 24 : 0
+                radius: 2
+                color: Theme.accentLight
+
+                Behavior on height {
+                    NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+                }
+            }
+
+            Rectangle {
+                id: workflowsNavButton
+                anchors.centerIn: parent
+                width: 42
+                height: 42
+                radius: 9
+                color: {
+                    if (workflowsItem.isActive) return Qt.rgba(0.49, 0.30, 1.0, 0.16)
+                    if (workflowsMouse.containsMouse) return Qt.rgba(1, 1, 1, 0.055)
+                    if (workflowsItem.activeCount > 0) return Qt.rgba(1.0, 0.65, 0.15, 0.10)
+                    return "transparent"
+                }
+                border.color: {
+                    if (workflowsItem.isActive) return Qt.rgba(0.49, 0.30, 1.0, 0.34)
+                    if (workflowsItem.activeCount > 0) return Qt.rgba(1.0, 0.65, 0.15, 0.38)
+                    return "transparent"
+                }
+                border.width: 1
+
+                LineIcon {
+                    anchors.centerIn: parent
+                    name: "activity"
+                    color: workflowsItem.isActive ? Theme.accentLight : (workflowsItem.activeCount > 0 ? Theme.warning : (workflowsMouse.containsMouse ? Theme.textPrimary : Theme.textSecondary))
+                    width: 21
+                    height: 21
+                    strokeWidth: 1.8
+                }
+
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: -4
+                    anchors.rightMargin: -5
+                    width: 16
+                    height: 16
+                    radius: 8
+                    color: Theme.warning
+                    border.color: Qt.rgba(0, 0, 0, 0.25)
+                    border.width: 1
+                    visible: workflowsItem.activeCount > 0
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: workflowsItem.activeCount > 9 ? "9+" : workflowsItem.activeCount
+                        color: Theme.background
+                        font.pixelSize: 9
+                        font.bold: true
+                    }
+                }
+
+                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on border.color { ColorAnimation { duration: 120 } }
+            }
+
+            MouseArea {
+                id: workflowsMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.workflowsClicked()
+            }
+
+            AppToolTip {
+                text: workflowsItem.activeCount > 0 ? qsTr("Activity (%1 active)").arg(workflowsItem.activeCount) : qsTr("Activity")
+                visible: workflowsMouse.containsMouse
+            }
+        }
 
         Item {
             id: communityItem

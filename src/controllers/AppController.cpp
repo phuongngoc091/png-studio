@@ -2,6 +2,7 @@
 
 #include "core/Settings.h"
 #include "controllers/ModelSessionRegistry.h"
+#include "controllers/WorkflowManager.h"
 #include "core/HFHubClient.h"
 #include "core/DownloadManager.h"
 #include "core/ModelManager.h"
@@ -59,6 +60,7 @@ AppController::AppController(QObject *parent)
     m_sttSession = new SttSessionController(this);
     m_updates = new AppUpdateService(m_downloads, this);
     m_examples = new ExampleManager(this);
+    m_workflows = new WorkflowManager(m_sessionRegistry, m_tts, m_sttSession, this);
 
     connect(m_preview, &AudioPreviewService::errorOccurred, this, &AppController::onError);
     connect(m_history, &HistoryService::errorOccurred, this, &AppController::onError);
