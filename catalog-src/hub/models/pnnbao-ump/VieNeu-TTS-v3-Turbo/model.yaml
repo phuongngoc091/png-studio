@@ -270,6 +270,16 @@ laStudio:
         - repetition_penalty
         - max_chars
         - apply_watermark
+      nonVerbalTags:
+        - text: "[cười]"
+          value: "[cười]"
+          description: Tiếng cười, cue cảm xúc thử nghiệm của VieNeu v3.
+        - text: "[thở dài]"
+          value: "[thở dài]"
+          description: Tiếng thở dài, cue phi ngôn từ thử nghiệm của VieNeu v3.
+        - text: "[hắng giọng]"
+          value: "[hắng giọng]"
+          description: Tiếng hắng giọng, cue phi ngôn từ thử nghiệm của VieNeu v3.
     voice-cloning:
       layout: voice-cloning
       action: clone
@@ -284,3 +294,13 @@ laStudio:
         - repetition_penalty
         - max_chars
         - apply_watermark
+      nonVerbalTags:
+        - text: "[cười]"
+          value: "[cười]"
+          description: Tiếng cười, cue cảm xúc thử nghiệm của VieNeu v3.
+        - text: "[thở dài]"
+          value: "[thở dài]"
+          description: Tiếng thở dài, cue phi ngôn từ thử nghiệm của VieNeu v3.
+        - text: "[hắng giọng]"
+          value: "[hắng giọng]"
+          description: Tiếng hắng giọng, cue phi ngôn từ thử nghiệm của VieNeu v3.
