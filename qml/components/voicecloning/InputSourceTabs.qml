@@ -6,13 +6,15 @@ AudioInputSourcePicker {
     id: root
 
     property string audioPath: ""
+    property int recordingSampleRate: 24000
+    property string recommendedAudioHint: "24kHz mono WAV recommended"
 
     signal audioLoaded(string path)
 
     audioLabel: "Reference audio"
-    audioHint: "24kHz mono WAV recommended"
+    audioHint: root.recommendedAudioHint
     fileDialogTitle: "Select Reference Audio"
-    fileNameFilters: ["Audio files (*.wav *.mp3 *.m4a *.flac)"]
+    fileNameFilters: root.recordingSampleRate === 48000 ? ["WAV files (*.wav)"] : ["Audio files (*.wav *.mp3 *.m4a *.flac)"]
     showSystemSource: true
     recording: AppController.recorder.recording
     saving: AppController.recorder.saving
@@ -30,7 +32,7 @@ AudioInputSourcePicker {
 
     onStopRecordingRequested: {
         AppController.recorder.stop()
-        AppController.recorder.saveLastRecordingToCacheAsync(24000)
+        AppController.recorder.saveLastRecordingToCacheAsync(root.recordingSampleRate)
     }
 
     Connections {

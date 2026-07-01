@@ -212,7 +212,7 @@ AudioRecorder::~AudioRecorder() = default;
 QAudioFormat AudioRecorder::makeFormat() const
 {
     QAudioFormat fmt;
-    fmt.setSampleRate(16000);
+    fmt.setSampleRate(48000);
     fmt.setChannelCount(1);
     fmt.setSampleFormat(QAudioFormat::Int16);
     return fmt;
@@ -223,6 +223,7 @@ void AudioRecorder::start()
     if (m_recording) return;
 
     m_buffer.clear();
+    m_bufferSampleRate = 48000;
 
 #ifdef Q_OS_WIN
     if (m_recordSystemAudio) {
@@ -241,8 +242,9 @@ void AudioRecorder::start()
     QAudioFormat fmt = makeFormat();
     QAudioDevice dev = QMediaDevices::defaultAudioInput();
     if (!dev.isFormatSupported(fmt)) {
-        Logger::warning("AudioRecorder", "Default device doesn't support 16kHz mono Int16");
+        Logger::warning("AudioRecorder", "Default device doesn't support 48kHz mono Int16");
     }
+    m_bufferSampleRate = fmt.sampleRate();
 
     m_source.reset(new QAudioSource(dev, fmt));
     m_ioDevice = m_source->start();
@@ -270,26 +272,11 @@ void AudioRecorder::stop()
         int srcRate = m_loopbackThread->sampleRate();
         m_loopbackThread.reset();
 
-        QVector<float> resampled;
-        if (srcRate != 16000 && srcRate > 0 && !floatSamples.isEmpty()) {
-            double ratio = 16000.0 / srcRate;
-            int newLen = static_cast<int>(floatSamples.size() * ratio);
-            resampled.resize(newLen);
-            for (int i = 0; i < newLen; ++i) {
-                double srcIdx = i / ratio;
-                int idx0 = static_cast<int>(srcIdx);
-                int idx1 = std::min(idx0 + 1, static_cast<int>(floatSamples.size() - 1));
-                double frac = srcIdx - idx0;
-                resampled[i] = floatSamples[idx0] * (1.0f - frac) + floatSamples[idx1] * frac;
-            }
-        } else {
-            resampled = floatSamples;
-        }
-
-        m_buffer.resize(resampled.size() * 2);
+        m_bufferSampleRate = srcRate > 0 ? srcRate : 48000;
+        m_buffer.resize(floatSamples.size() * 2);
         int16_t *dest = reinterpret_cast<int16_t *>(m_buffer.data());
-        for (int i = 0; i < resampled.size(); ++i) {
-            float s = std::clamp(resampled[i], -1.0f, 1.0f);
+        for (int i = 0; i < floatSamples.size(); ++i) {
+            float s = std::clamp(floatSamples[i], -1.0f, 1.0f);
             dest[i] = static_cast<int16_t>(s * 32767.0f);
         }
 
@@ -340,8 +327,9 @@ QString AudioRecorder::saveLastRecordingToCache(int targetSampleRate)
     int srcCount = m_buffer.size() / 2;
 
     QVector<int16_t> destSamples;
-    if (targetSampleRate != 16000) {
-        double ratio = static_cast<double>(targetSampleRate) / 16000.0;
+    const int sourceSampleRate = m_bufferSampleRate > 0 ? m_bufferSampleRate : targetSampleRate;
+    if (targetSampleRate != sourceSampleRate) {
+        double ratio = static_cast<double>(targetSampleRate) / sourceSampleRate;
         int destCount = static_cast<int>(srcCount * ratio);
         destSamples.resize(destCount);
         for (int i = 0; i < destCount; ++i) {
@@ -383,9 +371,10 @@ void AudioRecorder::saveLastRecordingToCacheAsync(int targetSampleRate)
     emit savingChanged();
 
     const QByteArray bufferCopy = m_buffer;
+    const int sourceSampleRate = m_bufferSampleRate > 0 ? m_bufferSampleRate : targetSampleRate;
     QPointer<AudioRecorder> self(this);
 
-    QThreadPool::globalInstance()->start([self, bufferCopy, targetSampleRate]() {
+    QThreadPool::globalInstance()->start([self, bufferCopy, sourceSampleRate, targetSampleRate]() {
         if (!self)
             return;
 
@@ -393,8 +382,8 @@ void AudioRecorder::saveLastRecordingToCacheAsync(int targetSampleRate)
         const int srcCount = bufferCopy.size() / 2;
 
         QVector<int16_t> destSamples;
-        if (targetSampleRate != 16000) {
-            const double ratio = static_cast<double>(targetSampleRate) / 16000.0;
+        if (targetSampleRate != sourceSampleRate) {
+            const double ratio = static_cast<double>(targetSampleRate) / sourceSampleRate;
             const int destCount = static_cast<int>(srcCount * ratio);
             destSamples.resize(destCount);
             for (int i = 0; i < destCount; ++i) {

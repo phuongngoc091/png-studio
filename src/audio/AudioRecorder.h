@@ -62,6 +62,7 @@ private:
     QScopedPointer<QAudioSource> m_source;
     QIODevice *m_ioDevice = nullptr;
     QByteArray m_buffer;
+    int m_bufferSampleRate = 48000;
     bool m_recording = false;
     float m_level = 0.0f;
     bool m_saving = false;

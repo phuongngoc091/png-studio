@@ -31,6 +31,7 @@ private:
     void *m_context = nullptr;
     bool m_useAbiV2 = false;
     bool m_useVieneuRuntime = false;
+    QString m_pipelineProfile;
     std::atomic<bool> m_cancelRequested {false};
     std::function<bool(int current, int total, const QString &stage, int chunkIndex, int chunkCount)> m_progressCallback;
 };

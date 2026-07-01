@@ -423,6 +423,12 @@
         "inputs": { "$ref": "#/$defs/stringArray" },
         "requiredInputs": { "$ref": "#/$defs/stringArray" },
         "parameters": { "$ref": "#/$defs/stringArray" },
+        "parameterDefaults": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["string", "number", "boolean"]
+          }
+        },
         "nonVerbalTags": {
           "type": "array",
           "items": {

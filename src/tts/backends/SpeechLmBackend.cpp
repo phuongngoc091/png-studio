@@ -915,8 +915,20 @@ bool SpeechLmBackend::load(const QVariantMap &config, QString &error, QVariantLi
     QString runtimePath = PathUtils::toNativeShortPath(config.value("runtimePath").toString());
     const QString pipelineProfile = config.value(QStringLiteral("pipelineProfile")).toString();
     const QString backendId = config.value(QStringLiteral("backend")).toString();
-    m_useAbiV2 = pipelineProfile == QStringLiteral("vieneu-v3-onnx") ||
-                 pipelineProfile == QStringLiteral("vieneu-v3-native");
+    const bool hasVieneuV3NativeAssets =
+        config.contains(QStringLiteral("heads")) ||
+        config.contains(QStringLiteral("acoustic")) ||
+        QFileInfo(modelPath).fileName().compare(QStringLiteral("backbone.gguf"), Qt::CaseInsensitive) == 0;
+    QString effectivePipelineProfile = pipelineProfile;
+    if (effectivePipelineProfile.isEmpty() &&
+        (backendId.contains(QStringLiteral("vieneu"), Qt::CaseInsensitive) ||
+         runtimePath.contains(QStringLiteral("vieneu-tts"), Qt::CaseInsensitive)) &&
+        hasVieneuV3NativeAssets) {
+        effectivePipelineProfile = QStringLiteral("vieneu-v3-native");
+    }
+    m_pipelineProfile = effectivePipelineProfile;
+    m_useAbiV2 = effectivePipelineProfile == QStringLiteral("vieneu-v3-onnx") ||
+                 effectivePipelineProfile == QStringLiteral("vieneu-v3-native");
     m_useVieneuRuntime = backendId.contains(QStringLiteral("vieneu"), Qt::CaseInsensitive) ||
                          runtimePath.contains(QStringLiteral("vieneu-tts"), Qt::CaseInsensitive);
     QString configPath = PathUtils::toNativeShortPath(config.value(QStringLiteral("config")).toString());
@@ -1121,15 +1133,36 @@ bool SpeechLmBackend::load(const QVariantMap &config, QString &error, QVariantLi
                 ? QFileInfo(codecDecodePath).absolutePath()
                 : QFileInfo(decoderPath).absolutePath();
 
-            QByteArray profileBytes = pipelineProfile.isEmpty()
+            QByteArray profileBytes = effectivePipelineProfile.isEmpty()
                 ? QByteArrayLiteral("vieneu-v3-onnx")
-                : pipelineProfile.toUtf8();
+                : effectivePipelineProfile.toUtf8();
             QByteArray modelDirBytes = PathUtils::toNativeShortPath(modelDir).toUtf8();
             QByteArray onnxDirBytes = PathUtils::toNativeShortPath(onnxDir).toUtf8();
             QByteArray codecDirBytes = PathUtils::toNativeShortPath(codecDir).toUtf8();
             QByteArray configPathBytes = configPath.toUtf8();
             QByteArray tokenizerPathBytes = tokenizerPath.toUtf8();
             QByteArray voicesPathBytes = resolvedVoicesPath.toUtf8();
+
+            if (effectivePipelineProfile == QStringLiteral("vieneu-v3-native")) {
+                const QStringList requiredNativeFiles = {
+                    QDir(modelDir).absoluteFilePath(QStringLiteral("backbone.gguf")),
+                    QDir(modelDir).absoluteFilePath(QStringLiteral("vieneu_v3_heads.npz")),
+                    QDir(modelDir).absoluteFilePath(QStringLiteral("acoustic/vieneu_acoustic_weights.npz")),
+                    QDir(codecDir).absoluteFilePath(QStringLiteral("moss_audio_tokenizer_encode.onnx")),
+                    QDir(codecDir).absoluteFilePath(QStringLiteral("moss_audio_tokenizer_decode_full.onnx"))
+                };
+                for (const QString &requiredFile : requiredNativeFiles) {
+                    if (!QFileInfo::exists(requiredFile)) {
+                        error = QStringLiteral("VieNeu-TTS v3 native asset is missing: %1").arg(requiredFile);
+                        Logger::error("SpeechLmBackend", error);
+                        return false;
+                    }
+                }
+            }
+
+            Logger::info(QStringLiteral("SpeechLmBackend"),
+                         QStringLiteral("Initializing VieNeu ABI v2 profile=%1, modelDir=%2, onnxDir=%3, codecDir=%4, voices=%5")
+                             .arg(QString::fromUtf8(profileBytes), modelDir, onnxDir, codecDir, resolvedVoicesPath));
 
             vieneu_init_params_v2 params;
             vieneu.vieneu_init_v2_default_params(&params);
@@ -1294,6 +1327,7 @@ void SpeechLmBackend::unload()
     }
     m_useAbiV2 = false;
     m_useVieneuRuntime = false;
+    m_pipelineProfile.clear();
 }
 
 bool SpeechLmBackend::synthesize(const QString &text, float speed, const QVariantMap &settings, 
@@ -1506,6 +1540,21 @@ bool SpeechLmBackend::cloneVoice(const QString &text, const QString &referencePa
 
             vieneu_audio out;
             memset(&out, 0, sizeof(out));
+            if (m_pipelineProfile != QStringLiteral("vieneu-v3-native")) {
+                Logger::warning(QStringLiteral("SpeechLmBackend"),
+                                QStringLiteral("VieNeu v3 clone is running with profile=%1, expected vieneu-v3-native.")
+                                    .arg(m_pipelineProfile.isEmpty() ? QStringLiteral("<empty>") : m_pipelineProfile));
+            }
+            Logger::info(QStringLiteral("SpeechLmBackend"),
+                         QStringLiteral("VieNeu v3 clone via ABI v2 profile=%1, ref=%2, temperature=%3, top_k=%4, top_p=%5, max_new_frames=%6, repetition_penalty=%7, max_chars=%8")
+                             .arg(m_pipelineProfile)
+                             .arg(referencePath)
+                             .arg(params.temperature)
+                             .arg(params.top_k)
+                             .arg(params.top_p)
+                             .arg(params.max_new_frames)
+                             .arg(params.repetition_penalty)
+                             .arg(params.max_chars));
             int status = vieneu.vieneu_synthesize_v2((struct vieneu_context*)m_context, &params, &out);
             if (status != 0) {
                 error = QString::fromUtf8(vieneu.vieneu_last_error());

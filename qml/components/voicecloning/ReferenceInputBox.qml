@@ -168,6 +168,10 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 enabled: !root.locked
+                recordingSampleRate: root.familyId === "vieneu-tts-v3-turbo" ? 48000 : 24000
+                recommendedAudioHint: root.familyId === "vieneu-tts-v3-turbo"
+                                      ? "48kHz mono WAV recommended for VieNeu v3 native cloning"
+                                      : "24kHz mono WAV recommended"
 
                 onAudioLoaded: (path) => {
                     if (root.locked) return

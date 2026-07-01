@@ -42,9 +42,12 @@ ColumnLayout {
         root.basicSchema = splitSchema(root.capabilitySchema, false)
         root.advancedSchema = splitSchema(root.capabilitySchema, true)
         var defaults = {}
+        var parameterDefaults = root.studioConfig && root.studioConfig.parameterDefaults ? root.studioConfig.parameterDefaults : ({})
         for (var i = 0; i < root.capabilitySchema.length; ++i) {
             var param = root.capabilitySchema[i] || {}
-            if (param.id && param["default"] !== undefined) {
+            if (param.id && parameterDefaults[param.id] !== undefined) {
+                defaults[param.id] = parameterDefaults[param.id]
+            } else if (param.id && param["default"] !== undefined) {
                 defaults[param.id] = param["default"]
             }
         }

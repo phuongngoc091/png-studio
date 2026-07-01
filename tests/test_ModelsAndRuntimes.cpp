@@ -227,6 +227,14 @@ void TestModelsAndRuntimes::testVieNeuV3CatalogIncludesMossExternalData()
     QVERIFY2(requiredFiles.contains(QStringLiteral("codec/moss_audio_tokenizer_encode.data")),
              "MOSS encoder ONNX external data must be installed with the encoder graph");
 
+    const QVariantMap voiceCloningStudio =
+        vieneuV3.value(QStringLiteral("studio")).toMap().value(QStringLiteral("voice-cloning")).toMap();
+    const QVariantMap cloneDefaults = voiceCloningStudio.value(QStringLiteral("parameterDefaults")).toMap();
+    QCOMPARE(cloneDefaults.value(QStringLiteral("temperature")).toDouble(), 0.8);
+    QCOMPARE(cloneDefaults.value(QStringLiteral("top_k")).toInt(), 25);
+    QCOMPARE(cloneDefaults.value(QStringLiteral("top_p")).toDouble(), 0.95);
+    QCOMPARE(cloneDefaults.value(QStringLiteral("max_new_frames")).toInt(), 180);
+
     const QString cppRepo = QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP");
     for (const QString &file : requiredFiles) {
         const QVariantMap req = requirementsByFile.value(file);

@@ -4483,6 +4483,12 @@
             "text",
             "ref_audio"
           ],
+          "parameterDefaults": {
+            "temperature": 0.8,
+            "top_k": 25,
+            "top_p": 0.95,
+            "max_new_frames": 180
+          },
           "parameters": [
             "temperature",
             "top_k",
