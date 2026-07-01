@@ -22,10 +22,14 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 <br>
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/nbGpQBhET)
+[![Facebook Group](https://img.shields.io/badge/Facebook-Group-1877F2?style=flat&logo=facebook&logoColor=white)](https://www.facebook.com/groups/amatowcoder.community)
+<!--
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-17-orange.svg)](https://en.cppreference.com/w/cpp/compiler_support/17)
 [![Qt Version](https://img.shields.io/badge/Qt-6.5%2B-green.svg)](https://www.qt.io/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
 [![Privacy](https://img.shields.io/badge/Privacy-Offline%20AI-success.svg)]()
+-->
 
 </div>
 
@@ -258,6 +262,13 @@ LA Studio is designed for local inference. Audio recordings, prompts, generated 
 - [ ] Expanded model validation and benchmark reporting
 - [ ] Advanced timeline-style audio editing
 - [ ] Additional local speech-to-speech and multimodal audio workflows
+
+## Community
+
+Join our community to connect with other developers and creators, share your creations, and get support:
+
+- **Discord Server**: [Join our Discord](https://discord.gg/nbGpQBhET)
+- **Facebook Group**: [Amatow Coder Community](https://www.facebook.com/groups/amatowcoder.community)
 
 ## Contributing
 
