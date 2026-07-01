@@ -125,3 +125,7 @@ LA-Studio/
 
 # Dependency directories
 .deps/
+
+# Codex
+.codex/
+
