@@ -231,6 +231,7 @@ qt_add_qml_module(LAStudio
         qml/components/ModelDetailsView.qml
         qml/components/DownloadProgressBar.qml
         qml/components/DownloadsPopup.qml
+        qml/components/CommunityDialog.qml
         qml/components/BottomLogPanel.qml
         qml/components/voicecloning/VoiceSettingsPanel.qml
         qml/components/voicecloning/VoiceCloningStudioView.qml

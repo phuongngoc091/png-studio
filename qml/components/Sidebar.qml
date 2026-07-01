@@ -10,8 +10,10 @@ Rectangle {
     property int currentIndex: 0
     property bool isCollapsed: true
     property bool downloadsActive: false
+    property bool communityActive: false
 
     signal navigated(string routeId)
+    signal communityClicked()
     signal downloadsClicked()
 
     color: Qt.darker(Theme.background, 1.02)
@@ -131,6 +133,202 @@ Rectangle {
         }
 
         Item { Layout.fillHeight: true }
+
+        Item {
+            id: communityItem
+            Layout.fillWidth: true
+            Layout.preferredHeight: 46
+
+            readonly property bool isActive: root.communityActive
+            readonly property bool spotlight: !isActive && !communityMouse.containsMouse
+            property real pulseOpacity: 0.18
+            property real pulseScale: 0.92
+            property real buttonScale: 1.0
+            property real buttonRotation: 0
+            property real badgeLift: 0
+            property real orbitRotation: 0
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                width: 3
+                height: communityItem.isActive ? 24 : 0
+                radius: 2
+                color: Theme.accentLight
+
+                Behavior on height {
+                    NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+                }
+            }
+
+            Rectangle {
+                anchors.centerIn: communityNavButton
+                width: 54
+                height: 54
+                radius: 14
+                color: Qt.rgba(0.49, 0.30, 1.0, 0.08)
+                border.color: Qt.rgba(0.64, 0.49, 1.0, 0.70)
+                border.width: 1
+                opacity: communityItem.spotlight ? communityItem.pulseOpacity : 0
+                scale: communityItem.spotlight ? communityItem.pulseScale : 0.92
+                rotation: communityNavButton.rotation
+
+                Behavior on opacity { NumberAnimation { duration: 160 } }
+                Behavior on scale { NumberAnimation { duration: 160 } }
+                Behavior on rotation { NumberAnimation { duration: 120 } }
+            }
+
+            Item {
+                anchors.centerIn: communityNavButton
+                width: 58
+                height: 58
+                rotation: communityItem.spotlight ? communityItem.orbitRotation : 0
+                opacity: communityItem.spotlight ? 1 : 0
+
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    width: 7
+                    height: 7
+                    radius: 4
+                    color: Theme.accentLight
+                    border.color: "#ffffff"
+                    border.width: 1
+                }
+
+                Behavior on opacity { NumberAnimation { duration: 160 } }
+            }
+
+            Rectangle {
+                id: communityNavButton
+                anchors.centerIn: parent
+                width: 42
+                height: 42
+                radius: 9
+                scale: communityItem.spotlight ? communityItem.buttonScale : 1.0
+                rotation: communityItem.spotlight ? communityItem.buttonRotation : 0
+                color: {
+                    if (communityItem.isActive) return Qt.rgba(0.49, 0.30, 1.0, 0.16)
+                    if (communityMouse.containsMouse) return Qt.rgba(1, 1, 1, 0.055)
+                    if (communityItem.spotlight) return Qt.rgba(0.49, 0.30, 1.0, 0.13)
+                    return "transparent"
+                }
+                border.color: {
+                    if (communityItem.isActive) return Qt.rgba(0.49, 0.30, 1.0, 0.34)
+                    if (communityItem.spotlight) return Qt.rgba(0.64, 0.49, 1.0, 0.55)
+                    return "transparent"
+                }
+                border.width: 1
+
+                LineIcon {
+                    anchors.centerIn: parent
+                    name: "users"
+                    color: (communityItem.isActive || communityItem.spotlight) ? Theme.accentLight : (communityMouse.containsMouse ? Theme.textPrimary : Theme.textSecondary)
+                    width: 21
+                    height: 21
+                    strokeWidth: 1.8
+                }
+
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: -5 + communityItem.badgeLift
+                    anchors.rightMargin: -8
+                    width: 24
+                    height: 14
+                    radius: 5
+                    color: Theme.accent
+                    border.color: Qt.rgba(1, 1, 1, 0.22)
+                    border.width: 1
+                    visible: !communityItem.isActive
+                    opacity: communityMouse.containsMouse ? 1.0 : 0.92
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "FB"
+                        color: "#ffffff"
+                        font.pixelSize: 8
+                        font.bold: true
+                    }
+                }
+
+                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on border.color { ColorAnimation { duration: 120 } }
+                Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+                Behavior on rotation { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            }
+
+            SequentialAnimation on pulseOpacity {
+                running: communityItem.spotlight
+                loops: Animation.Infinite
+                NumberAnimation { to: 0.48; duration: 900; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0.18; duration: 900; easing.type: Easing.InOutQuad }
+            }
+
+            SequentialAnimation on pulseScale {
+                running: communityItem.spotlight
+                loops: Animation.Infinite
+                NumberAnimation { to: 1.07; duration: 900; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0.92; duration: 900; easing.type: Easing.InOutQuad }
+            }
+
+            SequentialAnimation on buttonScale {
+                running: communityItem.spotlight
+                loops: Animation.Infinite
+                PauseAnimation { duration: 450 }
+                NumberAnimation { to: 1.14; duration: 180; easing.type: Easing.OutCubic }
+                NumberAnimation { to: 0.96; duration: 120; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 1.06; duration: 120; easing.type: Easing.OutCubic }
+                NumberAnimation { to: 1.0; duration: 140; easing.type: Easing.OutCubic }
+                PauseAnimation { duration: 1900 }
+            }
+
+            SequentialAnimation on buttonRotation {
+                running: communityItem.spotlight
+                loops: Animation.Infinite
+                PauseAnimation { duration: 360 }
+                NumberAnimation { to: -13; duration: 80; easing.type: Easing.OutCubic }
+                NumberAnimation { to: 13; duration: 95; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: -10; duration: 85; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 9; duration: 80; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: -5; duration: 75; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0; duration: 130; easing.type: Easing.OutCubic }
+                PauseAnimation { duration: 1395 }
+            }
+
+            SequentialAnimation on badgeLift {
+                running: communityItem.spotlight
+                loops: Animation.Infinite
+                PauseAnimation { duration: 520 }
+                NumberAnimation { to: -5; duration: 150; easing.type: Easing.OutCubic }
+                NumberAnimation { to: 1; duration: 130; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: -2; duration: 100; easing.type: Easing.OutCubic }
+                NumberAnimation { to: 0; duration: 140; easing.type: Easing.OutCubic }
+                PauseAnimation { duration: 1940 }
+            }
+
+            NumberAnimation on orbitRotation {
+                running: communityItem.spotlight
+                loops: Animation.Infinite
+                from: 0
+                to: 360
+                duration: 1350
+                easing.type: Easing.InOutQuad
+            }
+
+            MouseArea {
+                id: communityMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.communityClicked()
+            }
+
+            AppToolTip {
+                text: qsTr("Community - Facebook & Discord")
+                visible: communityMouse.containsMouse
+            }
+        }
 
         Item {
             id: downloadsItem

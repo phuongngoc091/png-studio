@@ -98,6 +98,10 @@ ApplicationWindow {
         y: root.height - height - 16
     }
 
+    CommunityDialog {
+        id: communityDialog
+    }
+
     ConfirmationDialog {
         id: installUpdateDialog
         titleText: qsTr("Install update")
@@ -218,11 +222,22 @@ ApplicationWindow {
                 Layout.preferredWidth: 64
                 currentIndex: stack.currentIndex
                 downloadsActive: downloadsPopup.opened
+                communityActive: communityDialog.opened
                 onNavigated: function(routeId) {
                     stack.currentIndex = StudioRouteRegistry.getIndex(routeId)
                     downloadsPopup.close()
+                    communityDialog.close()
+                }
+                onCommunityClicked: {
+                    downloadsPopup.close()
+                    if (communityDialog.opened) {
+                        communityDialog.close()
+                    } else {
+                        communityDialog.open()
+                    }
                 }
                 onDownloadsClicked: {
+                    communityDialog.close()
                     if (downloadsPopup.opened) {
                         downloadsPopup.close()
                     } else {
