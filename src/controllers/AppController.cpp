@@ -58,6 +58,7 @@ AppController::AppController(QObject *parent)
     m_voiceDesignPresets = new VoiceDesignPresetService(this);
     m_sttSession = new SttSessionController(this);
     m_updates = new AppUpdateService(m_downloads, this);
+    m_examples = new ExampleManager(this);
 
     connect(m_preview, &AudioPreviewService::errorOccurred, this, &AppController::onError);
     connect(m_history, &HistoryService::errorOccurred, this, &AppController::onError);

@@ -96,6 +96,26 @@ ColumnLayout {
         root.settingsChanged()
     }
 
+    function applyExampleSettings(exampleSettings) {
+        if (!exampleSettings) return
+        var settings = JSON.parse(JSON.stringify(root.dynamicSettings))
+        for (var i = 0; i < root.capabilitySchema.length; ++i) {
+            var param = root.capabilitySchema[i] || {}
+            if (param.id && exampleSettings[param.id] !== undefined) {
+                settings[param.id] = exampleSettings[param.id]
+            }
+        }
+        root.dynamicSettings = settings
+        if (exampleSettings["lang"] !== undefined) {
+            root.selectedLanguage = exampleSettings["lang"]
+        }
+        if (exampleSettings["instruct"] !== undefined) {
+            root.styleInstruction = exampleSettings["instruct"]
+            instructInput.text = root.styleInstruction
+        }
+        root.settingsChanged()
+    }
+
     function getSettingsObject(inputText, referenceText) {
         return VoiceCloningUtils.buildCloneSettings(
             root.selectedLanguage,

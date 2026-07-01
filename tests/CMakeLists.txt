@@ -20,6 +20,7 @@ set(TEST_SOURCES
 
     ../src/controllers/FileAccessService.cpp
     ../src/controllers/AppUpdateService.cpp
+    ../src/controllers/ExampleManager.cpp
     ../src/controllers/DownloadInstallService.cpp
     ../src/controllers/ModelsPathMigrator.cpp
     ../src/controllers/ModelsPathMigrationService.cpp
@@ -61,6 +62,7 @@ set(TEST_SOURCES
     ../src/core/HFHubClient.h
     ../src/controllers/AppController.h
     ../src/controllers/AppUpdateService.h
+    ../src/controllers/ExampleManager.h
     ../src/controllers/IStudioAction.h
     ../src/controllers/StudioActions.h
     ../src/controllers/IModelSession.h
@@ -72,7 +74,11 @@ set(TEST_SOURCES
 
 add_executable(LAStudioUnitTests ${TEST_SOURCES})
 
-target_compile_definitions(LAStudioUnitTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_compile_definitions(LAStudioUnitTests PRIVATE
+    NOMINMAX
+    WIN32_LEAN_AND_MEAN
+    LASTUDIO_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
 
 target_include_directories(LAStudioUnitTests PRIVATE
     ${CMAKE_SOURCE_DIR}/src

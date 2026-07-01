@@ -10,6 +10,11 @@ endif()
 project(LAStudio VERSION ${LASTUDIO_VERSION} LANGUAGES CXX)
 
 set(LASTUDIO_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+file(GLOB_RECURSE LASTUDIO_EXAMPLE_FILES CONFIGURE_DEPENDS
+    RELATIVE "${CMAKE_SOURCE_DIR}"
+    "examples/*.json"
+    "examples/*.md"
+)
 file(MAKE_DIRECTORY "${LASTUDIO_GENERATED_DIR}/lastudio")
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/AppVersion.h.in"
@@ -88,6 +93,7 @@ set(LASTUDIO_SOURCES
     src/controllers/ModelsPathMigrationService.cpp
     src/controllers/FileAccessService.cpp
     src/controllers/AppUpdateService.cpp
+    src/controllers/ExampleManager.cpp
     src/controllers/StudioActions.cpp
     src/controllers/ModelLifecycleController.cpp
     src/controllers/SttModelSession.cpp
@@ -160,6 +166,7 @@ set(LASTUDIO_HEADERS
     src/controllers/ModelsPathMigrationService.h
     src/controllers/FileAccessService.h
     src/controllers/AppUpdateService.h
+    src/controllers/ExampleManager.h
     src/controllers/IStudioAction.h
     src/controllers/StudioActions.h
     src/controllers/IModelSession.h
@@ -234,6 +241,7 @@ qt_add_qml_module(LAStudio
         qml/components/voicecloning/VoiceCloningSetupPanel.qml
         qml/components/shared/StudioHeaderBar.qml
         qml/components/shared/GeneratedAudioOutput.qml
+        qml/components/shared/ExamplePickerDialog.qml
         qml/components/shared/CapabilityGallery.qml
         qml/components/shared/StudioContext.qml
         qml/components/shared/StudioShell.qml
@@ -271,6 +279,7 @@ qt_add_qml_module(LAStudio
         data/language-sets/nemotron-3.5-v1.json
         data/language-sets/default.json
         data/vieneu/voices_v3_turbo.json
+        ${LASTUDIO_EXAMPLE_FILES}
         icons/app_icon.ico
         icons/app_icon_16.png
         icons/app_icon_32.png
@@ -292,6 +301,9 @@ target_include_directories(LAStudio PRIVATE
     ${CMAKE_SOURCE_DIR}/third_party/whisper/include
 )
 
+target_compile_definitions(LAStudio PRIVATE
+    LASTUDIO_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
 
 if(ENABLE_OMNIVOICE)
     target_include_directories(LAStudio PRIVATE

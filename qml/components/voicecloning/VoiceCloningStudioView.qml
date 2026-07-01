@@ -39,6 +39,7 @@ StudioShell {
             return family.studio[root.capability].nonVerbalTags
         return []
     }
+    readonly property var availableExamples: AppController.examples.examplesForTask("voice-cloning", root.family || ({}))
 
     property var studioConfig: ({})
     readonly property bool hasLanguageInput: studioConfig && studioConfig.inputs ? studioConfig.inputs.indexOf("language") !== -1 : true
@@ -136,6 +137,25 @@ StudioShell {
         if (count >= 1000000) return (count / 1000000).toFixed(1) + "M samples"
         if (count >= 1000) return (count / 1000).toFixed(1) + "k samples"
         return count + " samples"
+    }
+
+    function applyExample(example) {
+        if (!example || root.inputsLocked) return
+        var inputs = example.inputs || {}
+        var settings = example.settings || {}
+        if (inputs.text !== undefined) {
+            inputText.text = inputs.text
+        }
+        if (inputs.referenceText !== undefined) {
+            referenceBox.referenceText = inputs.referenceText
+        }
+        if (inputs.referenceAudioPath !== undefined && inputs.referenceAudioPath !== "") {
+            referenceBox.audioPath = inputs.referenceAudioPath
+        }
+        if (settings["lang"] !== undefined) {
+            root.selectedLanguageCode = settings["lang"]
+        }
+        settingsPanel.applyExampleSettings(settings)
     }
 
     Connections {
@@ -396,6 +416,19 @@ StudioShell {
                                                 }
 
                                                 PrimaryButton {
+                                                    id: examplesButton
+                                                    text: qsTr("Examples (%1)").arg(root.availableExamples.length)
+                                                    iconName: "file"
+                                                    quiet: true
+                                                    textColor: Theme.textPrimary
+                                                    Layout.preferredWidth: 140
+                                                    Layout.preferredHeight: 30
+                                                    visible: root.availableExamples.length > 0
+                                                    enabled: !root.inputsLocked && root.availableExamples.length > 0
+                                                    onClicked: examplePicker.open()
+                                                }
+
+                                                PrimaryButton {
                                                     text: qsTr("Import .txt")
                                                     iconName: "folder"
                                                     quiet: true
@@ -593,6 +626,14 @@ StudioShell {
         fileMode: FileDialog.SaveFile
         nameFilters: ["WAV files (*.wav)"]
         onAccepted: AppController.preview.saveWav(selectedFile.toString())
+    }
+
+    ExamplePickerDialog {
+        id: examplePicker
+        parent: Overlay.overlay
+        examples: root.availableExamples
+        taskTitle: qsTr("Voice Cloning Examples")
+        onExampleSelected: function(example) { root.applyExample(example) }
     }
 
     Loader {

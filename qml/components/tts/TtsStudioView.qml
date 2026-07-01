@@ -37,6 +37,7 @@ StudioShell {
             return family.studio[root.capability].nonVerbalTags
         return []
     }
+    readonly property var availableExamples: AppController.examples.examplesForTask("tts", root.family || ({}))
 
     signal backToGallery()
     signal reloadRequested()
@@ -103,6 +104,16 @@ StudioShell {
             }
         }
         return "Default"
+    }
+
+    function applyExample(example) {
+        if (!example || root.inputsLocked) return
+        var inputs = example.inputs || {}
+        var settings = example.settings || {}
+        if (inputs.text !== undefined) {
+            inputText.text = inputs.text
+        }
+        settingsPanel.applyExampleSettings(settings)
     }
 
     Connections {
@@ -295,6 +306,19 @@ StudioShell {
                                 color: Theme.textPrimary
                                 font.pixelSize: Theme.fontSmall
                                 font.bold: true
+                            }
+
+                            PrimaryButton {
+                                id: examplesButton
+                                text: qsTr("Examples (%1)").arg(root.availableExamples.length)
+                                iconName: "file"
+                                quiet: true
+                                textColor: Theme.textPrimary
+                                Layout.preferredWidth: 140
+                                Layout.preferredHeight: 30
+                                enabled: root.studioReady && !root.inputsLocked && root.availableExamples.length > 0
+                                visible: root.availableExamples.length > 0
+                                onClicked: examplePicker.open()
                             }
 
                             Text {
@@ -499,5 +523,13 @@ StudioShell {
         fileMode: FileDialog.SaveFile
         nameFilters: ["WAV files (*.wav)"]
         onAccepted: AppController.preview.saveWav(selectedFile.toString())
+    }
+
+    ExamplePickerDialog {
+        id: examplePicker
+        parent: Overlay.overlay
+        examples: root.availableExamples
+        taskTitle: qsTr("Text-to-Speech Examples")
+        onExampleSelected: function(example) { root.applyExample(example) }
     }
 }

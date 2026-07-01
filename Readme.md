@@ -138,6 +138,7 @@ LA-Studio/
 |-- vcpkg.json                  # C++ dependency manifest
 |-- catalog-src/                # Source catalog data for model families
 |-- data/                       # Generated runtime catalog and schema
+|-- examples/                   # Prompt and settings examples for model testing
 |-- docs/                       # Public documentation
 |   |-- BUILD.md                # Windows build guide
 |   |-- README.md               # Documentation index
