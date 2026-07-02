@@ -274,8 +274,9 @@ StudioShell {
                     Layout.fillWidth: true
                     Layout.leftMargin: root.promptInset
                     Layout.rightMargin: root.promptInset
-                    Layout.fillHeight: false
-                    Layout.preferredHeight: 260
+                    Layout.fillHeight: true
+                    Layout.minimumHeight: 360
+                    Layout.preferredHeight: 520
                     radius: Theme.radiusSmall
                     color: Theme.surface
                     border.color: Qt.rgba(1, 1, 1, 0.07)
@@ -408,7 +409,7 @@ StudioShell {
                         iconName: "spark"
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 42
-                        loading: AppController.tts.processing
+                        visible: !AppController.tts.processing
                         enabled: (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0 && !root.inputsLocked
                         onClicked: {
                             root.lastSynthesizedText = inputText.text
@@ -419,8 +420,9 @@ StudioShell {
 
                     PrimaryButton {
                         text: qsTr("Stop")
-                        iconName: "x"
-                        Layout.preferredWidth: 100
+                        iconName: "stop"
+                        buttonColor: Theme.danger
+                        Layout.preferredWidth: 180
                         Layout.preferredHeight: 42
                         visible: AppController.tts.processing
                         onClicked: AppController.tts.cancelProcessing()
@@ -428,6 +430,8 @@ StudioShell {
                 }
 
                 GeneratedAudioOutput {
+                    Layout.maximumWidth: 980
+                    Layout.alignment: Qt.AlignHCenter
                     family: root.family
                     outputReady: root.outputReady
                     samples: AppController.tts.lastSamplePreview
@@ -448,10 +452,6 @@ StudioShell {
                         }
                     }
                     onSaveClicked: saveDialog.open()
-                }
-
-                Item {
-                    Layout.fillHeight: true
                 }
             }
         }

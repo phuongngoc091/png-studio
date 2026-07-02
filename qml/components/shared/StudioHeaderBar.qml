@@ -30,6 +30,9 @@ Rectangle {
     property string runtimeDisplayText: ""
     property bool runtimeClickable: false
     property bool modelPickerOpen: false
+    readonly property bool showLoadedModelCard: root.modelLoaded && root.width >= 1220
+    readonly property bool showRuntimeCard: root.width >= 820
+    readonly property bool showStatusDetails: root.width >= 760
 
     signal backClicked()
     signal runtimeClicked()
@@ -53,6 +56,7 @@ Rectangle {
         anchors.leftMargin: Theme.paddingLarge
         anchors.rightMargin: Theme.paddingLarge
         spacing: Theme.paddingMedium
+        clip: true
 
         ToolIconButton {
             iconName: "chevron-left"
@@ -67,11 +71,12 @@ Rectangle {
             Layout.preferredHeight: 36
             fillMode: Image.PreserveAspectFit
             Layout.alignment: Qt.AlignVCenter
-            visible: root.width > 420
+            visible: root.width > 560
         }
 
         ColumnLayout {
             Layout.fillWidth: true
+            Layout.minimumWidth: 150
             spacing: 1
 
             Text {
@@ -107,6 +112,7 @@ Rectangle {
                     elide: Text.ElideMiddle
                     Layout.fillWidth: true
                     Layout.maximumWidth: 220
+                    visible: root.showStatusDetails
                 }
 
                 Rectangle {
@@ -114,7 +120,7 @@ Rectangle {
                     color: Qt.rgba(0.49, 0.30, 1.0, 0.16)
                     border.color: Qt.rgba(0.49, 0.30, 1.0, 0.40)
                     border.width: 1
-                    visible: root.inferenceElapsedText !== ""
+                    visible: root.inferenceElapsedText !== "" && root.width >= 680
                     implicitHeight: 20
                     implicitWidth: inferenceTimerText.implicitWidth + 10
 
@@ -133,7 +139,7 @@ Rectangle {
                     color: Qt.rgba(0.22, 0.62, 0.39, 0.18)
                     border.color: Qt.rgba(0.22, 0.62, 0.39, 0.45)
                     border.width: 1
-                    visible: root.processing
+                    visible: root.processing && root.width >= 720
                     implicitHeight: 20
                     implicitWidth: cpuText.implicitWidth + 10
 
@@ -152,7 +158,7 @@ Rectangle {
                     color: Qt.rgba(0.22, 0.62, 0.39, 0.18)
                     border.color: Qt.rgba(0.22, 0.62, 0.39, 0.45)
                     border.width: 1
-                    visible: root.modelLoaded
+                    visible: root.modelLoaded && root.width >= 780
                     implicitHeight: 20
                     implicitWidth: ramText.implicitWidth + 10
 
@@ -171,7 +177,7 @@ Rectangle {
                     color: Qt.rgba(0.31, 0.48, 0.89, 0.16)
                     border.color: Qt.rgba(0.31, 0.48, 0.89, 0.40)
                     border.width: 1
-                    visible: root.modelLoaded
+                    visible: root.modelLoaded && root.width >= 900
                     implicitHeight: 20
                     implicitWidth: vramText.implicitWidth + 10
 
@@ -189,10 +195,10 @@ Rectangle {
 
         Rectangle {
             id: loadedModelInfo
-            visible: root.modelLoaded && root.width > 880
-            Layout.preferredWidth: 250
+            visible: root.showLoadedModelCard
+            Layout.preferredWidth: 230
             Layout.minimumWidth: 170
-            Layout.maximumWidth: 300
+            Layout.maximumWidth: 260
             Layout.preferredHeight: 38
             radius: 8
             color: modelInfoMouse.containsMouse || root.modelPickerOpen ? Qt.rgba(1, 1, 1, 0.055) : Qt.rgba(1, 1, 1, 0.03)
@@ -252,10 +258,10 @@ Rectangle {
         }
 
         Rectangle {
-            visible: root.width > 600
-            Layout.preferredWidth: 320
+            visible: root.showRuntimeCard
+            Layout.preferredWidth: 280
             Layout.minimumWidth: 120
-            Layout.maximumWidth: 420
+            Layout.maximumWidth: 320
             Layout.preferredHeight: 38
             radius: 8
             color: Qt.rgba(1, 1, 1, 0.03)
@@ -297,7 +303,10 @@ Rectangle {
 
         Rectangle {
             Layout.preferredWidth: 78
+            Layout.minimumWidth: 78
+            Layout.maximumWidth: 78
             Layout.preferredHeight: 38
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             radius: 10
             color: Qt.rgba(1, 1, 1, 0.032)
             border.color: Qt.rgba(1, 1, 1, 0.085)

@@ -472,7 +472,7 @@ StudioShell {
                         iconName: "spark"
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 40
-                        loading: AppController.tts.processing
+                        visible: !AppController.tts.processing
                         enabled: (root.studioController ? root.studioController.canProcess : false)
                                  && !root.inputsLocked
                                  && AppController.tts.modelLoaded
@@ -492,8 +492,9 @@ StudioShell {
 
                     PrimaryButton {
                         text: qsTr("Stop")
-                        iconName: "x"
-                        Layout.preferredWidth: 100
+                        iconName: "stop"
+                        buttonColor: Theme.danger
+                        Layout.preferredWidth: 180
                         Layout.preferredHeight: 40
                         visible: AppController.tts.processing
                         onClicked: AppController.tts.cancelProcessing()

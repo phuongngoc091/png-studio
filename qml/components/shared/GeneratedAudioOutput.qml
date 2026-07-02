@@ -7,7 +7,7 @@ import "../base"
 Rectangle {
     id: root
     Layout.fillWidth: true
-    Layout.preferredHeight: active ? 198 : 0
+    Layout.preferredHeight: active ? 172 : 0
     visible: active
     opacity: active ? 1 : 0
     radius: Theme.radiusSmall
@@ -200,7 +200,7 @@ Rectangle {
                 buttonColor: root.isPlaying ? Theme.danger : Theme.surface
                 textColor: root.isPlaying ? "#ffffff" : Theme.success
                 borderColor: Qt.rgba(0.40, 0.73, 0.42, 0.26)
-                implicitWidth: 112
+                implicitWidth: 92
                 enabled: !root.processing && root.samples.length > 0
                 onClicked: root.playClicked()
             }
@@ -212,7 +212,7 @@ Rectangle {
                 buttonColor: Theme.surface
                 textColor: Theme.textPrimary
                 borderColor: Qt.rgba(1, 1, 1, 0.09)
-                implicitWidth: 112
+                implicitWidth: 92
                 enabled: !root.processing && root.samples.length > 0
                 onClicked: root.saveClicked()
             }

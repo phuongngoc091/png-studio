@@ -527,7 +527,7 @@ StudioShell {
                                     iconName: "spark"
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 42
-                                    loading: AppController.tts.processing
+                                    visible: !AppController.tts.processing
                                     enabled: {
                                         var isQwen3 = root.family && root.family.id && root.family.id.indexOf("qwen3") !== -1
                                         var baseEnabled = (root.studioController ? root.studioController.canProcess : false) && AppController.tts.modelLoaded && inputText.text.length > 0 && root.referenceAudioPath !== ""
@@ -545,8 +545,9 @@ StudioShell {
 
                                 PrimaryButton {
                                     text: qsTr("Stop")
-                                    iconName: "x"
-                                    Layout.preferredWidth: 100
+                                    iconName: "stop"
+                                    buttonColor: Theme.danger
+                                    Layout.fillWidth: true
                                     Layout.preferredHeight: 42
                                     visible: AppController.tts.processing
                                     onClicked: AppController.tts.cancelProcessing()
