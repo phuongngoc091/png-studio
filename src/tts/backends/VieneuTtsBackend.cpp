@@ -11,6 +11,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QProcess>
+#include <QProcessEnvironment>
 #include <QRegularExpression>
 #include <QSet>
 #include <QTemporaryDir>
@@ -193,7 +194,7 @@ static QStringList splitVieneuV3TextForSafeDecode(const QString &text, const QVa
     }
 
     QStringList chunks;
-    const QRegularExpression sentencePattern(QStringLiteral("[^.!?\\u2026]+[.!?\\u2026]*"));
+    const QRegularExpression sentencePattern(QStringLiteral("[^.!?\\x{2026}]+[.!?\\x{2026}]*"));
     auto it = sentencePattern.globalMatch(trimmed);
     while (it.hasNext()) {
         QString sentence = it.next().captured(0).trimmed();
@@ -341,6 +342,23 @@ static void configureVieneuSeaG2pDict(const QString &runtimePath,
     qputenv("VIENEU_SEA_G2P_DICT", QDir::toNativeSeparators(dictPath).toUtf8());
     Logger::info(QStringLiteral("VieneuTtsBackend"),
                  QStringLiteral("Configured VIENEU_SEA_G2P_DICT: %1").arg(dictPath));
+}
+
+static void configureVieneuV3NativeQualityEnv()
+{
+    if (!qEnvironmentVariableIsSet("VIENEU_GGML_FUSE_FFN")) {
+        qputenv("VIENEU_GGML_FUSE_FFN", "0");
+        Logger::info(QStringLiteral("VieneuTtsBackend"),
+                     QStringLiteral("Configured VIENEU_GGML_FUSE_FFN=0 for VieNeu v3 native quality parity."));
+    }
+    if (!qEnvironmentVariableIsSet("VIENEU_ACOUSTIC_Q8_FFN")) {
+        qputenv("VIENEU_ACOUSTIC_Q8_FFN", "0");
+        Logger::info(QStringLiteral("VieneuTtsBackend"),
+                     QStringLiteral("Configured VIENEU_ACOUSTIC_Q8_FFN=0 for VieNeu v3 native quality parity."));
+    }
+    if (!qEnvironmentVariableIsSet("VIENEU_V3_NATIVE_BENCHMARK")) {
+        qputenv("VIENEU_V3_NATIVE_BENCHMARK", "0");
+    }
 }
 
 static quint16 readLe16(const QByteArray &bytes, int offset)
@@ -1181,6 +1199,9 @@ bool VieneuTtsBackend::load(const QVariantMap &config, QString &error, QVariantL
             ? QFileInfo(configPath).absolutePath()
             : QFileInfo(modelPath).absolutePath();
         configureVieneuSeaG2pDict(runtimePath, g2pModelDir, configPath);
+        if (m_useAbiV2 && effectivePipelineProfile == QStringLiteral("vieneu-v3-native")) {
+            configureVieneuV3NativeQualityEnv();
+        }
 
         if (!runtimePath.isEmpty()) {
             if (!s_sessionVieneuRuntimePath.isEmpty() &&
@@ -1372,8 +1393,16 @@ bool VieneuTtsBackend::synthesizeWithCli(const QString &text,
     if (settings.contains(QStringLiteral("top_p"))) {
         args << QStringLiteral("--top-p") << settings.value(QStringLiteral("top_p")).toString();
     }
-    if (settings.contains(QStringLiteral("max_new_frames"))) {
-        args << QStringLiteral("--max-new-frames") << settings.value(QStringLiteral("max_new_frames")).toString();
+    const int requestedFrames = settings.value(QStringLiteral("max_new_frames"), 0).toInt();
+    const int frameCap = adaptiveVieneuV3FrameCap(text, requestedFrames);
+    if (frameCap > 0) {
+        args << QStringLiteral("--max-new-frames") << QString::number(frameCap);
+        if (frameCap != requestedFrames) {
+            Logger::info(QStringLiteral("VieneuTtsBackend"),
+                         QStringLiteral("Adaptive VieNeu CLI fallback frame cap: %1 -> %2")
+                             .arg(requestedFrames)
+                             .arg(frameCap));
+        }
     }
     if (settings.contains(QStringLiteral("max_chars"))) {
         args << QStringLiteral("--max-chars") << settings.value(QStringLiteral("max_chars")).toString();
@@ -1384,6 +1413,20 @@ bool VieneuTtsBackend::synthesizeWithCli(const QString &text,
     process.setArguments(args);
     process.setWorkingDirectory(QFileInfo(m_cliPath).absolutePath());
     process.setProcessChannelMode(QProcess::MergedChannels);
+    QProcessEnvironment processEnv = QProcessEnvironment::systemEnvironment();
+    processEnv.insert(QStringLiteral("VIENEU_GGML_FUSE_FFN"),
+                      QString::fromUtf8(qgetenv("VIENEU_GGML_FUSE_FFN").isEmpty()
+                                            ? QByteArrayLiteral("0")
+                                            : qgetenv("VIENEU_GGML_FUSE_FFN")));
+    processEnv.insert(QStringLiteral("VIENEU_ACOUSTIC_Q8_FFN"),
+                      QString::fromUtf8(qgetenv("VIENEU_ACOUSTIC_Q8_FFN").isEmpty()
+                                            ? QByteArrayLiteral("0")
+                                            : qgetenv("VIENEU_ACOUSTIC_Q8_FFN")));
+    processEnv.insert(QStringLiteral("VIENEU_V3_NATIVE_BENCHMARK"),
+                      QString::fromUtf8(qgetenv("VIENEU_V3_NATIVE_BENCHMARK").isEmpty()
+                                            ? QByteArrayLiteral("0")
+                                            : qgetenv("VIENEU_V3_NATIVE_BENCHMARK")));
+    process.setProcessEnvironment(processEnv);
 
     Logger::info(QStringLiteral("VieneuTtsBackend"),
                  QStringLiteral("Synthesizing via VieNeu CLI fallback: %1").arg(m_cliPath));
