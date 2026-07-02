@@ -5,8 +5,12 @@
 #include <QStringList>
 #include <QFileInfo>
 #include <QDir>
+#include <QDirIterator>
+#include <QSet>
+#include <QVector>
 #include <stdbool.h>
 #include <stdint.h>
+#include <algorithm>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -112,9 +116,17 @@ public:
     }
 
     void unload() {
+#ifdef Q_OS_WIN
+        if (m_module) {
+            FreeLibrary(m_module);
+            m_module = nullptr;
+        }
+        releasePreloadedDlls();
+#else
         if (m_lib.isLoaded()) {
             m_lib.unload();
         }
+#endif
         vieneu_version = nullptr;
         vieneu_last_error = nullptr;
         vieneu_audio_free = nullptr;
@@ -136,30 +148,39 @@ public:
     }
 
     bool load(const QString& libPath) {
-        if (m_lib.isLoaded()) {
-            if (m_lib.fileName() == libPath) return true;
+        if (isLoaded()) {
+            if (m_loadedPath == libPath) return true;
             m_lastError = QStringLiteral("Hot-switch between VieNeu TTS runtimes is not supported safely in one session. Please restart app after changing runtime.");
             return false;
         }
 
+        bool ok = false;
+#ifdef Q_OS_WIN
+        const QString cleanLibPath = QDir::toNativeSeparators(QDir::cleanPath(libPath));
+        preloadRuntimeDlls(cleanLibPath);
+        m_module = LoadLibraryExW(
+            reinterpret_cast<LPCWSTR>(cleanLibPath.utf16()),
+            NULL,
+            LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+        if (!m_module) {
+            const DWORD errorCode = GetLastError();
+            releasePreloadedDlls();
+            m_lastError = windowsLoadError(libPath, errorCode);
+            return false;
+        }
+        ok = true;
+#else
         QFileInfo fi(libPath);
         QString dir = QDir::toNativeSeparators(fi.absolutePath());
 
-#ifdef Q_OS_WIN
-        SetDllDirectoryW((LPCWSTR)dir.utf16());
-#endif
-
         m_lib.setFileName(libPath);
-        bool ok = m_lib.load();
-
-#ifdef Q_OS_WIN
-        SetDllDirectoryW(NULL);
-#endif
+        ok = m_lib.load();
 
         if (!ok) {
             m_lastError = m_lib.errorString();
             return false;
         }
+#endif
 
         vieneu_version = resolve<vieneu_version_fn>("vieneu_version");
         vieneu_last_error = resolve<vieneu_last_error_fn>("vieneu_last_error");
@@ -183,7 +204,7 @@ public:
         if (!ok) {
             m_lastError = QStringLiteral("Failed to resolve VieNeu TTS runtime symbols from %1. Missing: %2")
                               .arg(libPath, missingSymbols().join(QStringLiteral(", ")));
-            m_lib.unload();
+            unloadLoadedLibraryOnly();
         } else {
             m_loadedPath = libPath;
             m_lastError.clear();
@@ -191,7 +212,13 @@ public:
         return ok;
     }
 
-    bool isLoaded() const { return m_lib.isLoaded(); }
+    bool isLoaded() const {
+#ifdef Q_OS_WIN
+        return m_module != nullptr;
+#else
+        return m_lib.isLoaded();
+#endif
+    }
     bool hasCommonAbi() const { return vieneu_version && vieneu_last_error && vieneu_audio_free && vieneu_free; }
     bool hasAbiV1() const {
         return vieneu_init_default_params && vieneu_init &&
@@ -202,7 +229,14 @@ public:
         return vieneu_init_v2_default_params && vieneu_init_v2 &&
                vieneu_tts_v2_default_params && vieneu_synthesize_v2;
     }
-    QString errorString() const { return m_lastError.isEmpty() ? m_lib.errorString() : m_lastError; }
+    QString errorString() const {
+        if (!m_lastError.isEmpty()) return m_lastError;
+#ifdef Q_OS_WIN
+        return QStringLiteral("VieNeu TTS runtime is not loaded.");
+#else
+        return m_lib.errorString();
+#endif
+    }
 
     vieneu_version_fn vieneu_version = nullptr;
     vieneu_last_error_fn vieneu_last_error = nullptr;
@@ -229,15 +263,125 @@ private:
 
     template<typename Fn, typename... Names>
     Fn resolve(const char *primary, Names... names) {
+#ifdef Q_OS_WIN
+        if (m_module) {
+            if (auto fn = reinterpret_cast<Fn>(GetProcAddress(m_module, primary))) {
+                return fn;
+            }
+        }
+#else
         if (auto fn = reinterpret_cast<Fn>(m_lib.resolve(primary))) {
             return fn;
         }
+#endif
         if constexpr (sizeof...(names) == 0) {
             return nullptr;
         } else {
             return resolve<Fn>(names...);
         }
     }
+
+    void unloadLoadedLibraryOnly() {
+#ifdef Q_OS_WIN
+        if (m_module) {
+            FreeLibrary(m_module);
+            m_module = nullptr;
+        }
+        releasePreloadedDlls();
+#else
+        if (m_lib.isLoaded()) {
+            m_lib.unload();
+        }
+#endif
+    }
+
+#ifdef Q_OS_WIN
+    static int dllLoadPriority(const QString &fileName) {
+        const QString name = fileName.toLower();
+        if (name == QStringLiteral("ggml.dll") || name == QStringLiteral("ggmk.dll")) return 0;
+        if (name == QStringLiteral("ggml-base.dll") || name == QStringLiteral("ggmk-base.dll")) return 1;
+        if (name.startsWith(QStringLiteral("ggml-")) || name.startsWith(QStringLiteral("ggmk-"))) return 2;
+        if (name.startsWith(QStringLiteral("onnxruntime"))) return 3;
+        if (name.startsWith(QStringLiteral("cudart")) || name.startsWith(QStringLiteral("cublas"))) return 4;
+        return 5;
+    }
+
+    void preloadRuntimeDlls(const QString &mainLibPath) {
+        releasePreloadedDlls();
+
+        const QFileInfo mainInfo(mainLibPath);
+        const QString mainPath = QDir::toNativeSeparators(QDir::cleanPath(mainInfo.absoluteFilePath()));
+        const QDir runtimeDir(mainInfo.absolutePath());
+        QVector<QFileInfo> dlls;
+
+        QDirIterator it(runtimeDir.absolutePath(),
+                        QStringList{QStringLiteral("*.dll")},
+                        QDir::Files,
+                        QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QFileInfo dllInfo(it.next());
+            const QString dllPath = QDir::toNativeSeparators(QDir::cleanPath(dllInfo.absoluteFilePath()));
+            if (dllPath.compare(mainPath, Qt::CaseInsensitive) == 0) {
+                continue;
+            }
+            dlls.append(dllInfo);
+        }
+
+        std::sort(dlls.begin(), dlls.end(), [](const QFileInfo &a, const QFileInfo &b) {
+            const int ap = dllLoadPriority(a.fileName());
+            const int bp = dllLoadPriority(b.fileName());
+            if (ap != bp) return ap < bp;
+            return a.fileName().compare(b.fileName(), Qt::CaseInsensitive) < 0;
+        });
+
+        QSet<QString> loadedPaths;
+        for (const QFileInfo &dll : dlls) {
+            const QString dllPath = QDir::toNativeSeparators(QDir::cleanPath(dll.absoluteFilePath()));
+            if (loadedPaths.contains(dllPath)) {
+                continue;
+            }
+            loadedPaths.insert(dllPath);
+
+            HMODULE module = LoadLibraryExW(reinterpret_cast<LPCWSTR>(dllPath.utf16()),
+                                            NULL,
+                                            LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+            if (module) {
+                m_preloadedDlls.append(module);
+            }
+        }
+    }
+
+    void releasePreloadedDlls() {
+        for (auto it = m_preloadedDlls.rbegin(); it != m_preloadedDlls.rend(); ++it) {
+            FreeLibrary(*it);
+        }
+        m_preloadedDlls.clear();
+    }
+
+    static QString windowsLoadError(const QString &libPath, DWORD errorCode) {
+        LPWSTR message = nullptr;
+        const DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                            FORMAT_MESSAGE_FROM_SYSTEM |
+                            FORMAT_MESSAGE_IGNORE_INSERTS;
+        const DWORD len = FormatMessageW(flags,
+                                         NULL,
+                                         errorCode,
+                                         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                         reinterpret_cast<LPWSTR>(&message),
+                                         0,
+                                         NULL);
+        QString detail = len > 0 && message
+            ? QString::fromWCharArray(message).trimmed()
+            : QStringLiteral("Windows error %1").arg(errorCode);
+        if (message) {
+            LocalFree(message);
+        }
+        if (errorCode == ERROR_PROC_NOT_FOUND) {
+            detail += QStringLiteral(" This usually means a dependent DLL with the same name was found but does not export the procedure required by this VieNeu runtime. Restart LA Studio and reinstall the matching VieNeu runtime package if the problem persists.");
+        }
+        return QStringLiteral("Cannot load library %1: %2").arg(libPath, detail);
+    }
+#endif
 
     QStringList missingSymbols() const {
         QStringList missing;
@@ -270,7 +414,12 @@ private:
         }
     }
 
+#ifdef Q_OS_WIN
+    HMODULE m_module = nullptr;
+    QVector<HMODULE> m_preloadedDlls;
+#else
     QLibrary m_lib;
+#endif
     QString m_loadedPath;
     QString m_lastError;
 };

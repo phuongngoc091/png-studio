@@ -7,6 +7,7 @@
 #include <runtimes/WhisperInterface.h>
 #include <runtimes/OmnivoiceInterface.h>
 #include <runtimes/VibevoiceInterface.h>
+#include <runtimes/VieneuTtsInterface.h>
 #include <QVector>
 
 namespace LAStudio {

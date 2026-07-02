@@ -127,6 +127,18 @@ void TtsSharedModelSession::requestLoad(const QString &capabilityId, const Studi
         return;
     }
 
+    const QStringList loadedSignatures = m_loadedConfigs.keys();
+    for (const QString &signature : loadedSignatures) {
+        if (signature == resolved.signature) {
+            continue;
+        }
+        Logger::info(QStringLiteral("TtsSharedModelSession"),
+                     QStringLiteral("Unloading previous TTS configuration before loading: %1").arg(resolved.signature));
+        m_loadedConfigs.remove(signature);
+        m_ownerBySignature.remove(signature);
+        m_engine->unloadInstance(signature);
+    }
+
     m_pendingOwner = capabilityId;
     m_activeOwner = capabilityId;
     m_loadedConfigs.insert(resolved.signature, resolved);

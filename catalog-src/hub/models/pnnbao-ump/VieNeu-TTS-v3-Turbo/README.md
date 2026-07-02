@@ -4,7 +4,7 @@ VieNeu-TTS v3 Turbo is a 48 kHz Vietnamese-English text-to-speech model from Pha
 
 ## LA Studio Notes
 
-LA Studio targets `VieNeu-TTS.cpp` v0.1.1 with `pipelineProfile: vieneu-v3-native`. The runtime exposes a C ABI-compatible progress callback, so LA Studio can show exact inference progress while generating audio.
+LA Studio targets `VieNeu-TTS.cpp` v0.1.2 with `pipelineProfile: vieneu-v3-native`. The runtime exposes a C ABI-compatible progress callback, so LA Studio can show exact inference progress while generating audio.
 
 Required components are packaged in `lastudio-community/VieNeu-TTS-v3-Turbo-CPP` for LA Studio:
 

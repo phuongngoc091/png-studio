@@ -171,11 +171,17 @@ function Ensure-MsvcEnvironment {
         throw "Failed to initialize MSVC environment from '$vcvars'."
     }
 
+    $seenEnvNames = @{}
     foreach ($line in $envDump) {
         $idx = $line.IndexOf("=")
         if ($idx -gt 0) {
             $name = $line.Substring(0, $idx)
             $value = $line.Substring($idx + 1)
+            $normalizedName = $name.ToUpperInvariant()
+            if ($seenEnvNames.ContainsKey($normalizedName)) {
+                continue
+            }
+            $seenEnvNames[$normalizedName] = $true
             Set-Item -Path "Env:$name" -Value $value
         }
     }

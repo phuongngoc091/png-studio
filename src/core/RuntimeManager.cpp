@@ -319,7 +319,8 @@ RuntimeInfo RuntimeManager::processRuntimeDir(const QDir &dir,
                 if (c.contains(QStringLiteral("omnivoice")) ||
                     c.contains(QStringLiteral("vibevoice")) ||
                     c.contains(QStringLiteral("crispasr")) ||
-                    c.contains(QStringLiteral("kokoro"))) {
+                    c.contains(QStringLiteral("kokoro")) ||
+                    c.contains(QStringLiteral("vieneu"))) {
                     info.type = QStringLiteral("tts");
                 } else {
                     info.type = QStringLiteral("stt");
@@ -419,7 +420,8 @@ RuntimeInfo RuntimeManager::processRuntimeDir(const QDir &dir,
         if (info.libraryPath.contains(QStringLiteral("omnivoice")) ||
             info.libraryPath.contains(QStringLiteral("vibevoice")) ||
             info.libraryPath.contains(QStringLiteral("crispasr")) ||
-            info.libraryPath.contains(QStringLiteral("kokoro"))) {
+            info.libraryPath.contains(QStringLiteral("kokoro")) ||
+            info.libraryPath.contains(QStringLiteral("vieneu"))) {
             info.type = QStringLiteral("tts");
         } else {
             info.type = QStringLiteral("stt");
@@ -477,6 +479,9 @@ bool RuntimeManager::loadTtsRuntime(const QString &id)
             }
             if (info.libraryPath.contains(QStringLiteral("qwen3"), Qt::CaseInsensitive)) {
                 return CrispQwen3TtsInterface::instance().load(info.libraryPath);
+            }
+            if (info.libraryPath.contains(QStringLiteral("vieneu"), Qt::CaseInsensitive)) {
+                return VieneuTtsInterface::instance().load(info.libraryPath);
             }
             if (info.libraryPath.contains(QStringLiteral("crispasr"), Qt::CaseInsensitive) ||
                 info.libraryPath.contains(QStringLiteral("kokoro"), Qt::CaseInsensitive)) {

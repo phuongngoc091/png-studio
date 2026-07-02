@@ -267,6 +267,31 @@ void TtsEngine::cancelProcessing()
 
 TtsEngineInstance *TtsEngine::loadInstance(const SessionConfiguration &config)
 {
+#ifdef Q_OS_WIN
+    const QStringList signatures = m_instances.keys();
+    for (const QString &signature : signatures) {
+        if (signature == config.signature) {
+            continue;
+        }
+
+        TtsEngineInstance *oldInstance = m_instances.take(signature);
+        if (!oldInstance) {
+            continue;
+        }
+
+        Logger::info(QStringLiteral("TtsEngine"),
+                     QStringLiteral("Unloading previous TTS runtime instance before loading: %1").arg(config.signature));
+        oldInstance->unloadVoiceSync();
+        oldInstance->deleteLater();
+    }
+
+    if (!m_instances.contains(m_activeSignature)) {
+        m_activeSignature.clear();
+        emit activeSignatureChanged();
+        emit loadedInstancesChanged();
+    }
+#endif
+
     TtsEngineInstance *inst = ensureInstance(config.signature);
     inst->setFamilyConfig(config.familyConfig);
     inst->setRuntimePath(config.runtimePath);
