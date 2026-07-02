@@ -591,10 +591,6 @@ void StudioSessionViewModel::syncSelectionFromSettings()
         emit selectionChanged();
         emit studioContextChanged(m_pendingFamilyId, m_pendingRuntimeId, m_pendingRuntimeVersion);
 
-        // Keep STT unloaded on startup to avoid unnecessary memory usage.
-        if (m_autoLoadOnSync && m_capabilityId != QStringLiteral("stt")) {
-            QTimer::singleShot(100, this, &StudioSessionViewModel::loadSelectedConfiguration);
-        }
     } else {
         m_selectionCommitted = false;
         m_pendingFamilyId.clear();
@@ -617,7 +613,8 @@ void StudioSessionViewModel::commitConfigurationSelection(const QString &familyI
 
 void StudioSessionViewModel::autoLoadIfReady()
 {
-    loadSelectedConfiguration();
+    // Kept for older QML bindings. Opening a studio must not load a model;
+    // loading should only happen from an explicit user action.
 }
 
 void StudioSessionViewModel::onActionStateChanged()

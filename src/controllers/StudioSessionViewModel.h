@@ -156,7 +156,7 @@ private:
     QVariantMap m_pendingFiles;
 
     bool m_selectionCommitted = false;
-    bool m_autoLoadOnSync = true;
+    bool m_autoLoadOnSync = false;
     QElapsedTimer m_inferenceTimer;
     QTimer *m_inferenceUiTimer = nullptr;
     qint64 m_lastInferenceElapsedMs = 0;
