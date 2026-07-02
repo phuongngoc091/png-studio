@@ -303,16 +303,7 @@ laStudio:
       name: CPU Omnivoice (x64)
       asset: omnivoice-win-cpu.zip
       library: omnivoice.dll
-      version: v0.1.2
-      source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
-      type: tts
-    - id: omnivoice.cpp-win-x86_64-cuda-11
-      engineFamily: omnivoice.cpp
-      label: CUDA 11
-      name: CUDA 11 Omnivoice (x64)
-      asset: omnivoice-win-cuda-11.zip
-      library: omnivoice.dll
-      version: v0.1.2
+      version: v0.1.3
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
     - id: omnivoice.cpp-win-x86_64-cuda-12
@@ -321,7 +312,7 @@ laStudio:
       name: CUDA 12 Omnivoice (x64)
       asset: omnivoice-win-cuda-12.zip
       library: omnivoice.dll
-      version: v0.1.2
+      version: v0.1.3
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
     - id: omnivoice.cpp-win-x86_64-vulkan
@@ -330,7 +321,7 @@ laStudio:
       name: Vulkan Omnivoice (x64)
       asset: omnivoice-win-vulkan.zip
       library: omnivoice.dll
-      version: v0.1.2
+      version: v0.1.3
       source: https://github.com/dduongtrandai/omnivoice.cpp/releases/download/
       type: tts
   studio:

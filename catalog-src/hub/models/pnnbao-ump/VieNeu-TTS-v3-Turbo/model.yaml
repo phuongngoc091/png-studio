@@ -233,7 +233,7 @@ laStudio:
       name: CPU VieNeu-TTS v3 Native Runtime (x64)
       asset: vieneu-tts-win-cpu.zip
       library: vieneu-tts.dll
-      version: v0.1.1
+      version: v0.1.2
       source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
     - id: vieneu-tts-win-x86_64-cuda
       engineFamily: vieneu-tts
@@ -243,7 +243,7 @@ laStudio:
       name: CUDA 12 VieNeu-TTS v3 Native Runtime (x64)
       asset: vieneu-tts-win-cuda-12.zip
       library: vieneu-tts.dll
-      version: v0.1.1
+      version: v0.1.2
       source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
     - id: vieneu-tts-win-x86_64-vulkan
       engineFamily: vieneu-tts
@@ -253,7 +253,7 @@ laStudio:
       name: Vulkan VieNeu-TTS v3 Native Runtime (x64)
       asset: vieneu-tts-win-vulkan.zip
       library: vieneu-tts.dll
-      version: v0.1.1
+      version: v0.1.2
       source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
   studio:
     tts:

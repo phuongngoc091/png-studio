@@ -2098,18 +2098,7 @@
           "name": "CPU Omnivoice (x64)",
           "asset": "omnivoice-win-cpu.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.2",
-          "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
-          "type": "tts"
-        },
-        {
-          "id": "omnivoice.cpp-win-x86_64-cuda-11",
-          "engineFamily": "omnivoice.cpp",
-          "label": "CUDA 11",
-          "name": "CUDA 11 Omnivoice (x64)",
-          "asset": "omnivoice-win-cuda-11.zip",
-          "library": "omnivoice.dll",
-          "version": "v0.1.2",
+          "version": "v0.1.3",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         },
@@ -2120,7 +2109,7 @@
           "name": "CUDA 12 Omnivoice (x64)",
           "asset": "omnivoice-win-cuda-12.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.2",
+          "version": "v0.1.3",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         },
@@ -2131,7 +2120,7 @@
           "name": "Vulkan Omnivoice (x64)",
           "asset": "omnivoice-win-vulkan.zip",
           "library": "omnivoice.dll",
-          "version": "v0.1.2",
+          "version": "v0.1.3",
           "source": "https://github.com/dduongtrandai/omnivoice.cpp/releases/download/",
           "type": "tts"
         }
@@ -4413,7 +4402,7 @@
           "name": "CPU VieNeu-TTS v3 Native Runtime (x64)",
           "asset": "vieneu-tts-win-cpu.zip",
           "library": "vieneu-tts.dll",
-          "version": "v0.1.1",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/"
         },
         {
@@ -4425,7 +4414,7 @@
           "name": "CUDA 12 VieNeu-TTS v3 Native Runtime (x64)",
           "asset": "vieneu-tts-win-cuda-12.zip",
           "library": "vieneu-tts.dll",
-          "version": "v0.1.1",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/"
         },
         {
@@ -4437,7 +4426,7 @@
           "name": "Vulkan VieNeu-TTS v3 Native Runtime (x64)",
           "asset": "vieneu-tts-win-vulkan.zip",
           "library": "vieneu-tts.dll",
-          "version": "v0.1.1",
+          "version": "v0.1.2",
           "source": "https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/"
         }
       ],
