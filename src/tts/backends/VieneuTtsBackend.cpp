@@ -10,11 +10,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QProcess>
-#include <QProcessEnvironment>
 #include <QRegularExpression>
 #include <QSet>
-#include <QTemporaryDir>
 #include <zlib.h>
 #include <cmath>
 #include <cstring>
@@ -1213,27 +1210,6 @@ bool VieneuTtsBackend::load(const QVariantMap &config, QString &error, QVariantL
             }
             if (!vieneu.load(runtimePath)) {
                 error = QString("Failed to load VieNeu TTS runtime: ") + vieneu.errorString();
-#ifdef Q_OS_WIN
-                if (m_useAbiV2) {
-                    const QString cliPath = QDir(QFileInfo(runtimePath).absolutePath()).absoluteFilePath(QStringLiteral("vieneu-tts-cli.exe"));
-                    if (QFileInfo::exists(cliPath)) {
-                        m_cliFallback = true;
-                        m_cliPath = cliPath;
-                        m_cliModelDir = abiV2ModelDir;
-                        m_cliOnnxDir = abiV2OnnxDir;
-                        m_cliCodecDir = abiV2CodecDir;
-                        m_cliConfigPath = configPath;
-                        m_cliTokenizerPath = tokenizerPath;
-                        m_cliVoicesPath = resolvedVoicesPath;
-                        if (!runtimePath.isEmpty())
-                            s_sessionVieneuRuntimePath = runtimePath;
-                        Logger::warning(QStringLiteral("VieneuTtsBackend"),
-                                        error + QStringLiteral(" Falling back to VieNeu CLI runtime: %1").arg(cliPath));
-                        error.clear();
-                        return true;
-                    }
-                }
-#endif
                 Logger::error(QStringLiteral("VieneuTtsBackend"), error);
                 return false;
             }
@@ -1330,141 +1306,7 @@ void VieneuTtsBackend::unload()
     }
     VieneuTtsInterface::instance().unload();
     m_useAbiV2 = false;
-    m_cliFallback = false;
     m_pipelineProfile.clear();
-    m_cliPath.clear();
-    m_cliModelDir.clear();
-    m_cliOnnxDir.clear();
-    m_cliCodecDir.clear();
-    m_cliConfigPath.clear();
-    m_cliTokenizerPath.clear();
-    m_cliVoicesPath.clear();
-}
-
-bool VieneuTtsBackend::synthesizeWithCli(const QString &text,
-                                         const QString &referencePath,
-                                         const QVariantMap &settings,
-                                         QVector<float> &samples,
-                                         int &sampleRate,
-                                         QString &error)
-{
-    if (m_cliPath.isEmpty() || !QFileInfo::exists(m_cliPath)) {
-        error = QStringLiteral("VieNeu CLI fallback is unavailable.");
-        return false;
-    }
-
-    QTemporaryDir tempDir;
-    if (!tempDir.isValid()) {
-        error = QStringLiteral("Could not create a temporary directory for VieNeu CLI output.");
-        return false;
-    }
-
-    const QString outputPath = QDir(tempDir.path()).absoluteFilePath(QStringLiteral("vieneu-output.wav"));
-    QStringList args;
-    args << QStringLiteral("--profile") << (m_pipelineProfile.isEmpty() ? QStringLiteral("vieneu-v3-native") : m_pipelineProfile)
-         << QStringLiteral("--model-dir") << m_cliModelDir
-         << QStringLiteral("--codec-dir") << m_cliCodecDir
-         << QStringLiteral("--text") << text
-         << QStringLiteral("--output") << outputPath;
-
-    if (!m_cliOnnxDir.isEmpty() && m_cliOnnxDir != m_cliModelDir) {
-        args << QStringLiteral("--onnx-dir") << m_cliOnnxDir;
-    }
-    if (!m_cliConfigPath.isEmpty()) {
-        args << QStringLiteral("--config") << m_cliConfigPath;
-    }
-    if (!m_cliTokenizerPath.isEmpty()) {
-        args << QStringLiteral("--tokenizer") << m_cliTokenizerPath;
-    }
-    if (!m_cliVoicesPath.isEmpty()) {
-        args << QStringLiteral("--voices-json") << m_cliVoicesPath;
-    }
-    if (!referencePath.isEmpty()) {
-        args << QStringLiteral("--ref-audio") << referencePath;
-    } else if (settings.contains(QStringLiteral("voice"))) {
-        args << QStringLiteral("--voice") << settings.value(QStringLiteral("voice")).toString();
-    }
-    if (settings.contains(QStringLiteral("temperature"))) {
-        args << QStringLiteral("--temperature") << settings.value(QStringLiteral("temperature")).toString();
-    }
-    if (settings.contains(QStringLiteral("top_k"))) {
-        args << QStringLiteral("--top-k") << settings.value(QStringLiteral("top_k")).toString();
-    }
-    if (settings.contains(QStringLiteral("top_p"))) {
-        args << QStringLiteral("--top-p") << settings.value(QStringLiteral("top_p")).toString();
-    }
-    const int requestedFrames = settings.value(QStringLiteral("max_new_frames"), 0).toInt();
-    const int frameCap = adaptiveVieneuV3FrameCap(text, requestedFrames);
-    if (frameCap > 0) {
-        args << QStringLiteral("--max-new-frames") << QString::number(frameCap);
-        if (frameCap != requestedFrames) {
-            Logger::info(QStringLiteral("VieneuTtsBackend"),
-                         QStringLiteral("Adaptive VieNeu CLI fallback frame cap: %1 -> %2")
-                             .arg(requestedFrames)
-                             .arg(frameCap));
-        }
-    }
-    if (settings.contains(QStringLiteral("max_chars"))) {
-        args << QStringLiteral("--max-chars") << settings.value(QStringLiteral("max_chars")).toString();
-    }
-
-    QProcess process;
-    process.setProgram(m_cliPath);
-    process.setArguments(args);
-    process.setWorkingDirectory(QFileInfo(m_cliPath).absolutePath());
-    process.setProcessChannelMode(QProcess::MergedChannels);
-    QProcessEnvironment processEnv = QProcessEnvironment::systemEnvironment();
-    processEnv.insert(QStringLiteral("VIENEU_GGML_FUSE_FFN"),
-                      QString::fromUtf8(qgetenv("VIENEU_GGML_FUSE_FFN").isEmpty()
-                                            ? QByteArrayLiteral("0")
-                                            : qgetenv("VIENEU_GGML_FUSE_FFN")));
-    processEnv.insert(QStringLiteral("VIENEU_ACOUSTIC_Q8_FFN"),
-                      QString::fromUtf8(qgetenv("VIENEU_ACOUSTIC_Q8_FFN").isEmpty()
-                                            ? QByteArrayLiteral("0")
-                                            : qgetenv("VIENEU_ACOUSTIC_Q8_FFN")));
-    processEnv.insert(QStringLiteral("VIENEU_V3_NATIVE_BENCHMARK"),
-                      QString::fromUtf8(qgetenv("VIENEU_V3_NATIVE_BENCHMARK").isEmpty()
-                                            ? QByteArrayLiteral("0")
-                                            : qgetenv("VIENEU_V3_NATIVE_BENCHMARK")));
-    process.setProcessEnvironment(processEnv);
-
-    Logger::info(QStringLiteral("VieneuTtsBackend"),
-                 QStringLiteral("Synthesizing via VieNeu CLI fallback: %1").arg(m_cliPath));
-    process.start();
-    if (!process.waitForStarted(5000)) {
-        error = QStringLiteral("Failed to start VieNeu CLI fallback: %1").arg(process.errorString());
-        return false;
-    }
-
-    while (!process.waitForFinished(100)) {
-        if (m_cancelRequested.load()) {
-            process.kill();
-            process.waitForFinished(3000);
-            error = QStringLiteral("TTS synthesis was canceled.");
-            return false;
-        }
-    }
-
-    const QString output = QString::fromLocal8Bit(process.readAll()).trimmed();
-    if (process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0) {
-        error = QStringLiteral("VieNeu CLI fallback failed (exit=%1): %2")
-                    .arg(process.exitCode())
-                    .arg(output);
-        Logger::error(QStringLiteral("VieneuTtsBackend"), error);
-        return false;
-    }
-
-    WavIO::WavData wav = WavIO::loadAsFloat(outputPath);
-    if (wav.samples.isEmpty() || wav.sampleRate <= 0) {
-        error = output.isEmpty()
-            ? QStringLiteral("VieNeu CLI fallback did not produce valid audio.")
-            : QStringLiteral("VieNeu CLI fallback did not produce valid audio: %1").arg(output);
-        return false;
-    }
-
-    samples = std::move(wav.samples);
-    sampleRate = wav.sampleRate;
-    return true;
 }
 
 bool VieneuTtsBackend::synthesize(const QString &text, float speed, const QVariantMap &settings,
@@ -1536,10 +1378,6 @@ bool VieneuTtsBackend::synthesize(const QString &text, float speed, const QVaria
             sampleRate = combinedSampleRate;
             return !samples.isEmpty() && sampleRate > 0;
         }
-    }
-
-    if (m_cliFallback) {
-        return synthesizeWithCli(ensureSentenceTerminatorForVieneuV3(text), QString(), settings, samples, sampleRate, error);
     }
 
     {
@@ -1697,10 +1535,6 @@ bool VieneuTtsBackend::cloneVoice(const QString &text, const QString &referenceP
             sampleRate = combinedSampleRate;
             return !samples.isEmpty() && sampleRate > 0;
         }
-    }
-
-    if (m_cliFallback) {
-        return synthesizeWithCli(ensureSentenceTerminatorForVieneuV3(text), referencePath, settings, samples, sampleRate, error);
     }
 
     {
