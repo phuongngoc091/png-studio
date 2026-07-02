@@ -419,10 +419,17 @@ ApplicationWindow {
                     }
                 }
                 Loader {
-                    id: settingsLoader
+                    id: developerLoader
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     active: stack.currentIndex === 7
+                    sourceComponent: DeveloperPage {}
+                }
+                Loader {
+                    id: settingsLoader
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    active: stack.currentIndex === 8
                     sourceComponent: SettingsPage {}
                 }
                 }
@@ -437,6 +444,96 @@ ApplicationWindow {
                         NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
                     }
                 }
+            }
+        }
+    }
+
+    ResizeHandle {
+        edge: Qt.LeftEdge
+        cursorShape: Qt.SizeHorCursor
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: edgeWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.RightEdge
+        cursorShape: Qt.SizeHorCursor
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: edgeWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.TopEdge
+        cursorShape: Qt.SizeVerCursor
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: edgeWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.BottomEdge
+        cursorShape: Qt.SizeVerCursor
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: edgeWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.TopEdge | Qt.LeftEdge
+        cursorShape: Qt.SizeFDiagCursor
+        anchors.left: parent.left
+        anchors.top: parent.top
+        width: cornerWidth
+        height: cornerWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.TopEdge | Qt.RightEdge
+        cursorShape: Qt.SizeBDiagCursor
+        anchors.right: parent.right
+        anchors.top: parent.top
+        width: cornerWidth
+        height: cornerWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.BottomEdge | Qt.LeftEdge
+        cursorShape: Qt.SizeBDiagCursor
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        width: cornerWidth
+        height: cornerWidth
+    }
+
+    ResizeHandle {
+        edge: Qt.BottomEdge | Qt.RightEdge
+        cursorShape: Qt.SizeFDiagCursor
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        width: cornerWidth
+        height: cornerWidth
+    }
+
+    component ResizeHandle: MouseArea {
+        property int edge: 0
+        readonly property int edgeWidth: 6
+        readonly property int cornerWidth: 14
+
+        visible: root.visibility !== Window.Maximized && root.visibility !== Window.FullScreen
+        enabled: visible
+        z: 1000
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton
+
+        onPressed: {
+            if (root.startSystemResize) {
+                root.startSystemResize(edge)
             }
         }
     }

@@ -153,7 +153,6 @@ void VoxCpm2Backend::unload()
         }
         m_session = nullptr;
     }
-    CrispVoxCpm2Interface::instance().unload();
     m_modelPath.clear();
 }
 

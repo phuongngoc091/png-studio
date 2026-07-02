@@ -52,7 +52,7 @@ private slots:
 private:
     QVariantMap ttsWorkflow() const;
     QVariantMap sttWorkflow() const;
-    QVariantMap sessionItem(IModelSession *session) const;
+    QVariantList sessionItems(IModelSession *session) const;
     QVariantMap makeWorkflow(const QString &id,
                              const QString &type,
                              const QString &title,

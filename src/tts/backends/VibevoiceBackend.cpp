@@ -178,7 +178,6 @@ void VibevoiceBackend::unload()
         }
         m_session = nullptr;
     }
-    CrispVibeVoiceInterface::instance().unload();
     m_loaded = false;
     m_modelPath.clear();
     m_backendName.clear();

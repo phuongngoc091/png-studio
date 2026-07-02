@@ -70,6 +70,7 @@ RowLayout {
         if (raw === "Setup required") return qsTr("Setup required")
         if (raw === "Processing") return qsTr("Processing")
         if (raw === "Loading") return qsTr("Loading")
+        if (raw === "Unloading") return qsTr("Unloading")
         if (raw === "Error") return qsTr("Error")
         return raw
     }
@@ -77,9 +78,13 @@ RowLayout {
     function statusColor() {
         var stText = studioController ? studioController.statusText : (root.studioReady ? "Ready" : "Setup required")
         if (stText === "Ready" || stText === "Processing") return Theme.success
-        if (stText === "Loading") return Theme.warning
+        if (stText === "Loading" || stText === "Unloading") return Theme.warning
         if (stText === "Error") return Theme.danger
         return Theme.textSecondary
+    }
+
+    function hasLoadedModels() {
+        return studioController && studioController.loadedModels && studioController.loadedModels.length > 0
     }
 
     function runtimeInstalled(runtimeId) {
@@ -116,6 +121,22 @@ RowLayout {
             out.push(item)
         }
         return out
+    }
+
+    LoadedModelDialog {
+        id: loadedModelDialog
+        loadedModels: studioController ? studioController.loadedModels : []
+        statusText: root.statusText()
+        statusColor: root.statusColor()
+        processing: root.isProcessingState
+        onActivateRequested: function(modelId) {
+            if (studioController) studioController.activateLoadedModel(modelId)
+        }
+        onUnloadRequested: function(modelId) {
+            if (studioController) studioController.unloadLoadedModel(modelId)
+        }
+        onConfigureCurrentRequested: root.requestConfigurationPicker()
+        onLoadAnotherRequested: root.requestConfigurationPicker()
     }
 
     Rectangle {
@@ -203,6 +224,9 @@ RowLayout {
             estimatedVramUsage: studioController ? studioController.estimatedVramUsage : ""
             loadedModelName: studioController ? studioController.loadedModelName : ""
             loadedModelFiles: studioController ? studioController.loadedModelFiles : []
+            loadedModels: studioController ? studioController.loadedModels : []
+            activeModelId: studioController ? studioController.activeModelId : ""
+            modelPickerOpen: loadedModelDialog.opened
             inferenceElapsedText: studioController ? studioController.inferenceElapsedText : ""
             studioReady: root.studioReady
             backToolTip: root.backToolTip
@@ -212,6 +236,15 @@ RowLayout {
             onRuntimeClicked: root.requestConfigurationPicker()
             onReloadRequested: root.requestReload()
             onEjectRequested: root.requestEject()
+            onLoadedModelPickerRequested: loadedModelDialog.open()
+            onLoadedModelActivated: function(modelId) {
+                if (studioController) studioController.activateLoadedModel(modelId)
+            }
+            onLoadedModelUnloadRequested: function(modelId) {
+                if (studioController) studioController.unloadLoadedModel(modelId)
+            }
+            onLoadAnotherModelRequested: root.requestConfigurationPicker()
+            onConfigureCurrentModelRequested: root.requestConfigurationPicker()
         }
         Rectangle {
             Layout.fillWidth: true
@@ -234,12 +267,19 @@ RowLayout {
                 spacing: Theme.paddingMedium
 
                 Button {
+                    id: modalModelSelectorButton
                     visible: root.modalSelectionMode
                     enabled: !root.isProcessingState
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
                     flat: true
-                    onClicked: root.requestConfigurationPicker()
+                    onClicked: {
+                        if (root.hasLoadedModels()) {
+                            loadedModelDialog.open()
+                        } else {
+                            root.requestConfigurationPicker()
+                        }
+                    }
 
                     contentItem: RowLayout {
                         anchors.fill: parent
@@ -292,6 +332,7 @@ RowLayout {
                         border.color: Qt.rgba(1, 1, 1, 0.08)
                         border.width: 1
                     }
+
                 }
 
                 RowLayout {

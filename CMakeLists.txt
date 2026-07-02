@@ -48,6 +48,7 @@ set(LASTUDIO_SOURCES
     src/core/PathUtils.cpp
     src/core/VoiceCloningUtils.cpp
     src/core/Settings.cpp
+    src/api/ApiServerService.cpp
     src/core/HFHubClient.cpp
     src/core/DownloadManager.cpp
     src/core/ModelManager.cpp
@@ -66,12 +67,14 @@ set(LASTUDIO_SOURCES
     src/audio/AudioPlayer.cpp
     src/audio/WaveformProvider.cpp
     src/stt/SttEngine.cpp
+    src/stt/SttEngineInstance.cpp
     src/stt/SttWorker.cpp
     src/stt/backends/SttBackendFactory.cpp
     src/stt/backends/WhisperSttBackend.cpp
     src/stt/backends/QwenSttBackend.cpp
     src/stt/backends/NemotronSttBackend.cpp
     src/tts/TtsEngine.cpp
+    src/tts/TtsEngineInstance.cpp
     src/tts/TtsWorker.cpp
     src/tts/TtsRequestValidator.cpp
     src/tts/backends/TtsBackendFactory.cpp
@@ -130,12 +133,14 @@ set(LASTUDIO_HEADERS
     src/core/StudioSelectionRepository.h
     src/core/CapabilityFamilyModel.h
     src/core/LogViewService.h
+    src/api/ApiServerService.h
 
     src/audio/WavIO.h
     src/audio/AudioRecorder.h
     src/audio/AudioPlayer.h
     src/audio/WaveformProvider.h
     src/stt/SttEngine.h
+    src/stt/SttEngineInstance.h
     src/stt/SttWorker.h
     src/stt/backends/SttBackend.h
     src/stt/backends/SttBackendFactory.h
@@ -143,6 +148,7 @@ set(LASTUDIO_HEADERS
     src/stt/backends/QwenSttBackend.h
     src/stt/backends/NemotronSttBackend.h
     src/tts/TtsEngine.h
+    src/tts/TtsEngineInstance.h
     src/tts/TtsWorker.h
     src/tts/TtsRequestValidator.h
     src/tts/backends/TtsBackend.h
@@ -198,6 +204,7 @@ qt_add_qml_module(LAStudio
         qml/Main.qml
         qml/Theme.qml
         qml/pages/HFExplorerPage.qml
+        qml/pages/DeveloperPage.qml
         qml/pages/ModelsPage.qml
         qml/pages/MyModelsPage.qml
         qml/pages/SettingsPage.qml
@@ -242,6 +249,7 @@ qt_add_qml_module(LAStudio
         qml/components/voicecloning/VoiceCloningSetupPanel.qml
         qml/components/shared/StudioHeaderBar.qml
         qml/components/shared/GeneratedAudioOutput.qml
+        qml/components/shared/LoadedModelDialog.qml
         qml/components/shared/ExamplePickerDialog.qml
         qml/components/shared/CapabilityGallery.qml
         qml/components/shared/StudioContext.qml
@@ -294,6 +302,7 @@ target_include_directories(LAStudio PRIVATE
     ${LASTUDIO_GENERATED_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/api
     ${CMAKE_SOURCE_DIR}/src/audio
     ${CMAKE_SOURCE_DIR}/src/stt
     ${CMAKE_SOURCE_DIR}/src/tts

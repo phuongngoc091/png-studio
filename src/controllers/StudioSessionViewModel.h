@@ -17,6 +17,7 @@ class StudioSessionViewModel : public QObject {
     QML_NAMED_ELEMENT(StudioPageController)
 
     Q_PROPERTY(QString capabilityId READ capabilityId WRITE setCapabilityId NOTIFY capabilityIdChanged)
+    Q_PROPERTY(bool autoLoadOnSync READ autoLoadOnSync WRITE setAutoLoadOnSync NOTIFY autoLoadOnSyncChanged)
     Q_PROPERTY(QString selectedFamilyId READ selectedFamilyId NOTIFY selectionChanged)
     Q_PROPERTY(QString runtimeId READ runtimeId NOTIFY selectionChanged)
     Q_PROPERTY(QString runtimeVersion READ runtimeVersion NOTIFY selectionChanged)
@@ -32,6 +33,8 @@ class StudioSessionViewModel : public QObject {
     Q_PROPERTY(QString estimatedVramUsage READ estimatedVramUsage NOTIFY stateChanged)
     Q_PROPERTY(QString loadedModelName READ loadedModelName NOTIFY stateChanged)
     Q_PROPERTY(QVariantList loadedModelFiles READ loadedModelFiles NOTIFY stateChanged)
+    Q_PROPERTY(QVariantList loadedModels READ loadedModels NOTIFY stateChanged)
+    Q_PROPERTY(QString activeModelId READ activeModelId NOTIFY stateChanged)
     Q_PROPERTY(qint64 inferenceElapsedMs READ inferenceElapsedMs NOTIFY stateChanged)
     Q_PROPERTY(QString inferenceElapsedText READ inferenceElapsedText NOTIFY stateChanged)
 
@@ -56,6 +59,8 @@ public:
     // Getters / Setters
     QString capabilityId() const { return m_capabilityId; }
     void setCapabilityId(const QString &id);
+    bool autoLoadOnSync() const { return m_autoLoadOnSync; }
+    void setAutoLoadOnSync(bool enabled);
 
     QString selectedFamilyId() const;
     QString runtimeId() const;
@@ -72,6 +77,8 @@ public:
     QString estimatedVramUsage() const;
     QString loadedModelName() const;
     QVariantList loadedModelFiles() const;
+    QVariantList loadedModels() const;
+    QString activeModelId() const;
     qint64 inferenceElapsedMs() const;
     QString inferenceElapsedText() const;
 
@@ -96,6 +103,8 @@ public:
     Q_INVOKABLE void loadSelectedConfiguration();
     Q_INVOKABLE void unload();
     Q_INVOKABLE void reload();
+    Q_INVOKABLE void activateLoadedModel(const QString &modelId);
+    Q_INVOKABLE void unloadLoadedModel(const QString &modelId);
 
     // Legacy StudioContext alignment helpers
     Q_INVOKABLE QString getStudioContextFamilyId() const { return selectedFamilyId(); }
@@ -113,6 +122,7 @@ public:
 
 signals:
     void capabilityIdChanged();
+    void autoLoadOnSyncChanged();
     void selectionChanged();
     void stateChanged();
     
@@ -129,6 +139,8 @@ private:
     void initializeAction();
     QVariantMap getFamilyConfig(const QString &familyId) const;
     std::optional<SessionConfiguration> activeSessionConfiguration() const;
+    QVariantList filesForConfiguration(const SessionConfiguration &config) const;
+    QVariantMap modelListItemForConfiguration(const SessionConfiguration &config, bool active) const;
     void syncInferenceTimer();
     static QString formatElapsed(qint64 elapsedMs);
 
@@ -144,6 +156,7 @@ private:
     QVariantMap m_pendingFiles;
 
     bool m_selectionCommitted = false;
+    bool m_autoLoadOnSync = true;
     QElapsedTimer m_inferenceTimer;
     QTimer *m_inferenceUiTimer = nullptr;
     qint64 m_lastInferenceElapsedMs = 0;

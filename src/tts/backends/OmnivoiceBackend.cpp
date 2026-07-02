@@ -138,9 +138,6 @@ void OmnivoiceBackend::unload()
         }
         m_context = nullptr;
     }
-    if (OmnivoiceInterface::instance().unload()) {
-        s_sessionOmniRuntimePath.clear();
-    }
 }
 
 bool OmnivoiceBackend::synthesize(const QString &text, float speed, const QVariantMap &settings, 

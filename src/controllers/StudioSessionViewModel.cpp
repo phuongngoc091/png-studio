@@ -46,6 +46,13 @@ void StudioSessionViewModel::setCapabilityId(const QString &id)
     syncSelectionFromSettings();
 }
 
+void StudioSessionViewModel::setAutoLoadOnSync(bool enabled)
+{
+    if (m_autoLoadOnSync == enabled) return;
+    m_autoLoadOnSync = enabled;
+    emit autoLoadOnSyncChanged();
+}
+
 void StudioSessionViewModel::initializeAction()
 {
     if (m_action) {
@@ -146,6 +153,7 @@ QString StudioSessionViewModel::statusText() const
     switch (state()) {
     case StudioState::Unloaded: return QStringLiteral("Unloaded");
     case StudioState::Loading: return QStringLiteral("Loading");
+    case StudioState::Unloading: return QStringLiteral("Unloading");
     case StudioState::Ready: return QStringLiteral("Ready");
     case StudioState::Processing: return QStringLiteral("Processing");
     case StudioState::Error: return QStringLiteral("Error");
@@ -219,26 +227,31 @@ QString StudioSessionViewModel::loadedModelName() const
 
 QVariantList StudioSessionViewModel::loadedModelFiles() const
 {
-    QVariantList out;
     auto config = activeSessionConfiguration();
     if (!config) {
-        return out;
+        return {};
     }
 
-    const QVariantMap family = config->familyConfig.isEmpty()
-        ? getFamilyConfig(config->selection.familyId)
-        : config->familyConfig;
+    return filesForConfiguration(*config);
+}
+
+QVariantList StudioSessionViewModel::filesForConfiguration(const SessionConfiguration &config) const
+{
+    QVariantList out;
+    const QVariantMap family = config.familyConfig.isEmpty()
+        ? getFamilyConfig(config.selection.familyId)
+        : config.familyConfig;
     const QVariantList requiredFiles = family.value(QStringLiteral("requiredFiles")).toList();
 
     for (const QVariant &reqValue : requiredFiles) {
         const QVariantMap req = reqValue.toMap();
         const QString role = req.value(QStringLiteral("role")).toString();
-        if (role.isEmpty() || !config->selection.selectedFiles.contains(role)) {
+        if (role.isEmpty() || !config.selection.selectedFiles.contains(role)) {
             continue;
         }
 
-        const QString selectedFile = config->selection.selectedFiles.value(role).toString();
-        const QString resolvedPath = config->resolvedPathsByRole.value(role).toString();
+        const QString selectedFile = config.selection.selectedFiles.value(role).toString();
+        const QString resolvedPath = config.resolvedPathsByRole.value(role).toString();
         QVariantMap item;
         item.insert(QStringLiteral("role"), role);
         item.insert(QStringLiteral("label"), req.value(QStringLiteral("name"), role).toString());
@@ -249,9 +262,9 @@ QVariantList StudioSessionViewModel::loadedModelFiles() const
     }
 
     if (out.isEmpty()) {
-        for (auto it = config->selection.selectedFiles.cbegin(); it != config->selection.selectedFiles.cend(); ++it) {
+        for (auto it = config.selection.selectedFiles.cbegin(); it != config.selection.selectedFiles.cend(); ++it) {
             const QString role = it.key();
-            const QString resolvedPath = config->resolvedPathsByRole.value(role).toString();
+            const QString resolvedPath = config.resolvedPathsByRole.value(role).toString();
             QVariantMap item;
             item.insert(QStringLiteral("role"), role);
             item.insert(QStringLiteral("label"), role);
@@ -263,6 +276,68 @@ QVariantList StudioSessionViewModel::loadedModelFiles() const
     }
 
     return out;
+}
+
+QString StudioSessionViewModel::activeModelId() const
+{
+    auto config = activeSessionConfiguration();
+    return config ? config->signature : QString();
+}
+
+QVariantList StudioSessionViewModel::loadedModels() const
+{
+    QVariantList out;
+    AppController *app = AppController::instance();
+    IModelSession *session = app && app->sessionRegistry()
+        ? app->sessionRegistry()->sessionForCapability(m_capabilityId)
+        : nullptr;
+    if (!session) {
+        return out;
+    }
+
+    const QString active = session->activeSignature();
+    for (const SessionConfiguration &config : session->loadedConfigurations()) {
+        if (config.capabilityId != m_capabilityId) {
+            continue;
+        }
+        out.append(modelListItemForConfiguration(config, config.signature == active));
+    }
+    return out;
+}
+
+QVariantMap StudioSessionViewModel::modelListItemForConfiguration(const SessionConfiguration &config, bool active) const
+{
+    const QVariantMap family = config.familyConfig.isEmpty()
+        ? getFamilyConfig(config.selection.familyId)
+        : config.familyConfig;
+
+    QString runtimeText = config.selection.runtimeId;
+    const QVariantList runtimes = family.value(QStringLiteral("runtimes")).toList();
+    for (const QVariant &rtVal : runtimes) {
+        const QVariantMap rt = rtVal.toMap();
+        if (rt.value(QStringLiteral("id")).toString() == config.selection.runtimeId) {
+            runtimeText = rt.value(QStringLiteral("name"), config.selection.runtimeId).toString();
+            if (!config.selection.runtimeVersion.isEmpty()) {
+                runtimeText += QStringLiteral("  ") + config.selection.runtimeVersion;
+            }
+            break;
+        }
+    }
+
+    QVariantMap item;
+    item.insert(QStringLiteral("id"), config.signature);
+    item.insert(QStringLiteral("familyId"), config.selection.familyId);
+    item.insert(QStringLiteral("title"), family.value(QStringLiteral("title"), config.selection.familyId).toString());
+    item.insert(QStringLiteral("modelId"), family.value(QStringLiteral("modelId"), config.selection.familyId).toString());
+    item.insert(QStringLiteral("runtimeId"), config.selection.runtimeId);
+    item.insert(QStringLiteral("runtimeVersion"), config.selection.runtimeVersion);
+    item.insert(QStringLiteral("runtime"), runtimeText);
+    item.insert(QStringLiteral("status"), active ? statusText() : QStringLiteral("Ready"));
+    item.insert(QStringLiteral("active"), active);
+    item.insert(QStringLiteral("fileCount"), filesForConfiguration(config).size());
+    item.insert(QStringLiteral("estimatedRamUsage"), active ? estimatedRamUsage() : QString());
+    item.insert(QStringLiteral("estimatedVramUsage"), active ? estimatedVramUsage() : QString());
+    return item;
 }
 
 qint64 StudioSessionViewModel::inferenceElapsedMs() const
@@ -450,6 +525,57 @@ void StudioSessionViewModel::reload()
     }
 }
 
+void StudioSessionViewModel::activateLoadedModel(const QString &modelId)
+{
+    if (modelId.isEmpty() || modelId == activeModelId()) {
+        return;
+    }
+
+    AppController *app = AppController::instance();
+    IModelSession *session = app && app->sessionRegistry()
+        ? app->sessionRegistry()->sessionForCapability(m_capabilityId)
+        : nullptr;
+    if (!session) {
+        return;
+    }
+
+    session->activateConfiguration(modelId);
+    auto active = session->activeConfiguration();
+    if (active) {
+        m_pendingFamilyId = active->selection.familyId;
+        m_pendingRuntimeId = active->selection.runtimeId;
+        m_pendingRuntimeVersion = active->selection.runtimeVersion;
+        m_pendingFiles = active->selection.selectedFiles;
+        m_selectionCommitted = true;
+        if (m_familiesModel) {
+            m_familiesModel->setSelectedFamilyId(m_pendingFamilyId);
+        }
+        if (m_repository) {
+            m_repository->saveActiveSelection(active->selection);
+        }
+        emit selectionChanged();
+        emit studioContextChanged(active->selection.familyId, active->selection.runtimeId, active->selection.runtimeVersion);
+    }
+    emit stateChanged();
+}
+
+void StudioSessionViewModel::unloadLoadedModel(const QString &modelId)
+{
+    if (modelId.isEmpty()) {
+        return;
+    }
+
+    AppController *app = AppController::instance();
+    IModelSession *session = app && app->sessionRegistry()
+        ? app->sessionRegistry()->sessionForCapability(m_capabilityId)
+        : nullptr;
+    if (!session) {
+        return;
+    }
+    session->requestUnloadConfiguration(modelId);
+    emit stateChanged();
+}
+
 void StudioSessionViewModel::syncSelectionFromSettings()
 {
     if (!m_repository) return;
@@ -466,7 +592,7 @@ void StudioSessionViewModel::syncSelectionFromSettings()
         emit studioContextChanged(m_pendingFamilyId, m_pendingRuntimeId, m_pendingRuntimeVersion);
 
         // Keep STT unloaded on startup to avoid unnecessary memory usage.
-        if (m_capabilityId != QStringLiteral("stt")) {
+        if (m_autoLoadOnSync && m_capabilityId != QStringLiteral("stt")) {
             QTimer::singleShot(100, this, &StudioSessionViewModel::loadSelectedConfiguration);
         }
     } else {
@@ -528,6 +654,7 @@ void StudioSessionViewModel::syncInferenceTimer()
     }
 
     if (currentState == StudioState::Loading ||
+        currentState == StudioState::Unloading ||
         currentState == StudioState::Unloaded ||
         currentState == StudioState::Error)
     {

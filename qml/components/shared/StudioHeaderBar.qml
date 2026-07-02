@@ -21,17 +21,25 @@ Rectangle {
     property string estimatedVramUsage: ""
     property string loadedModelName: ""
     property var loadedModelFiles: []
+    property var loadedModels: []
+    property string activeModelId: ""
     property string inferenceElapsedText: ""
     property bool studioReady: false
     property string studioTitle: ""
     property string backToolTip: qsTr("Back")
     property string runtimeDisplayText: ""
     property bool runtimeClickable: false
+    property bool modelPickerOpen: false
 
     signal backClicked()
     signal runtimeClicked()
     signal reloadRequested()
     signal ejectRequested()
+    signal loadedModelActivated(string modelId)
+    signal loadedModelUnloadRequested(string modelId)
+    signal loadAnotherModelRequested()
+    signal configureCurrentModelRequested()
+    signal loadedModelPickerRequested()
 
     function loadedFilesSummary() {
         var count = root.loadedModelFiles ? root.loadedModelFiles.length : 0
@@ -187,8 +195,8 @@ Rectangle {
             Layout.maximumWidth: 300
             Layout.preferredHeight: 38
             radius: 8
-            color: modelInfoMouse.containsMouse || modelInfoPopup.opened ? Qt.rgba(1, 1, 1, 0.055) : Qt.rgba(1, 1, 1, 0.03)
-            border.color: modelInfoPopup.opened ? Qt.rgba(0.49, 0.30, 1.0, 0.45) : Qt.rgba(1, 1, 1, 0.08)
+            color: modelInfoMouse.containsMouse || root.modelPickerOpen ? Qt.rgba(1, 1, 1, 0.055) : Qt.rgba(1, 1, 1, 0.03)
+            border.color: root.modelPickerOpen ? Qt.rgba(0.49, 0.30, 1.0, 0.45) : Qt.rgba(1, 1, 1, 0.08)
             border.width: 1
 
             RowLayout {
@@ -227,7 +235,7 @@ Rectangle {
                 }
 
                 LineIcon {
-                    name: modelInfoPopup.opened ? "chevron-up" : "chevron-down"
+                    name: root.modelPickerOpen ? "chevron-up" : "chevron-down"
                     color: Theme.textSecondary
                     Layout.preferredWidth: 13
                     Layout.preferredHeight: 13
@@ -239,124 +247,7 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: modelInfoPopup.opened ? modelInfoPopup.close() : modelInfoPopup.open()
-            }
-
-            Popup {
-                id: modelInfoPopup
-                x: loadedModelInfo.width - width
-                y: loadedModelInfo.height + 8
-                width: 420
-                modal: false
-                focus: true
-                closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
-                padding: 0
-
-                background: Rectangle {
-                    color: Qt.rgba(0.09, 0.09, 0.14, 0.98)
-                    radius: 8
-                    border.color: Qt.rgba(1, 1, 1, 0.12)
-                    border.width: 1
-                }
-
-                contentItem: ColumnLayout {
-                    width: modelInfoPopup.width
-                    spacing: 0
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.margins: Theme.paddingMedium
-                        spacing: 4
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: root.loadedModelName !== "" ? root.loadedModelName : qsTr("Loaded model")
-                            color: Theme.textPrimary
-                            font.pixelSize: Theme.fontMedium
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: root.currentRuntimeItem ? (root.currentRuntimeItem.name + (root.currentRuntimeItem.version ? "  " + root.currentRuntimeItem.version : "")) : (root.runtimeDisplayText !== "" ? root.runtimeDisplayText : qsTr("Runtime not reported"))
-                            color: Theme.textSecondary
-                            font.pixelSize: Theme.fontSmall
-                            elide: Text.ElideRight
-                        }
-                    }
-
-                    Rectangle { Layout.fillWidth: true; height: 1; color: Qt.rgba(1, 1, 1, 0.08) }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.margins: Theme.paddingMedium
-                        spacing: Theme.paddingSmall
-
-                        Repeater {
-                            model: root.loadedModelFiles || []
-
-                            delegate: Rectangle {
-                                Layout.fillWidth: true
-                                implicitHeight: fileRow.implicitHeight + Theme.paddingSmall
-                                radius: 6
-                                color: Qt.rgba(1, 1, 1, 0.035)
-                                border.color: Qt.rgba(1, 1, 1, 0.07)
-                                border.width: 1
-
-                                RowLayout {
-                                    id: fileRow
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.leftMargin: Theme.paddingSmall
-                                    anchors.rightMargin: Theme.paddingSmall
-                                    spacing: Theme.paddingSmall
-
-                                    Text {
-                                        Layout.preferredWidth: 84
-                                        text: (modelData.label || modelData.role || qsTr("File"))
-                                        color: Theme.accentLight
-                                        font.pixelSize: Theme.fontSmall
-                                        font.bold: true
-                                        elide: Text.ElideRight
-                                    }
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        spacing: 1
-
-                                        Text {
-                                            Layout.fillWidth: true
-                                            text: modelData.fileName || "--"
-                                            color: Theme.textPrimary
-                                            font.pixelSize: Theme.fontSmall
-                                            elide: Text.ElideMiddle
-                                        }
-
-                                        Text {
-                                            Layout.fillWidth: true
-                                            text: modelData.path || ""
-                                            color: Theme.textSecondary
-                                            font.pixelSize: 10
-                                            elide: Text.ElideMiddle
-                                            visible: text !== ""
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        Text {
-                            Layout.fillWidth: true
-                            visible: !root.loadedModelFiles || root.loadedModelFiles.length === 0
-                            text: qsTr("The loaded session did not report individual model files.")
-                            color: Theme.textSecondary
-                            font.pixelSize: Theme.fontSmall
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                }
+                onClicked: root.loadedModelPickerRequested()
             }
         }
 

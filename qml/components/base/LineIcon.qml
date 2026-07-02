@@ -283,6 +283,20 @@ Canvas {
             ctx.stroke()
             line(ctx, cx + 2 * u, cy - 9 * u, cx + 2 * u, cy - 4 * u)
             line(ctx, cx + 2 * u, cy - 4 * u, cx + 7 * u, cy - 4 * u)
+        } else if (name === "code") {
+            ctx.beginPath()
+            ctx.moveTo(cx - 4 * u, cy - 7 * u)
+            ctx.lineTo(cx - 10 * u, cy)
+            ctx.lineTo(cx - 4 * u, cy + 7 * u)
+            ctx.stroke()
+
+            ctx.beginPath()
+            ctx.moveTo(cx + 4 * u, cy - 7 * u)
+            ctx.lineTo(cx + 10 * u, cy)
+            ctx.lineTo(cx + 4 * u, cy + 7 * u)
+            ctx.stroke()
+
+            line(ctx, cx + 1 * u, cy - 9 * u, cx - 1 * u, cy + 9 * u)
         } else if (name === "gallery") {
             ctx.strokeRect(cx - 8 * u, cy - 7 * u, 6 * u, 6 * u)
             ctx.strokeRect(cx + 2 * u, cy - 7 * u, 6 * u, 6 * u)

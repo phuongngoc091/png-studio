@@ -13,7 +13,8 @@ QtObject {
         "studio-voice-design": 4,
         "models": 5,
         "my-models": 6,
-        "settings": 7
+        "developer": 7,
+        "settings": 8
     }
 
     // List of route descriptors for Sidebar / navigation
@@ -25,6 +26,7 @@ QtObject {
         { id: "studio-voice-design", label: qsTr("Voice Design"), iconName: "waves" },
         { id: "models", label: qsTr("Models"), iconName: "gallery" },
         { id: "my-models", label: qsTr("My Models"), iconName: "folder" },
+        { id: "developer", label: qsTr("Developer"), iconName: "code" },
         { id: "settings", label: qsTr("Settings"), iconName: "settings" }
     ]
 

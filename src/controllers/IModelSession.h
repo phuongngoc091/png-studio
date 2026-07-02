@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <QList>
 #include <QString>
 #include <QStringList>
 #include <QVariantMap>
@@ -41,11 +42,14 @@ public:
 
     virtual std::optional<SessionConfiguration> activeConfiguration() const = 0;
     virtual std::optional<SessionConfiguration> pendingConfiguration() const = 0;
+    virtual QList<SessionConfiguration> loadedConfigurations() const = 0;
     virtual QString activeSignature() const = 0;
 
     virtual void requestLoad(const QString &capabilityId,
                              const StudioConfiguration &configuration) = 0;
     virtual void requestUnload(const QString &capabilityId) = 0;
+    virtual void requestUnloadConfiguration(const QString &signature) = 0;
+    virtual void activateConfiguration(const QString &signature) = 0;
     virtual void requestReload(const QString &capabilityId) = 0;
 
     virtual bool usesRuntime(const QString &runtimeId,

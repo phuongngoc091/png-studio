@@ -4,6 +4,8 @@
 #include "core/StudioCapabilityRegistry.h"
 #include "core/Logger.h"
 
+#include <QFileInfo>
+
 namespace LAStudio {
 
 ModelSessionRegistry::ModelSessionRegistry(SttEngine *sttEngine, TtsEngine *ttsEngine, QObject *parent)
@@ -53,28 +55,18 @@ ResourceReleaseResult ModelSessionRegistry::prepareRuntimeRemoval(const QString 
                 return ResourceReleaseResult::BusyProcessing;
             }
             
-            // For Ready, Loading, Unloading, Error: trigger unload
-            QString capId;
-            auto active = session->activeConfiguration();
-            if (active) {
-                capId = active->capabilityId;
-            } else {
-                auto pending = session->pendingConfiguration();
-                if (pending) {
-                    capId = pending->capabilityId;
-                }
-            }
-
-            if (capId.isEmpty()) {
-                // Default fallback capId
-                if (session == m_sttSession) capId = QStringLiteral("stt");
-                else capId = QStringLiteral("tts");
-            }
-
             Logger::info(QStringLiteral("ModelSessionRegistry"),
                          QStringLiteral("Requesting unload of session due to runtime removal. State: %1")
                          .arg(static_cast<int>(state)));
-            session->requestUnload(capId);
+            for (const SessionConfiguration &config : session->loadedConfigurations()) {
+                if (config.selection.runtimeId != runtimeId) {
+                    continue;
+                }
+                if (!runtimeVersion.isEmpty() && config.selection.runtimeVersion != runtimeVersion) {
+                    continue;
+                }
+                session->requestUnloadConfiguration(config.signature);
+            }
             overallResult = ResourceReleaseResult::Pending;
         }
     }
@@ -97,26 +89,23 @@ ResourceReleaseResult ModelSessionRegistry::prepareModelRemoval(const QString &m
                 return ResourceReleaseResult::BusyProcessing;
             }
 
-            QString capId;
-            auto active = session->activeConfiguration();
-            if (active) {
-                capId = active->capabilityId;
-            } else {
-                auto pending = session->pendingConfiguration();
-                if (pending) {
-                    capId = pending->capabilityId;
-                }
-            }
-
-            if (capId.isEmpty()) {
-                if (session == m_sttSession) capId = QStringLiteral("stt");
-                else capId = QStringLiteral("tts");
-            }
-
             Logger::info(QStringLiteral("ModelSessionRegistry"),
                          QStringLiteral("Requesting unload of session due to model removal. State: %1")
                          .arg(static_cast<int>(state)));
-            session->requestUnload(capId);
+            const QString normalizedPath = QFileInfo(modelPath).canonicalFilePath();
+            for (const SessionConfiguration &config : session->loadedConfigurations()) {
+                bool usesPath = false;
+                for (const QString &path : config.resolvedModelPaths) {
+                    const QFileInfo info(path);
+                    if (info.canonicalFilePath() == normalizedPath || info.absoluteFilePath() == modelPath) {
+                        usesPath = true;
+                        break;
+                    }
+                }
+                if (usesPath) {
+                    session->requestUnloadConfiguration(config.signature);
+                }
+            }
             overallResult = ResourceReleaseResult::Pending;
         }
     }

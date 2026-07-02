@@ -3,13 +3,18 @@
 
 namespace LAStudio {
 
-// Helper for std::visit
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+static SttEngine::State s_mockState = SttEngine::Unloaded;
+static int s_mockProgress = 0;
+static QString s_mockTranscript;
+static QString s_activeSignature;
 
 SttEngine::SttEngine(QObject *parent)
     : QObject(parent)
 {
+    s_mockState = SttEngine::Unloaded;
+    s_mockProgress = 0;
+    s_mockTranscript.clear();
+    s_activeSignature.clear();
 }
 
 SttEngine::~SttEngine()
@@ -18,13 +23,27 @@ SttEngine::~SttEngine()
 
 SttEngine::State SttEngine::state() const
 {
-    return std::visit(overloaded{
-        [](StateUnloaded) { return Unloaded; },
-        [](StateLoading)  { return Loading; },
-        [](StateReady)    { return Ready; },
-        [](StateProcessing) { return Processing; },
-        [](StateError)    { return Error; }
-    }, m_state);
+    return s_mockState;
+}
+
+bool SttEngine::isModelLoaded() const
+{
+    return s_mockState == Ready || s_mockState == Processing;
+}
+
+bool SttEngine::isProcessing() const
+{
+    return s_mockState == Processing;
+}
+
+int SttEngine::progress() const
+{
+    return s_mockProgress;
+}
+
+QString SttEngine::transcript() const
+{
+    return s_mockTranscript;
 }
 
 void SttEngine::loadModel(const QString &modelPath, bool useGpu, const QString &runtimePath)
@@ -33,13 +52,13 @@ void SttEngine::loadModel(const QString &modelPath, bool useGpu, const QString &
     Q_UNUSED(useGpu);
     Q_UNUSED(runtimePath);
 
-    m_state = StateLoading{};
+    s_mockState = Loading;
     emit stateChanged();
     emit modelLoadedChanged();
 
     // Simulate model loading asynchronously
     QTimer::singleShot(50, this, [this]() {
-        m_state = StateReady{};
+        s_mockState = Ready;
         emit stateChanged();
         emit modelLoadedChanged();
     });
@@ -47,7 +66,7 @@ void SttEngine::loadModel(const QString &modelPath, bool useGpu, const QString &
 
 void SttEngine::unloadModel()
 {
-    m_state = StateUnloaded{};
+    s_mockState = Unloaded;
     emit stateChanged();
     emit modelLoadedChanged();
 }
@@ -65,31 +84,62 @@ void SttEngine::transcribeSamples(const QVector<float> &samples, const QString &
     Q_UNUSED(translate);
     Q_UNUSED(settings);
 
-    m_state = StateProcessing{};
+    s_mockState = Processing;
     emit stateChanged();
     emit processingChanged();
 
     // Simulate transcription asynchronously
     QTimer::singleShot(50, this, [this]() {
-        m_progress = 100;
-        m_transcript = QStringLiteral("Mock transcribed text");
+        s_mockProgress = 100;
+        s_mockTranscript = QStringLiteral("Mock transcribed text");
         emit progressChanged();
         emit transcriptChanged();
 
-        m_state = StateReady{};
+        s_mockState = Ready;
         emit stateChanged();
         emit processingChanged();
 
-        emit transcriptionFinished(m_transcript, QVariantList());
+        emit transcriptionFinished(s_mockTranscript, QVariantList());
     });
 }
 
-void SttEngine::onWorkerModelLoaded(bool, const QString &) {}
-void SttEngine::onWorkerProgress(int) {}
-void SttEngine::onWorkerFinished(const QString &, const QVariantList &) {}
-void SttEngine::onWorkerError(const QString &) {}
-void SttEngine::dispatch(const EngineEvent &) {}
-void SttEngine::applyState(const EngineState &) {}
-void SttEngine::cancelProcessing() {}
+void SttEngine::cancelProcessing()
+{
+}
+
+SttEngineInstance *SttEngine::loadInstance(const SessionConfiguration &config, bool useGpu)
+{
+    Q_UNUSED(config);
+    Q_UNUSED(useGpu);
+    return nullptr;
+}
+
+bool SttEngine::activateInstance(const QString &signature)
+{
+    s_activeSignature = signature;
+    emit activeSignatureChanged();
+    return true;
+}
+
+void SttEngine::unloadInstance(const QString &signature)
+{
+    Q_UNUSED(signature);
+}
+
+SttEngineInstance *SttEngine::instance(const QString &signature) const
+{
+    Q_UNUSED(signature);
+    return nullptr;
+}
+
+QList<SttEngineInstance *> SttEngine::loadedInstances() const
+{
+    return {};
+}
+
+QStringList SttEngine::loadedSignatures() const
+{
+    return {};
+}
 
 } // namespace LAStudio

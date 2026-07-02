@@ -7,15 +7,11 @@
 #include <QVariantList>
 #include <QVector>
 #include <QHash>
-#include <QtGlobal>
 #include <QtQml/qqml.h>
-#include <variant>
-
-class QTimer;
+#include "controllers/IModelSession.h"
+#include "TtsEngineInstance.h"
 
 namespace LAStudio {
-
-class TtsWorker;
 
 class TtsEngine : public QObject {
     Q_OBJECT
@@ -42,60 +38,39 @@ class TtsEngine : public QObject {
     Q_PROPERTY(int generationProgress READ generationProgress NOTIFY generationProgressChanged)
     Q_PROPERTY(bool generationProgressEstimated READ generationProgressEstimated NOTIFY generationProgressChanged)
     Q_PROPERTY(QString generationProgressLabel READ generationProgressLabel NOTIFY generationProgressChanged)
-
+    Q_PROPERTY(QString activeSignature READ activeSignature NOTIFY activeSignatureChanged)
 
 public:
     enum State {
-        Unloaded,
-        Loading,
-        Ready,
-        Processing,
-        Error
+        Unloaded = TtsEngineInstance::Unloaded,
+        Loading = TtsEngineInstance::Loading,
+        Ready = TtsEngineInstance::Ready,
+        Processing = TtsEngineInstance::Processing,
+        Error = TtsEngineInstance::Error
     };
     Q_ENUM(State)
-
-    // State Machine States
-    struct StateUnloaded {};
-    struct StateLoading { bool cancelRequested = false; };
-    struct StateReady {};
-    struct StateProcessing { bool unloadRequested = false; bool stopRequested = false; };
-    struct StateError { QString message; };
-
-    using EngineState = std::variant<StateUnloaded, StateLoading, StateReady, StateProcessing, StateError>;
-
-    // State Machine Events
-    struct EventLoadVoice { QVariantMap config; };
-    struct EventUnload {};
-    struct EventWorkerLoaded { bool success; QString error; QVariantList schema; };
-    struct EventSynthesize { QString text; int speakerId; float speed; QVariantMap settings; };
-    struct EventCloneVoice { QString text; QString referencePath; QVariantMap settings; };
-    struct EventCancelProcessing {};
-    struct EventWorkerFinished { QVector<float> samples; int sampleRate; };
-    struct EventWorkerError { QString error; };
-
-    using EngineEvent = std::variant<EventLoadVoice, EventUnload, EventWorkerLoaded, EventSynthesize, EventCloneVoice, EventCancelProcessing, EventWorkerFinished, EventWorkerError>;
 
     explicit TtsEngine(QObject *parent = nullptr);
     ~TtsEngine() override;
 
     State state() const;
-    bool isModelLoaded() const { State s = state(); return s == Ready || s == Processing; }
-    bool isProcessing() const { return state() == Processing; }
-    int sampleRate() const { return m_sampleRate; }
-    QVariantList currentSchema() const { return m_currentSchema; }
-    QVariantMap familyConfig() const { return m_familyConfig; }
+    bool isModelLoaded() const;
+    bool isProcessing() const;
+    int sampleRate() const;
+    QVariantList currentSchema() const;
+    QVariantMap familyConfig() const;
     void setFamilyConfig(const QVariantMap &config);
-    qint64 estimatedRamBytes() const { return m_estimatedRamBytes; }
-    qint64 estimatedVramBytes() const { return m_estimatedVramBytes; }
+    qint64 estimatedRamBytes() const;
+    qint64 estimatedVramBytes() const;
     QString estimatedRamUsage() const;
     QString estimatedVramUsage() const;
-    double cpuUsage() const { return m_cpuUsage; }
-    bool isCloneAction() const { return m_isCloneAction; }
-    QString lastGenerationMode() const { return m_lastGenerationMode; }
-    int generationProgress() const { return m_generationProgress; }
-    bool generationProgressEstimated() const { return m_generationProgressEstimated; }
-    QString generationProgressLabel() const { return m_generationProgressLabel; }
-
+    double cpuUsage() const;
+    bool isCloneAction() const;
+    QString lastGenerationMode() const;
+    int generationProgress() const;
+    bool generationProgressEstimated() const;
+    QString generationProgressLabel() const;
+    QString activeSignature() const { return m_activeSignature; }
 
     Q_INVOKABLE QVariantList schemaForCapability(const QString &capability) const;
     Q_INVOKABLE QVariantMap studioConfigForCapability(const QString &capability) const;
@@ -111,16 +86,22 @@ public:
     Q_INVOKABLE void unloadVoiceSync();
     Q_INVOKABLE void clearLastSamples();
     Q_INVOKABLE void synthesize(const QString &text, int speakerId = 0,
-                                 float speed = 1.0f, const QVariantMap &settings = QVariantMap());
+                                float speed = 1.0f, const QVariantMap &settings = QVariantMap());
     Q_INVOKABLE void cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings = QVariantMap());
     Q_INVOKABLE void designVoice(const QString &text, const QVariantMap &settings = QVariantMap());
     Q_INVOKABLE void cancelProcessing();
 
+    QByteArray lastPcm() const;
+    QVector<float> lastSamples() const;
+    QVariantList lastSamplePreview() const;
+    int lastSampleCount() const;
 
-    QByteArray lastPcm() const { return m_lastPcm; }
-    QVector<float> lastSamples() const { return m_lastSamples; }
-    QVariantList lastSamplePreview() const { return m_lastSamplePreview; }
-    int lastSampleCount() const { return m_lastSamples.size(); }
+    TtsEngineInstance *loadInstance(const SessionConfiguration &config);
+    bool activateInstance(const QString &signature);
+    void unloadInstance(const QString &signature);
+    TtsEngineInstance *instance(const QString &signature) const;
+    QList<TtsEngineInstance *> loadedInstances() const;
+    QStringList loadedSignatures() const;
 
 signals:
     void modelLoadedChanged();
@@ -135,56 +116,19 @@ signals:
     void stateChanged();
     void lastGenerationModeChanged();
     void generationProgressChanged();
-
-
-private slots:
-    void onWorkerModelLoaded(bool success, const QString &error, const QVariantList &schema);
-    void onWorkerFinished(const QVector<float> &samples, int sampleRate);
-    void onWorkerError(const QString &error);
-    void onWorkerProgress(int current, int total, const QString &stage, int chunkIndex, int chunkCount);
-    void updateCpuUsage();
+    void activeSignatureChanged();
+    void loadedInstancesChanged();
 
 private:
-    QVariantList buildSchemaForRuntime(const QString &runtimePath) const;
-    void updateMemoryUsageEstimates();
-    static QString formatBytes(qint64 bytes);
-    
-    void dispatch(const EngineEvent &event);
-    void applyState(const EngineState &newState);
-    QString voiceConfigSignature(const QVariantMap &config) const;
-    void rememberLoadingVoiceConfig(const QVariantMap &config);
-    void rememberLoadedVoiceConfig();
-    void clearVoiceConfigTracking();
-    void resetGenerationProgress();
-    void setGenerationProgress(int progress, bool estimated, const QString &label);
+    TtsEngineInstance *activeInstance() const;
+    TtsEngineInstance *ensureInstance(const QString &signature);
+    void connectInstance(TtsEngineInstance *inst);
+    void emitActiveForwardSignals();
 
-    TtsWorker *m_worker = nullptr;
-    QThread *m_thread = nullptr;
-    EngineState m_state = StateUnloaded{};
-    int m_sampleRate = 22050;
-    QByteArray m_lastPcm;
-    QVector<float> m_lastSamples;
-    QVariantList m_lastSamplePreview;
-    QVariantList m_currentSchema;
+    QHash<QString, TtsEngineInstance*> m_instances;
+    QString m_activeSignature;
     QVariantMap m_familyConfig;
-    QString m_lastRuntimePath;
-    QString m_lastModelPath;
-    QString m_lastCodecPath;
-    QString m_loadingVoiceSignature;
-    QString m_loadedVoiceSignature;
-    QHash<QString, QVariantList> m_schemaCache;
-    bool m_memoryBaselineArmed = false;
-    double m_memoryBaselineRamGb = 0.0;
-    double m_memoryBaselineVramGb = 0.0;
-    qint64 m_estimatedRamBytes = 0;
-    qint64 m_estimatedVramBytes = 0;
-    double m_cpuUsage = 0;
-    QTimer *m_cpuTimer = nullptr;
-    bool m_isCloneAction = false;
-    QString m_lastGenerationMode = QStringLiteral("tts");
-    int m_generationProgress = 0;
-    bool m_generationProgressEstimated = true;
-    QString m_generationProgressLabel = QStringLiteral("Generating audio");
+    QString m_runtimePath;
 };
 
 } // namespace LAStudio

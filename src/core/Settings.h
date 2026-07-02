@@ -31,6 +31,10 @@ class Settings : public QObject {
     Q_PROPERTY(bool sttTranslate READ sttTranslate WRITE setSttTranslate NOTIFY sttTranslateChanged)
     Q_PROPERTY(bool offloadKvCache READ offloadKvCache WRITE setOffloadKvCache NOTIFY offloadKvCacheChanged)
     Q_PROPERTY(int guardrailMode READ guardrailMode WRITE setGuardrailMode NOTIFY guardrailModeChanged)
+    Q_PROPERTY(bool apiServerEnabled READ apiServerEnabled WRITE setApiServerEnabled NOTIFY apiServerEnabledChanged)
+    Q_PROPERTY(bool apiServerAllowLan READ apiServerAllowLan WRITE setApiServerAllowLan NOTIFY apiServerAllowLanChanged)
+    Q_PROPERTY(int apiServerPort READ apiServerPort WRITE setApiServerPort NOTIFY apiServerPortChanged)
+    Q_PROPERTY(QString apiServerApiKey READ apiServerApiKey WRITE setApiServerApiKey NOTIFY apiServerApiKeyChanged)
 
 
 public:
@@ -96,6 +100,18 @@ public:
     int guardrailMode() const;
     void setGuardrailMode(int v);
 
+    bool apiServerEnabled() const;
+    void setApiServerEnabled(bool v);
+
+    bool apiServerAllowLan() const;
+    void setApiServerAllowLan(bool v);
+
+    int apiServerPort() const;
+    void setApiServerPort(int v);
+
+    QString apiServerApiKey() const;
+    void setApiServerApiKey(const QString &v);
+
 
 signals:
     void deviceChanged();
@@ -118,6 +134,10 @@ signals:
     void sttTranslateChanged();
     void offloadKvCacheChanged();
     void guardrailModeChanged();
+    void apiServerEnabledChanged();
+    void apiServerAllowLanChanged();
+    void apiServerPortChanged();
+    void apiServerApiKeyChanged();
 
 
 private:
@@ -142,6 +162,10 @@ private:
     bool m_sttTranslate;
     bool m_offloadKvCache;
     int m_guardrailMode;
+    bool m_apiServerEnabled;
+    bool m_apiServerAllowLan;
+    int m_apiServerPort;
+    QString m_apiServerApiKey;
 };
 
 

@@ -8,6 +8,7 @@ namespace LAStudio {
 enum class StudioState {
     Unloaded,
     Loading,
+    Unloading,
     Ready,
     Processing,
     Error

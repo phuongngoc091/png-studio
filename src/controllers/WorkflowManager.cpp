@@ -80,8 +80,8 @@ QVariantList WorkflowManager::activeSessions() const
     }
 
     for (IModelSession *session : m_sessionRegistry->sessions()) {
-        const QVariantMap item = sessionItem(session);
-        if (!item.isEmpty()) {
+        const QVariantList items = sessionItems(session);
+        for (const QVariant &item : items) {
             sessions.append(item);
         }
     }
@@ -132,7 +132,9 @@ void WorkflowManager::openWorkflow(const QString &id)
     }
 
     if (id.startsWith(QStringLiteral("session:"))) {
-        emit openRequested(studioRouteForCapability(id.mid(QStringLiteral("session:").size())));
+        const QString payload = id.mid(QStringLiteral("session:").size());
+        const QString capabilityId = payload.section(QLatin1Char(':'), 0, 0);
+        emit openRequested(studioRouteForCapability(capabilityId));
         return;
     }
 
@@ -181,55 +183,60 @@ QVariantMap WorkflowManager::ttsWorkflow() const
                         true);
 }
 
-QVariantMap WorkflowManager::sessionItem(IModelSession *session) const
+QVariantList WorkflowManager::sessionItems(IModelSession *session) const
 {
-    if (!session || !session->modelActive()) {
-        return {};
+    QVariantList items;
+    if (!session) {
+        return items;
     }
 
-    auto config = session->activeConfiguration();
-    if (!config) {
-        return {};
+    const QString activeSignature = session->activeSignature();
+    for (const SessionConfiguration &config : session->loadedConfigurations()) {
+        const QString capabilityId = routeForCapability(config.capabilityId);
+        const QString title = config.familyConfig
+            .value(QStringLiteral("title"), fallbackTitleForCapability(capabilityId))
+            .toString();
+        const QString runtimeId = config.selection.runtimeId;
+        const QString runtimeVersion = config.selection.runtimeVersion;
+        const QString runtimeLabel = runtimeVersion.isEmpty()
+            ? runtimeId
+            : QStringLiteral("%1 %2").arg(runtimeId, runtimeVersion);
+
+        QVariantList files;
+        for (const QString &path : config.resolvedModelPaths) {
+            QVariantMap file;
+            file.insert(QStringLiteral("name"), QFileInfo(path).fileName());
+            file.insert(QStringLiteral("path"), path);
+            files.append(file);
+        }
+
+        const bool isTtsShared = capabilityId == QStringLiteral("tts") ||
+                                 capabilityId == QStringLiteral("voice-cloning") ||
+                                 capabilityId == QStringLiteral("voice-design");
+        const bool isDefault = config.signature == activeSignature;
+        const QString status = isDefault ? stateLabel(static_cast<int>(session->state())) : QStringLiteral("Ready");
+
+        QVariantMap item;
+        item.insert(QStringLiteral("id"), QStringLiteral("session:%1:%2").arg(capabilityId, config.signature));
+        item.insert(QStringLiteral("capabilityId"), capabilityId);
+        item.insert(QStringLiteral("title"), title);
+        item.insert(QStringLiteral("routeId"), studioRouteForCapability(capabilityId));
+        item.insert(QStringLiteral("iconName"), iconForCapability(capabilityId));
+        item.insert(QStringLiteral("status"), status);
+        item.insert(QStringLiteral("statusLabel"), isDefault ? QStringLiteral("Default") : QStringLiteral("Loaded"));
+        item.insert(QStringLiteral("runtime"), runtimeLabel);
+        item.insert(QStringLiteral("modelFileCount"), config.resolvedModelPaths.size());
+        item.insert(QStringLiteral("modelFiles"), files);
+        item.insert(QStringLiteral("active"), isDefault);
+        item.insert(QStringLiteral("loaded"), true);
+        item.insert(QStringLiteral("cpuUsage"), isDefault && isTtsShared && m_tts ? m_tts->cpuUsage() : 0.0);
+        item.insert(QStringLiteral("ramUsage"), isDefault && isTtsShared && m_tts ? m_tts->estimatedRamUsage() : QString());
+        item.insert(QStringLiteral("vramUsage"), isDefault && isTtsShared && m_tts ? m_tts->estimatedVramUsage() : QString());
+        item.insert(QStringLiteral("hardwareRealtime"), isDefault && isTtsShared);
+        items.append(item);
     }
 
-    const QString capabilityId = routeForCapability(config->capabilityId);
-    const QString title = config->familyConfig
-        .value(QStringLiteral("title"), fallbackTitleForCapability(capabilityId))
-        .toString();
-    const QString runtimeId = config->selection.runtimeId;
-    const QString runtimeVersion = config->selection.runtimeVersion;
-    const QString runtimeLabel = runtimeVersion.isEmpty()
-        ? runtimeId
-        : QStringLiteral("%1 %2").arg(runtimeId, runtimeVersion);
-
-    QVariantList files;
-    for (const QString &path : config->resolvedModelPaths) {
-        QVariantMap file;
-        file.insert(QStringLiteral("name"), QFileInfo(path).fileName());
-        file.insert(QStringLiteral("path"), path);
-        files.append(file);
-    }
-
-    const bool isTtsShared = capabilityId == QStringLiteral("tts") ||
-                             capabilityId == QStringLiteral("voice-cloning") ||
-                             capabilityId == QStringLiteral("voice-design");
-
-    QVariantMap item;
-    item.insert(QStringLiteral("id"), QStringLiteral("session:%1").arg(capabilityId));
-    item.insert(QStringLiteral("capabilityId"), capabilityId);
-    item.insert(QStringLiteral("title"), title);
-    item.insert(QStringLiteral("routeId"), studioRouteForCapability(capabilityId));
-    item.insert(QStringLiteral("iconName"), iconForCapability(capabilityId));
-    item.insert(QStringLiteral("status"), stateLabel(static_cast<int>(session->state())));
-    item.insert(QStringLiteral("statusLabel"), stateLabel(static_cast<int>(session->state())));
-    item.insert(QStringLiteral("runtime"), runtimeLabel);
-    item.insert(QStringLiteral("modelFileCount"), config->resolvedModelPaths.size());
-    item.insert(QStringLiteral("modelFiles"), files);
-    item.insert(QStringLiteral("cpuUsage"), isTtsShared && m_tts ? m_tts->cpuUsage() : 0.0);
-    item.insert(QStringLiteral("ramUsage"), isTtsShared && m_tts ? m_tts->estimatedRamUsage() : QString());
-    item.insert(QStringLiteral("vramUsage"), isTtsShared && m_tts ? m_tts->estimatedVramUsage() : QString());
-    item.insert(QStringLiteral("hardwareRealtime"), isTtsShared);
-    return item;
+    return items;
 }
 
 QVariantMap WorkflowManager::sttWorkflow() const

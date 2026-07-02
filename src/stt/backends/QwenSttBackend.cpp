@@ -70,7 +70,6 @@ void QwenSttBackend::unloadModel()
         }
         m_session = nullptr;
     }
-    CrispQwen3SttInterface::instance().unload();
     m_modelPath.clear();
 }
 

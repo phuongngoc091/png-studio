@@ -98,8 +98,7 @@ void ModelLifecycleController::requestUnload(const QString &capabilityId)
 
     if (m_state == ModelSessionState::Processing ||
         m_state == ModelSessionState::Loading ||
-        m_state == ModelSessionState::Unloading)
-    {
+        m_state == ModelSessionState::Unloading) {
         m_pendingUnload = true;
         m_pendingConfig.reset();
         emit pendingConfigurationChanged();
@@ -107,7 +106,13 @@ void ModelLifecycleController::requestUnload(const QString &capabilityId)
         return;
     }
 
-    // Ready, Error, Unconfigured, Unloaded
+    if (m_state != ModelSessionState::Ready && !m_activeConfig && !m_inFlightConfig && !m_pendingConfig) {
+        m_pendingUnload = false;
+        emit pendingConfigurationChanged();
+        Logger::info(QStringLiteral("ModelLifecycleController"), QStringLiteral("No active or pending model to unload. Ignoring unload request."));
+        return;
+    }
+
     m_pendingUnload = false;
     m_pendingConfig.reset();
     emit pendingConfigurationChanged();

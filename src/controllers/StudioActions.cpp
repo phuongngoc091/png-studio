@@ -42,9 +42,9 @@ StudioState CapabilityStudioAction::state() const
     case ModelSessionState::Unconfigured: return StudioState::Unloaded;
     case ModelSessionState::Unloaded: return StudioState::Unloaded;
     case ModelSessionState::Loading: return StudioState::Loading;
+    case ModelSessionState::Unloading: return StudioState::Unloading;
     case ModelSessionState::Ready: return StudioState::Ready;
     case ModelSessionState::Processing: return StudioState::Processing;
-    case ModelSessionState::Unloading: return StudioState::Loading; // map unloading to busy loading
     case ModelSessionState::Error: return StudioState::Error;
     }
     return StudioState::Unloaded;

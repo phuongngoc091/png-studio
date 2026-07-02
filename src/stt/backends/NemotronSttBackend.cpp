@@ -70,7 +70,6 @@ void NemotronSttBackend::unloadModel()
     auto &ci = CrispNemotronSttInterface::instance();
     if (m_session && ci.isLoaded()) ci.crispasr_session_close(static_cast<crispasr_session *>(m_session));
     m_session = nullptr;
-    ci.unload();
 }
 
 bool NemotronSttBackend::transcribe(const QVector<float> &samples, const QString &language, int threads, bool translate,

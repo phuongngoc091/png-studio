@@ -151,6 +151,10 @@ Settings::Settings(QObject *parent)
     m_sttTranslate = m_settings.value(QStringLiteral("stt/translate"), false).toBool();
     m_offloadKvCache = m_settings.value(QStringLiteral("hardware/offloadKvCache"), true).toBool();
     m_guardrailMode = m_settings.value(QStringLiteral("hardware/guardrailMode"), 3).toInt(); // Default to Strict (index 3)
+    m_apiServerEnabled = m_settings.value(QStringLiteral("api/serverEnabled"), false).toBool();
+    m_apiServerAllowLan = m_settings.value(QStringLiteral("api/serverAllowLan"), false).toBool();
+    m_apiServerPort = m_settings.value(QStringLiteral("api/serverPort"), 3900).toInt();
+    m_apiServerApiKey = m_settings.value(QStringLiteral("api/serverApiKey"), QString()).toString();
 }
 
 
@@ -453,6 +457,68 @@ void Settings::setGuardrailMode(int v)
         m_settings.setValue(QStringLiteral("hardware/guardrailMode"), v);
         m_settings.sync();
         emit guardrailModeChanged();
+    }
+}
+
+bool Settings::apiServerEnabled() const
+{
+    return m_apiServerEnabled;
+}
+
+void Settings::setApiServerEnabled(bool v)
+{
+    if (m_apiServerEnabled != v) {
+        m_apiServerEnabled = v;
+        m_settings.setValue(QStringLiteral("api/serverEnabled"), v);
+        m_settings.sync();
+        emit apiServerEnabledChanged();
+    }
+}
+
+bool Settings::apiServerAllowLan() const
+{
+    return m_apiServerAllowLan;
+}
+
+void Settings::setApiServerAllowLan(bool v)
+{
+    if (m_apiServerAllowLan != v) {
+        m_apiServerAllowLan = v;
+        m_settings.setValue(QStringLiteral("api/serverAllowLan"), v);
+        m_settings.sync();
+        emit apiServerAllowLanChanged();
+    }
+}
+
+int Settings::apiServerPort() const
+{
+    return m_apiServerPort;
+}
+
+void Settings::setApiServerPort(int v)
+{
+    v = qBound(1, v, 65535);
+    if (m_apiServerPort != v) {
+        m_apiServerPort = v;
+        m_settings.setValue(QStringLiteral("api/serverPort"), v);
+        m_settings.sync();
+        emit apiServerPortChanged();
+    }
+}
+
+QString Settings::apiServerApiKey() const
+{
+    return m_apiServerApiKey;
+}
+
+void Settings::setApiServerApiKey(const QString &v)
+{
+    const QString normalized = v.trimmed();
+    if (m_apiServerApiKey != normalized) {
+        m_apiServerApiKey = normalized;
+        m_settings.setValue(QStringLiteral("api/serverApiKey"), normalized);
+        m_settings.sync();
+        emit apiServerApiKeyChanged();
     }
 }
 

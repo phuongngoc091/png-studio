@@ -236,7 +236,6 @@ void KokoroBackend::unload()
         }
         m_session = nullptr;
     }
-    CrispKokoroInterface::instance().unload();
     m_currentVoicePath.clear();
     m_modelPath.clear();
 }

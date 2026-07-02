@@ -40,22 +40,34 @@ SttModelSession::SttModelSession(SttEngine *engine, QObject *parent)
 
 ModelSessionState SttModelSession::state() const
 {
-    return m_lifecycle->state();
+    if (!m_engine) return ModelSessionState::Unloaded;
+    switch (m_engine->state()) {
+    case SttEngine::Unloaded: return ModelSessionState::Unloaded;
+    case SttEngine::Loading: return ModelSessionState::Loading;
+    case SttEngine::Ready: return ModelSessionState::Ready;
+    case SttEngine::Processing: return ModelSessionState::Processing;
+    case SttEngine::Error: return ModelSessionState::Error;
+    }
+    return ModelSessionState::Unloaded;
 }
 
 bool SttModelSession::modelActive() const
 {
-    return m_lifecycle->modelActive();
+    return m_engine && m_engine->isModelLoaded();
 }
 
 bool SttModelSession::canProcess() const
 {
-    return m_lifecycle->canProcess();
+    return m_engine && m_engine->state() == SttEngine::Ready;
 }
 
 std::optional<SessionConfiguration> SttModelSession::activeConfiguration() const
 {
-    return m_lifecycle->activeConfiguration();
+    const QString signature = activeSignature();
+    if (signature.isEmpty() || !m_loadedConfigs.contains(signature)) {
+        return std::nullopt;
+    }
+    return m_loadedConfigs.value(signature);
 }
 
 std::optional<SessionConfiguration> SttModelSession::pendingConfiguration() const
@@ -65,33 +77,73 @@ std::optional<SessionConfiguration> SttModelSession::pendingConfiguration() cons
 
 QString SttModelSession::activeSignature() const
 {
-    return m_lifecycle->activeSignature();
+    return m_engine ? m_engine->activeSignature() : QString();
+}
+
+QList<SessionConfiguration> SttModelSession::loadedConfigurations() const
+{
+    return m_loadedConfigs.values();
 }
 
 void SttModelSession::requestLoad(const QString &capabilityId, const StudioConfiguration &configuration)
 {
-    m_lifecycle->requestLoad(capabilityId, configuration);
+    Q_UNUSED(capabilityId);
+    auto resolvedOpt = resolveConfig(configuration);
+    if (!resolvedOpt || !m_engine) {
+        emit errorOccurred(QStringLiteral("Failed to resolve STT configuration"));
+        return;
+    }
+    SessionConfiguration resolved = *resolvedOpt;
+    const QString runtimeId = resolved.selection.runtimeId;
+    const bool useGpu = runtimeId.contains(QStringLiteral("cuda"), Qt::CaseInsensitive) ||
+                        runtimeId.contains(QStringLiteral("vulkan"), Qt::CaseInsensitive);
+    m_loadedConfigs.insert(resolved.signature, resolved);
+    m_engine->loadInstance(resolved, useGpu);
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
+    emit stateChanged();
 }
 
 void SttModelSession::requestUnload(const QString &capabilityId)
 {
-    m_lifecycle->requestUnload(capabilityId);
+    Q_UNUSED(capabilityId);
+    requestUnloadConfiguration(activeSignature());
+}
+
+void SttModelSession::requestUnloadConfiguration(const QString &signature)
+{
+    if (signature.isEmpty() || !m_engine) return;
+    m_loadedConfigs.remove(signature);
+    m_engine->unloadInstance(signature);
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
+    emit stateChanged();
+}
+
+void SttModelSession::activateConfiguration(const QString &signature)
+{
+    if (signature.isEmpty() || !m_engine || !m_loadedConfigs.contains(signature)) return;
+    m_engine->activateInstance(signature);
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
+    emit stateChanged();
 }
 
 void SttModelSession::requestReload(const QString &capabilityId)
 {
-    m_lifecycle->requestReload(capabilityId);
+    Q_UNUSED(capabilityId);
+    auto active = activeConfiguration();
+    if (active) {
+        requestLoad(active->capabilityId, active->selection);
+    }
 }
 
 bool SttModelSession::usesRuntime(const QString &runtimeId, const QString &runtimeVersion) const
 {
-    auto active = activeConfiguration();
-    if (active && active->selection.runtimeId == runtimeId && active->selection.runtimeVersion == runtimeVersion) {
-        return true;
-    }
-    auto pending = pendingConfiguration();
-    if (pending && pending->selection.runtimeId == runtimeId && pending->selection.runtimeVersion == runtimeVersion) {
-        return true;
+    for (const SessionConfiguration &config : loadedConfigurations()) {
+        if (config.selection.runtimeId == runtimeId && config.selection.runtimeVersion == runtimeVersion) {
+            return true;
+        }
     }
     return false;
 }
@@ -104,9 +156,8 @@ bool SttModelSession::usesModelPath(const QString &modelPath) const
 
     const QString target = cleanPath(modelPath);
 
-    auto checkConfig = [&](const std::optional<SessionConfiguration> &conf) {
-        if (!conf) return false;
-        for (const QString &p : conf->resolvedModelPaths) {
+    auto checkConfig = [&](const SessionConfiguration &conf) {
+        for (const QString &p : conf.resolvedModelPaths) {
             if (cleanPath(p).compare(target, Qt::CaseInsensitive) == 0) {
                 return true;
             }
@@ -114,30 +165,19 @@ bool SttModelSession::usesModelPath(const QString &modelPath) const
         return false;
     };
 
-    return checkConfig(activeConfiguration()) || checkConfig(pendingConfiguration());
+    for (const SessionConfiguration &config : loadedConfigurations()) {
+        if (checkConfig(config)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void SttModelSession::onEngineStateChanged()
 {
-    if (!m_engine) return;
-
-    SttEngine::State engState = m_engine->state();
-    
-    // Map engine state directly to lifecycle controller triggers
-    if (engState == SttEngine::Ready) {
-        m_lifecycle->onLoadSuccess();
-    } else if (engState == SttEngine::Unloaded) {
-        m_lifecycle->onUnloadFinished();
-    } else if (engState == SttEngine::Processing) {
-        m_lifecycle->onProcessingStateChanged(true);
-    } else if (engState == SttEngine::Error) {
-        m_lifecycle->onEngineError(QStringLiteral("STT Engine entered error state"));
-    } else {
-        // If it transitions from Processing to Ready/Error/Unloaded
-        if (m_lifecycle->state() == ModelSessionState::Processing) {
-            m_lifecycle->onProcessingStateChanged(false);
-        }
-    }
+    emit stateChanged();
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
 }
 
 std::optional<SessionConfiguration> SttModelSession::resolveConfig(const StudioConfiguration &config)

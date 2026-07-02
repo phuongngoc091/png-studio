@@ -91,13 +91,20 @@ void ModelsPathMigrationService::changeDirectory(const QString &pathUrl)
             IModelSession *session = appCtrl->sessionRegistry()->sessionForCapability(fallbackCapability);
             if (!session) continue;
 
-            QString owner = fallbackCapability;
-            if (auto active = session->activeConfiguration()) {
-                owner = active->capabilityId;
-            } else if (auto pending = session->pendingConfiguration()) {
-                owner = pending->capabilityId;
+            const QList<SessionConfiguration> loaded = session->loadedConfigurations();
+            if (loaded.isEmpty()) {
+                QString owner = fallbackCapability;
+                if (auto pending = session->pendingConfiguration()) {
+                    owner = pending->capabilityId;
+                }
+                session->requestUnload(owner);
+                continue;
             }
-            session->requestUnload(owner);
+            for (const SessionConfiguration &config : loaded) {
+                if (!config.signature.isEmpty()) {
+                    session->requestUnloadConfiguration(config.signature);
+                }
+            }
         }
     }
 

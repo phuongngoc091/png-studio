@@ -14,6 +14,7 @@
 #include "audio/AudioPlayer.h"
 #include "audio/WaveformProvider.h"
 #include "controllers/AppUpdateService.h"
+#include "api/ApiServerService.h"
 #include <QGuiApplication>
 #include <QClipboard>
 #include "core/Logger.h"
@@ -61,6 +62,7 @@ AppController::AppController(QObject *parent)
     m_updates = new AppUpdateService(m_downloads, this);
     m_examples = new ExampleManager(this);
     m_workflows = new WorkflowManager(m_sessionRegistry, m_tts, m_sttSession, this);
+    m_apiServer = new ApiServerService(m_settings, m_tts, m_stt, this);
 
     connect(m_preview, &AudioPreviewService::errorOccurred, this, &AppController::onError);
     connect(m_history, &HistoryService::errorOccurred, this, &AppController::onError);

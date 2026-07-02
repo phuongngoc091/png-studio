@@ -278,7 +278,6 @@ void Qwen3Backend::unload()
         }
         m_session = nullptr;
     }
-    CrispQwen3TtsInterface::instance().unload();
     if (m_codePredictorBackendEnvOverridden) {
         QMutexLocker locker(&s_envMutex);
         setOrClearEnv("QWEN3_TTS_CP_BACKEND", m_previousCodePredictorBackendEnv, m_restoreCodePredictorBackendEnv);

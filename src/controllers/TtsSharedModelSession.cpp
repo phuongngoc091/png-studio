@@ -43,25 +43,35 @@ TtsSharedModelSession::TtsSharedModelSession(TtsEngine *engine, QObject *parent)
 
 ModelSessionState TtsSharedModelSession::state() const
 {
-    return m_lifecycle->state();
+    if (!m_engine) return ModelSessionState::Unloaded;
+    switch (m_engine->state()) {
+    case TtsEngine::Unloaded: return ModelSessionState::Unloaded;
+    case TtsEngine::Loading: return ModelSessionState::Loading;
+    case TtsEngine::Ready: return ModelSessionState::Ready;
+    case TtsEngine::Processing: return ModelSessionState::Processing;
+    case TtsEngine::Error: return ModelSessionState::Error;
+    }
+    return ModelSessionState::Unloaded;
 }
 
 bool TtsSharedModelSession::modelActive() const
 {
-    return m_lifecycle->modelActive();
+    return m_engine && m_engine->isModelLoaded();
 }
 
 bool TtsSharedModelSession::canProcess() const
 {
-    return m_lifecycle->canProcess();
+    return m_engine && m_engine->state() == TtsEngine::Ready;
 }
 
 std::optional<SessionConfiguration> TtsSharedModelSession::activeConfiguration() const
 {
-    auto conf = m_lifecycle->activeConfiguration();
-    if (conf) {
-        conf->capabilityId = m_activeOwner;
+    const QString signature = activeSignature();
+    if (signature.isEmpty() || !m_loadedConfigs.contains(signature)) {
+        return std::nullopt;
     }
+    SessionConfiguration conf = m_loadedConfigs.value(signature);
+    conf.capabilityId = m_ownerBySignature.value(signature, m_activeOwner);
     return conf;
 }
 
@@ -76,7 +86,18 @@ std::optional<SessionConfiguration> TtsSharedModelSession::pendingConfiguration(
 
 QString TtsSharedModelSession::activeSignature() const
 {
-    return m_lifecycle->activeSignature();
+    return m_engine ? m_engine->activeSignature() : QString();
+}
+
+QList<SessionConfiguration> TtsSharedModelSession::loadedConfigurations() const
+{
+    QList<SessionConfiguration> out;
+    for (auto it = m_loadedConfigs.cbegin(); it != m_loadedConfigs.cend(); ++it) {
+        SessionConfiguration conf = it.value();
+        conf.capabilityId = m_ownerBySignature.value(it.key(), conf.capabilityId);
+        out.append(conf);
+    }
+    return out;
 }
 
 bool TtsSharedModelSession::isOwnerActive(const QString &capabilityId) const
@@ -96,57 +117,72 @@ void TtsSharedModelSession::requestLoad(const QString &capabilityId, const Studi
 
     auto resolvedOpt = resolveConfig(configuration);
     if (!resolvedOpt) {
-        m_lifecycle->onLoadError(QStringLiteral("Failed to resolve configuration"));
+        emit errorOccurred(QStringLiteral("Failed to resolve configuration"));
         return;
     }
 
     SessionConfiguration resolved = *resolvedOpt;
-
-    // Check if signature matches current active signature
-    if (m_lifecycle->state() == ModelSessionState::Ready && m_lifecycle->activeSignature() == resolved.signature) {
-        if (m_engine) {
-            m_engine->setFamilyConfig(resolved.familyConfig);
-            m_engine->setRuntimePath(resolved.runtimePath);
-        }
-        if (m_activeOwner != capabilityId) {
-            Logger::info(QStringLiteral("TtsSharedModelSession"),
-                         QStringLiteral("Signature matches. Switching owner from %1 to %2 without reloading engine.")
-                         .arg(m_activeOwner, capabilityId));
-            m_activeOwner = capabilityId;
-            emit activeConfigurationChanged();
-            emit activeSignatureChanged();
-        }
+    if (!m_engine) {
+        emit errorOccurred(QStringLiteral("TTS Engine is null"));
         return;
     }
 
     m_pendingOwner = capabilityId;
-    m_lifecycle->requestLoad(capabilityId, configuration);
+    m_activeOwner = capabilityId;
+    m_loadedConfigs.insert(resolved.signature, resolved);
+    m_ownerBySignature.insert(resolved.signature, capabilityId);
+    m_engine->loadInstance(resolved);
+    m_pendingOwner.clear();
+    emit pendingConfigurationChanged();
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
+    emit stateChanged();
 }
 
 void TtsSharedModelSession::requestUnload(const QString &capabilityId)
 {
-    if (m_activeOwner == capabilityId || m_pendingOwner == capabilityId) {
-        m_lifecycle->requestUnload(capabilityId);
-    }
+    Q_UNUSED(capabilityId);
+    requestUnloadConfiguration(activeSignature());
+}
+
+void TtsSharedModelSession::requestUnloadConfiguration(const QString &signature)
+{
+    if (signature.isEmpty() || !m_engine) return;
+    m_loadedConfigs.remove(signature);
+    m_ownerBySignature.remove(signature);
+    m_engine->unloadInstance(signature);
+    m_activeOwner = activeConfiguration() ? activeConfiguration()->capabilityId : QString();
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
+    emit stateChanged();
+}
+
+void TtsSharedModelSession::activateConfiguration(const QString &signature)
+{
+    if (signature.isEmpty() || !m_engine || !m_loadedConfigs.contains(signature)) return;
+    m_engine->activateInstance(signature);
+    m_activeOwner = m_ownerBySignature.value(signature, m_loadedConfigs.value(signature).capabilityId);
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
+    emit stateChanged();
 }
 
 void TtsSharedModelSession::requestReload(const QString &capabilityId)
 {
     if (m_activeOwner == capabilityId) {
-        m_pendingOwner = capabilityId;
-        m_lifecycle->requestReload(capabilityId);
+        auto active = activeConfiguration();
+        if (active && m_engine) {
+            m_engine->loadInstance(*active);
+        }
     }
 }
 
 bool TtsSharedModelSession::usesRuntime(const QString &runtimeId, const QString &runtimeVersion) const
 {
-    auto active = activeConfiguration();
-    if (active && active->selection.runtimeId == runtimeId && active->selection.runtimeVersion == runtimeVersion) {
-        return true;
-    }
-    auto pending = pendingConfiguration();
-    if (pending && pending->selection.runtimeId == runtimeId && pending->selection.runtimeVersion == runtimeVersion) {
-        return true;
+    for (const SessionConfiguration &config : loadedConfigurations()) {
+        if (config.selection.runtimeId == runtimeId && config.selection.runtimeVersion == runtimeVersion) {
+            return true;
+        }
     }
     return false;
 }
@@ -159,9 +195,8 @@ bool TtsSharedModelSession::usesModelPath(const QString &modelPath) const
 
     const QString target = cleanPath(modelPath);
 
-    auto checkConfig = [&](const std::optional<SessionConfiguration> &conf) {
-        if (!conf) return false;
-        for (const QString &p : conf->resolvedModelPaths) {
+    auto checkConfig = [&](const SessionConfiguration &conf) {
+        for (const QString &p : conf.resolvedModelPaths) {
             if (cleanPath(p).compare(target, Qt::CaseInsensitive) == 0) {
                 return true;
             }
@@ -169,38 +204,19 @@ bool TtsSharedModelSession::usesModelPath(const QString &modelPath) const
         return false;
     };
 
-    return checkConfig(activeConfiguration()) || checkConfig(pendingConfiguration());
+    for (const SessionConfiguration &config : loadedConfigurations()) {
+        if (checkConfig(config)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void TtsSharedModelSession::onEngineStateChanged()
 {
-    if (!m_engine) return;
-
-    TtsEngine::State engState = m_engine->state();
-
-    if (engState == TtsEngine::Ready && m_lifecycle->state() == ModelSessionState::Loading) {
-        if (!m_pendingOwner.isEmpty()) {
-            m_activeOwner = m_pendingOwner;
-            m_pendingOwner.clear();
-        }
-        m_lifecycle->onLoadSuccess();
-    } else if (engState == TtsEngine::Ready) {
-        m_lifecycle->onProcessingStateChanged(false);
-    } else if (engState == TtsEngine::Unloaded) {
-        m_activeOwner.clear();
-        m_pendingOwner.clear();
-        m_lifecycle->onUnloadFinished();
-    } else if (engState == TtsEngine::Processing) {
-        m_lifecycle->onProcessingStateChanged(true);
-    } else if (engState == TtsEngine::Error) {
-        m_activeOwner.clear();
-        m_pendingOwner.clear();
-        m_lifecycle->onEngineError(QStringLiteral("TTS Engine entered error state"));
-    } else {
-        if (m_lifecycle->state() == ModelSessionState::Processing) {
-            m_lifecycle->onProcessingStateChanged(false);
-        }
-    }
+    emit stateChanged();
+    emit activeConfigurationChanged();
+    emit activeSignatureChanged();
 }
 
 std::optional<SessionConfiguration> TtsSharedModelSession::resolveConfig(const StudioConfiguration &config)

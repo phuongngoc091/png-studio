@@ -1,279 +1,193 @@
 #include "SttEngine.h"
-#include "SttWorker.h"
-#include "audio/WavIO.h"
-
-#include <QThread>
-#include <QThreadPool>
-#include <variant>
+#include <QFileInfo>
 
 namespace LAStudio {
-
-// Helper for std::visit
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 SttEngine::SttEngine(QObject *parent)
     : QObject(parent)
 {
-    m_worker = new SttWorker;
-    m_thread = new QThread(this);
-    m_worker->moveToThread(m_thread);
-
-    connect(m_thread, &QThread::finished, m_worker, &QObject::deleteLater);
-    connect(m_worker, &SttWorker::modelLoaded, this, &SttEngine::onWorkerModelLoaded);
-    connect(m_worker, &SttWorker::progress, this, &SttEngine::onWorkerProgress);
-    connect(m_worker, &SttWorker::finished, this, &SttEngine::onWorkerFinished);
-    connect(m_worker, &SttWorker::errorOccurred, this, &SttEngine::onWorkerError);
-
-    m_thread->start();
 }
 
 SttEngine::~SttEngine()
 {
-    m_thread->quit();
-    m_thread->wait();
+    qDeleteAll(m_instances);
+    m_instances.clear();
+}
+
+SttEngineInstance *SttEngine::activeInstance() const
+{
+    return m_instances.value(m_activeSignature, nullptr);
 }
 
 SttEngine::State SttEngine::state() const
 {
-    return std::visit(overloaded{
-        [](StateUnloaded) { return Unloaded; },
-        [](StateLoading)  { return Loading; },
-        [](StateReady)    { return Ready; },
-        [](StateProcessing) { return Processing; },
-        [](StateError)    { return Error; }
-    }, m_state);
+    SttEngineInstance *inst = activeInstance();
+    return inst ? static_cast<SttEngine::State>(inst->state()) : SttEngine::Unloaded;
+}
+
+bool SttEngine::isModelLoaded() const
+{
+    SttEngineInstance *inst = activeInstance();
+    return inst && inst->isModelLoaded();
+}
+
+bool SttEngine::isProcessing() const
+{
+    SttEngineInstance *inst = activeInstance();
+    return inst && inst->isProcessing();
+}
+
+int SttEngine::progress() const
+{
+    SttEngineInstance *inst = activeInstance();
+    return inst ? inst->progress() : 0;
+}
+
+QString SttEngine::transcript() const
+{
+    SttEngineInstance *inst = activeInstance();
+    return inst ? inst->transcript() : QString();
 }
 
 void SttEngine::loadModel(const QString &modelPath, bool useGpu, const QString &runtimePath)
 {
-    dispatch(EventLoad{modelPath, useGpu, runtimePath});
+    const QString signature = QFileInfo(modelPath).absoluteFilePath() + QLatin1Char('|') + runtimePath + QLatin1Char('|') + (useGpu ? QStringLiteral("gpu") : QStringLiteral("cpu"));
+    SttEngineInstance *inst = ensureInstance(signature);
+    activateInstance(signature);
+    inst->loadModel(modelPath, useGpu, runtimePath);
 }
 
 void SttEngine::unloadModel()
 {
-    dispatch(EventUnload{});
+    if (SttEngineInstance *inst = activeInstance()) {
+        inst->unloadModel();
+    }
 }
 
 void SttEngine::unloadModelSync()
 {
-    QMetaObject::invokeMethod(m_worker, "unloadModel", Qt::BlockingQueuedConnection);
-    applyState(StateUnloaded{});
+    if (SttEngineInstance *inst = activeInstance()) {
+        inst->unloadModelSync();
+    }
 }
 
 void SttEngine::transcribeSamples(const QVector<float> &samples, const QString &language, int threads, bool translate, const QVariantMap &settings)
 {
-    if (state() != State::Ready) {
-        emit errorOccurred(QStringLiteral("No model loaded or engine not ready"));
+    if (SttEngineInstance *inst = activeInstance()) {
+        inst->transcribeSamples(samples, language, threads, translate, settings);
         return;
     }
-    dispatch(EventTranscribe{samples, language, threads, translate, settings});
+    emit errorOccurred(QStringLiteral("No STT model is active."));
 }
 
 void SttEngine::cancelProcessing()
 {
-    dispatch(EventCancelProcessing{});
+    if (SttEngineInstance *inst = activeInstance()) {
+        inst->cancelProcessing();
+    }
 }
 
-void SttEngine::onWorkerModelLoaded(bool success, const QString &error)
+SttEngineInstance *SttEngine::loadInstance(const SessionConfiguration &config, bool useGpu)
 {
-    dispatch(EventWorkerLoaded{success, error});
+    SttEngineInstance *inst = ensureInstance(config.signature);
+    const QString modelPath = config.resolvedPathsByRole.value(QStringLiteral("model")).toString();
+    inst->loadModel(modelPath, useGpu, config.runtimePath);
+    activateInstance(config.signature);
+    return inst;
 }
 
-void SttEngine::onWorkerProgress(int percent)
+bool SttEngine::activateInstance(const QString &signature)
 {
-    m_progress = percent;
+    if (signature.isEmpty() || !m_instances.contains(signature)) {
+        return false;
+    }
+    if (m_activeSignature == signature) {
+        return true;
+    }
+    m_activeSignature = signature;
+    emit activeSignatureChanged();
+    emitActiveForwardSignals();
+    return true;
+}
+
+void SttEngine::unloadInstance(const QString &signature)
+{
+    SttEngineInstance *inst = m_instances.take(signature);
+    if (!inst) {
+        return;
+    }
+
+    const bool wasActive = signature == m_activeSignature;
+    inst->unloadModelSync();
+    inst->deleteLater();
+
+    if (wasActive) {
+        m_activeSignature = m_instances.isEmpty() ? QString() : m_instances.keys().last();
+        emit activeSignatureChanged();
+        emitActiveForwardSignals();
+    }
+    emit loadedInstancesChanged();
+}
+
+SttEngineInstance *SttEngine::instance(const QString &signature) const
+{
+    return m_instances.value(signature, nullptr);
+}
+
+QList<SttEngineInstance *> SttEngine::loadedInstances() const
+{
+    return m_instances.values();
+}
+
+QStringList SttEngine::loadedSignatures() const
+{
+    return m_instances.keys();
+}
+
+SttEngineInstance *SttEngine::ensureInstance(const QString &signature)
+{
+    const QString key = signature.isEmpty() ? QStringLiteral("default") : signature;
+    if (SttEngineInstance *existing = m_instances.value(key, nullptr)) {
+        return existing;
+    }
+
+    auto *inst = new SttEngineInstance(this);
+    m_instances.insert(key, inst);
+    connectInstance(inst);
+    emit loadedInstancesChanged();
+    return inst;
+}
+
+void SttEngine::connectInstance(SttEngineInstance *inst)
+{
+    connect(inst, &SttEngineInstance::errorOccurred, this, &SttEngine::errorOccurred);
+    connect(inst, &SttEngineInstance::transcriptionFinished, this, [this, inst](const QString &text, const QVariantList &segments) {
+        if (inst == activeInstance()) {
+            emit transcriptionFinished(text, segments);
+        }
+    });
+
+    auto forwardIfActive = [this, inst](auto signal) {
+        connect(inst, signal, this, [this, inst]() {
+            if (inst == activeInstance()) {
+                emitActiveForwardSignals();
+            }
+        });
+    };
+    forwardIfActive(&SttEngineInstance::modelLoadedChanged);
+    forwardIfActive(&SttEngineInstance::processingChanged);
+    forwardIfActive(&SttEngineInstance::progressChanged);
+    forwardIfActive(&SttEngineInstance::transcriptChanged);
+    forwardIfActive(&SttEngineInstance::stateChanged);
+}
+
+void SttEngine::emitActiveForwardSignals()
+{
+    emit stateChanged();
+    emit modelLoadedChanged();
+    emit processingChanged();
     emit progressChanged();
-}
-
-void SttEngine::onWorkerFinished(const QString &text, const QVariantList &segments)
-{
-    dispatch(EventWorkerFinished{text, segments});
-}
-
-void SttEngine::onWorkerError(const QString &error)
-{
-    dispatch(EventWorkerError{error});
-}
-
-void SttEngine::dispatch(const EngineEvent &event)
-{
-    std::visit(overloaded {
-        // --- State: Unloaded ---
-        [this](StateUnloaded&, const EventLoad& e) {
-            applyState(StateLoading{});
-            QMetaObject::invokeMethod(m_worker, "loadModel", Qt::QueuedConnection,
-                                      Q_ARG(QString, e.modelPath), Q_ARG(bool, e.useGpu), Q_ARG(QString, e.runtimePath));
-        },
-        [this](StateUnloaded&, const auto&) {}, // Ignore other events in Unloaded
-
-        // --- State: Loading ---
-        [this](StateLoading& s, const EventLoad& e) {
-            s.cancelRequested = true;
-            s.hasPendingLoad = true;
-            s.pendingModelPath = e.modelPath;
-            s.pendingUseGpu = e.useGpu;
-            s.pendingRuntimePath = e.runtimePath;
-        },
-        [this](StateLoading& s, const EventUnload&) {
-            s.cancelRequested = true;
-            s.hasPendingLoad = false;
-            s.pendingModelPath.clear();
-            s.pendingRuntimePath.clear();
-        },
-        [this](StateLoading& s, const EventWorkerLoaded& e) {
-            bool cancelReq = s.cancelRequested;
-            bool pending = s.hasPendingLoad;
-            QString path = s.pendingModelPath;
-            bool gpu = s.pendingUseGpu;
-            QString rtPath = s.pendingRuntimePath;
-
-            if (cancelReq) {
-                QMetaObject::invokeMethod(m_worker, "unloadModel", Qt::QueuedConnection);
-                if (pending) {
-                    applyState(StateLoading{});
-                    QMetaObject::invokeMethod(m_worker, "loadModel", Qt::QueuedConnection,
-                                              Q_ARG(QString, path), Q_ARG(bool, gpu), Q_ARG(QString, rtPath));
-                } else {
-                    applyState(StateUnloaded{});
-                }
-            } else {
-                if (e.success) {
-                    applyState(StateReady{});
-                } else {
-                    applyState(StateError{e.error});
-                    emit errorOccurred(e.error);
-                }
-            }
-        },
-        [this](StateLoading&, const auto&) {},
-
-        // --- State: Ready ---
-        [this](StateReady&, const EventLoad& e) {
-            applyState(StateLoading{});
-            QMetaObject::invokeMethod(m_worker, "loadModel", Qt::QueuedConnection,
-                                      Q_ARG(QString, e.modelPath), Q_ARG(bool, e.useGpu), Q_ARG(QString, e.runtimePath));
-        },
-        [this](StateReady&, const EventUnload&) {
-            QMetaObject::invokeMethod(m_worker, "unloadModel", Qt::QueuedConnection);
-            applyState(StateUnloaded{});
-        },
-        [this](StateReady&, const EventTranscribe& e) {
-            applyState(StateProcessing{});
-            m_progress = 0;
-            m_transcript.clear();
-            emit progressChanged();
-            emit transcriptChanged();
-            QMetaObject::invokeMethod(m_worker, "transcribe", Qt::QueuedConnection,
-                                      Q_ARG(QVector<float>, e.samples),
-                                      Q_ARG(QString, e.language),
-                                      Q_ARG(int, e.threads),
-                                      Q_ARG(bool, e.translate),
-                                      Q_ARG(QVariantMap, e.settings));
-        },
-        [this](StateReady&, const auto&) {},
-
-        // --- State: Processing ---
-        [this](StateProcessing& s, const EventLoad& e) {
-            s.cancelRequested = true;
-            s.hasPendingLoad = true;
-            s.pendingModelPath = e.modelPath;
-            s.pendingUseGpu = e.useGpu;
-            s.pendingRuntimePath = e.runtimePath;
-        },
-        [this](StateProcessing& s, const EventUnload&) {
-            s.cancelRequested = true;
-            s.hasPendingLoad = false;
-            s.pendingModelPath.clear();
-            s.pendingRuntimePath.clear();
-        },
-        [this](StateProcessing&, const EventCancelProcessing&) {
-            QMetaObject::invokeMethod(m_worker, "cancelProcessing", Qt::QueuedConnection);
-        },
-        [this](StateProcessing& s, const EventWorkerFinished& e) {
-            m_progress = 100;
-            m_transcript = e.text;
-            emit progressChanged();
-            emit transcriptChanged();
-
-            bool cancelReq = s.cancelRequested;
-            bool pending = s.hasPendingLoad;
-            QString path = s.pendingModelPath;
-            bool gpu = s.pendingUseGpu;
-            QString rtPath = s.pendingRuntimePath;
-
-            if (cancelReq) {
-                QMetaObject::invokeMethod(m_worker, "unloadModel", Qt::QueuedConnection);
-                if (pending) {
-                    applyState(StateLoading{});
-                    QMetaObject::invokeMethod(m_worker, "loadModel", Qt::QueuedConnection,
-                                              Q_ARG(QString, path), Q_ARG(bool, gpu), Q_ARG(QString, rtPath));
-                } else {
-                    applyState(StateUnloaded{});
-                }
-            } else {
-                applyState(StateReady{});
-            }
-
-            emit transcriptionFinished(e.text, e.segments);
-        },
-        [this](StateProcessing& s, const EventWorkerError& e) {
-            bool cancelReq = s.cancelRequested;
-            bool pending = s.hasPendingLoad;
-            QString path = s.pendingModelPath;
-            bool gpu = s.pendingUseGpu;
-            QString rtPath = s.pendingRuntimePath;
-
-            if (cancelReq) {
-                QMetaObject::invokeMethod(m_worker, "unloadModel", Qt::QueuedConnection);
-                if (pending) {
-                    applyState(StateLoading{});
-                    QMetaObject::invokeMethod(m_worker, "loadModel", Qt::QueuedConnection,
-                                              Q_ARG(QString, path), Q_ARG(bool, gpu), Q_ARG(QString, rtPath));
-                } else {
-                    applyState(StateUnloaded{});
-                }
-            } else {
-                applyState(StateReady{});
-            }
-
-            emit errorOccurred(e.error);
-        },
-        [this](StateProcessing&, const auto&) {},
-
-        // --- State: Error ---
-        [this](StateError&, const EventLoad& e) {
-            applyState(StateLoading{});
-            QMetaObject::invokeMethod(m_worker, "loadModel", Qt::QueuedConnection,
-                                      Q_ARG(QString, e.modelPath), Q_ARG(bool, e.useGpu), Q_ARG(QString, e.runtimePath));
-        },
-        [this](StateError&, const EventUnload&) {
-            QMetaObject::invokeMethod(m_worker, "unloadModel", Qt::QueuedConnection);
-            applyState(StateUnloaded{});
-        },
-        [this](StateError&, const auto&) {}
-
-    }, m_state, event);
-}
-
-void SttEngine::applyState(const EngineState &newState)
-{
-    State oldType = state();
-    bool oldLoaded = isModelLoaded();
-    bool oldProcessing = isProcessing();
-
-    m_state = newState;
-    
-    State newType = state();
-    if (oldType != newType) {
-        emit stateChanged();
-    }
-    if (isModelLoaded() != oldLoaded) {
-        emit modelLoadedChanged();
-    }
-    if (isProcessing() != oldProcessing) {
-        emit processingChanged();
-    }
+    emit transcriptChanged();
 }
 
 } // namespace LAStudio

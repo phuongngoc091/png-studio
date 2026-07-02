@@ -51,7 +51,6 @@ void WhisperSttBackend::unloadModel()
         }
         m_ctx = nullptr;
     }
-    WhisperInterface::instance().unload();
 }
 
 void WhisperSttBackend::cancelProcessing()

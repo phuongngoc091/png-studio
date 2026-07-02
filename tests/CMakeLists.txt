@@ -11,12 +11,16 @@ set(TEST_SOURCES
     test_ModelsAndRuntimes.cpp
     test_SttSession.cpp
     mocks/SttEngine.cpp
+    mocks/SttEngineInstance.cpp
     mocks/TtsEngine.cpp
+    mocks/TtsEngineInstance.cpp
     mocks/AudioRecorder.cpp
     mocks/AudioPlayer.cpp
     mocks/HFHubClient.cpp
     mocks/DownloadManager.cpp
     mocks/AppController.cpp
+
+    ../src/api/ApiServerService.cpp
 
     ../src/controllers/FileAccessService.cpp
     ../src/controllers/AppUpdateService.cpp
@@ -56,8 +60,11 @@ set(TEST_SOURCES
     ../src/audio/WaveformProvider.cpp
 
     ../src/core/DownloadManager.h
+    ../src/api/ApiServerService.h
     ../src/stt/SttEngine.h
+    ../src/stt/SttEngineInstance.h
     ../src/tts/TtsEngine.h
+    ../src/tts/TtsEngineInstance.h
     ../src/audio/AudioRecorder.h
     ../src/audio/AudioPlayer.h
     ../src/core/HFHubClient.h
