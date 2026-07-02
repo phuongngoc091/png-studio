@@ -299,10 +299,7 @@ QVariantList TtsEngine::buildSchemaForRuntime(const QString &runtimePath) const
     bool isVibe = runtimePath.contains("vibevoice", Qt::CaseInsensitive) || runtimePath.contains("vibe", Qt::CaseInsensitive);
     bool isOmni = runtimePath.contains("omnivoice", Qt::CaseInsensitive) || runtimePath.contains("omni", Qt::CaseInsensitive);
     bool isKokoro = runtimePath.contains("crispasr", Qt::CaseInsensitive) || runtimePath.contains("kokoro", Qt::CaseInsensitive);
-    bool isSpeechLmTts = runtimePath.contains("speech-lm", Qt::CaseInsensitive) ||
-                         runtimePath.contains("speechlm", Qt::CaseInsensitive) ||
-                         runtimePath.contains("vieneu", Qt::CaseInsensitive) ||
-                         runtimePath.contains("slm", Qt::CaseInsensitive);
+    bool isVieneuTts = runtimePath.contains("vieneu", Qt::CaseInsensitive);
 
     QVariantList schema;
 
@@ -356,7 +353,7 @@ QVariantList TtsEngine::buildSchemaForRuntime(const QString &runtimePath) const
         guidance["default"] = 2.0;
         guidance["description"] = "Controls style adherence.";
         schema.append(guidance);
-    } else if (isSpeechLmTts) {
+    } else if (isVieneuTts) {
         QVariantMap temp;
         temp["id"] = "temperature";
         temp["name"] = "Temperature";

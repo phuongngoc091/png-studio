@@ -79,7 +79,6 @@ set(LASTUDIO_SOURCES
     src/tts/backends/Qwen3Backend.cpp
     src/tts/backends/VoxCpm2Backend.cpp
     src/tts/backends/VibevoiceBackend.cpp
-    src/tts/backends/SpeechLmBackend.cpp
     src/tts/backends/VieneuTtsBackend.cpp
     src/tts/backends/OmnivoiceBackend.cpp
     src/controllers/AppController.cpp
@@ -120,7 +119,6 @@ set(LASTUDIO_HEADERS
     include/runtimes/CrispKokoroInterface.h
     include/runtimes/CrispVoxCpm2Interface.h
     include/runtimes/CrispVibeVoiceInterface.h
-    include/runtimes/SpeechLmTtsInterface.h
     include/runtimes/VieneuTtsInterface.h
     include/runtimes/CrispQwen3SttInterface.h
     include/runtimes/CrispNemotronSttInterface.h
@@ -153,7 +151,6 @@ set(LASTUDIO_HEADERS
     src/tts/backends/Qwen3Backend.h
     src/tts/backends/VoxCpm2Backend.h
     src/tts/backends/VibevoiceBackend.h
-    src/tts/backends/SpeechLmBackend.h
     src/tts/backends/VieneuTtsBackend.h
     src/tts/backends/OmnivoiceBackend.h
     src/controllers/AppController.h

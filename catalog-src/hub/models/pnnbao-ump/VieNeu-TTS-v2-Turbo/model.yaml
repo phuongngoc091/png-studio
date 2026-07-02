@@ -145,16 +145,16 @@ laStudio:
       description: Apply invisible watermark to output audio.
       advanced: true
   runtimes:
-    - id: speech-lm-tts.cpp-win-x86_64-cpu
-      engineFamily: speech-lm-tts.cpp
-      backend: speech-lm-tts.cpp
+    - id: vieneu-tts-win-x86_64-cpu
+      engineFamily: vieneu-tts
+      backend: vieneu-tts
       pipelineProfile: vieneu-turbo
       label: CPU
-      name: CPU speech-lm-tts.cpp (x64)
-      asset: speech-lm-tts-win-cpu.zip
-      library: speechlm-tts.dll
-      version: v0.1.1
-      source: https://github.com/dduongtrandai/speech-lm-tts.cpp/releases/download/
+      name: CPU VieNeu-TTS.cpp (x64)
+      asset: vieneu-tts-win-cpu.zip
+      library: vieneu-tts.dll
+      version: v0.1.2
+      source: https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases/download/
   studio:
     tts:
       layout: tts

@@ -250,7 +250,7 @@ void TestModelsAndRuntimes::testVieNeuV3CatalogIncludesMossExternalData()
         QCOMPARE(runtime.value(QStringLiteral("engineFamily")).toString(), QStringLiteral("vieneu-tts"));
         QCOMPARE(runtime.value(QStringLiteral("backend")).toString(), QStringLiteral("vieneu-tts"));
         QCOMPARE(runtime.value(QStringLiteral("library")).toString(), QStringLiteral("vieneu-tts.dll"));
-        QCOMPARE(runtime.value(QStringLiteral("version")).toString(), QStringLiteral("v0.1.1"));
+        QCOMPARE(runtime.value(QStringLiteral("version")).toString(), QStringLiteral("v0.1.2"));
         QCOMPARE(runtime.value(QStringLiteral("pipelineProfile")).toString(), QStringLiteral("vieneu-v3-native"));
         QVERIFY2(runtime.value(QStringLiteral("asset")).toString().startsWith(QStringLiteral("vieneu-tts-win-")),
                  "VieNeu-TTS v3 runtime assets should come from VieNeu-TTS.cpp release archives");

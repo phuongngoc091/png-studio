@@ -1,13 +1,39 @@
 #pragma once
 
-#include "SpeechLmBackend.h"
+#include "TtsBackend.h"
+#include <atomic>
+#include <functional>
 
 namespace LAStudio {
 
-class VieneuTtsBackend : public SpeechLmBackend {
+struct vieneu_progress;
+
+class VieneuTtsBackend : public TtsBackend {
 public:
     VieneuTtsBackend() = default;
-    ~VieneuTtsBackend() override = default;
+    ~VieneuTtsBackend() override;
+
+    bool load(const QVariantMap &config, QString &error, QVariantList &schema) override;
+    void unload() override;
+    bool synthesize(const QString &text, float speed, const QVariantMap &settings,
+                    QVector<float> &samples, int &sampleRate, QString &error) override;
+    bool cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings,
+                    QVector<float> &samples, int &sampleRate, QString &error) override;
+    void cancelProcessing() override;
+    void setProgressCallback(std::function<bool(int current,
+                                                int total,
+                                                const QString &stage,
+                                                int chunkIndex,
+                                                int chunkCount)> callback) override;
+
+private:
+    static void handleProgress(const vieneu_progress *progress, void *userData);
+
+    void *m_context = nullptr;
+    bool m_useAbiV2 = false;
+    QString m_pipelineProfile;
+    std::atomic<bool> m_cancelRequested {false};
+    std::function<bool(int current, int total, const QString &stage, int chunkIndex, int chunkCount)> m_progressCallback;
 };
 
 } // namespace LAStudio

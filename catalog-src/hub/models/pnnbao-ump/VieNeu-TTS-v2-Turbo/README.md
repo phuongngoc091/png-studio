@@ -5,7 +5,7 @@ VieNeu-TTS v2 Turbo is an advanced, lightweight bilingual Vietnamese-English tex
 ## Links
 
 - Upstream model card: https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2
-- Upstream GitHub: https://github.com/dduongtrandai/speech-lm-tts.cpp
+- Runtime GitHub: https://github.com/dduongtrandai/VieNeu-TTS.cpp
 
 ## Model Facts
 

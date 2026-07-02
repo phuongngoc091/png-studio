@@ -393,16 +393,6 @@ RuntimeInfo RuntimeManager::processRuntimeDir(const QDir &dir,
         obj[QStringLiteral("engineFamily")] = info.engineFamily;
         obj[QStringLiteral("id")] = info.id;
 
-        // Also update backend key in metadata if it exists and matches old family
-        if (obj.contains(QStringLiteral("metadata"))) {
-            QJsonObject metaObj = obj[QStringLiteral("metadata")].toObject();
-            if (metaObj.contains(QStringLiteral("backend")) &&
-                metaObj[QStringLiteral("backend")].toString() == QStringLiteral("speech-lm-tts")) {
-                metaObj[QStringLiteral("backend")] = QStringLiteral("speech-lm-tts.cpp");
-                obj[QStringLiteral("metadata")] = metaObj;
-            }
-        }
-
         // Save corrected manifest file back to disk
         QFile outFile(manifestFile.fileName());
         if (outFile.open(QIODevice::WriteOnly)) {
