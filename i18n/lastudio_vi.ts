@@ -131,6 +131,10 @@
         <translation>Văn bản đầu vào</translation>
     </message>
     <message>
+        <source>Import .txt</source>
+        <translation>Nhập từ file .txt</translation>
+    </message>
+    <message>
         <source>%1 chars</source>
         <translation>%1 ký tự</translation>
     </message>
@@ -157,6 +161,18 @@
     <message>
         <source>Open model gallery</source>
         <translation>Mở thư viện mô hình</translation>
+    </message>
+    <message>
+        <source>Select Prompt Text</source>
+        <translation>Chọn tệp văn bản đầu vào</translation>
+    </message>
+    <message>
+        <source>Text files (*.txt)</source>
+        <translation>Tệp văn bản (*.txt)</translation>
+    </message>
+    <message>
+        <source>All files (*)</source>
+        <translation>Tất cả tệp (*)</translation>
     </message>
 </context>
 <context>

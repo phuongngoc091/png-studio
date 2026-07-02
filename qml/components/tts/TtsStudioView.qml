@@ -321,6 +321,17 @@ StudioShell {
                                 onClicked: examplePicker.open()
                             }
 
+                            PrimaryButton {
+                                text: qsTr("Import .txt")
+                                iconName: "folder"
+                                quiet: true
+                                textColor: Theme.textPrimary
+                                Layout.preferredWidth: 110
+                                Layout.preferredHeight: 30
+                                enabled: root.studioReady && !root.inputsLocked
+                                onClicked: promptFileDialogLoader.active = true
+                            }
+
                             Text {
                                 text: qsTr("%1 chars").arg(inputText.text.length)
                                 color: Theme.textSecondary
@@ -531,5 +542,33 @@ StudioShell {
         examples: root.availableExamples
         taskTitle: qsTr("Text-to-Speech Examples")
         onExampleSelected: function(example) { root.applyExample(example) }
+    }
+
+    Loader {
+        id: promptFileDialogLoader
+        active: false
+        sourceComponent: promptFileDialogComponent
+    }
+
+    Component {
+        id: promptFileDialogComponent
+        FileDialog {
+            title: qsTr("Select Prompt Text")
+            nameFilters: [qsTr("Text files (*.txt)"), qsTr("All files (*)")]
+
+            Component.onCompleted: open()
+
+            onAccepted: {
+                if (root.inputsLocked) {
+                    promptFileDialogLoader.active = false
+                    return
+                }
+                var path = AppController.files.urlToLocalPath(selectedFile.toString())
+                var content = AppController.files.readTextFile(path)
+                inputText.text = content
+                promptFileDialogLoader.active = false
+            }
+            onRejected: promptFileDialogLoader.active = false
+        }
     }
 }
