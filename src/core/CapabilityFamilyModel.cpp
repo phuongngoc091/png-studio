@@ -6,6 +6,7 @@
 #include "core/Settings.h"
 #include "core/PathUtils.h"
 #include "core/Logger.h"
+#include "core/StudioSelectionRepository.h"
 #include "core/StudioCapabilityRegistry.h"
 #include "controllers/AppController.h"
 #include <algorithm>
@@ -16,6 +17,7 @@
 #include <QSet>
 #include <QLocale>
 #include <QVersionNumber>
+#include <utility>
 
 namespace LAStudio {
 
@@ -580,6 +582,12 @@ CapabilityFamilyModel::CapabilityFamilyModel(ModelManager *models, RuntimeManage
         connect(m_settings, &Settings::selectedSttRuntimeChanged, this, &CapabilityFamilyModel::refresh);
         connect(m_settings, &Settings::selectedSttRuntimeVersionChanged, this, &CapabilityFamilyModel::refresh);
     }
+    if (m_registry) {
+        m_selectionRepository = new StudioSelectionRepository(m_registry->connectionName(), this);
+        if (m_settings) {
+            m_selectionRepository->migrateLegacySelectionsIfNeeded(m_settings);
+        }
+    }
 }
 
 int CapabilityFamilyModel::rowCount(const QModelIndex &parent) const
@@ -721,6 +729,47 @@ void CapabilityFamilyModel::refresh()
     endResetModel();
     ++m_revision;
     emit revisionChanged();
+}
+
+QString CapabilityFamilyModel::capabilityForFamily(const QVariantMap &family) const
+{
+    if (m_capabilityId != QStringLiteral("all")) {
+        return m_capabilityId;
+    }
+    const QVariantList capabilities = family.value(QStringLiteral("capabilities")).toList();
+    if (capabilities.contains(QStringLiteral("stt"))) {
+        return QStringLiteral("stt");
+    }
+    if (capabilities.contains(QStringLiteral("voice-cloning"))) {
+        return QStringLiteral("voice-cloning");
+    }
+    return QStringLiteral("tts");
+}
+
+QVariantMap CapabilityFamilyModel::storedFilesByRequirement(const QVariantMap &family,
+                                                            const QString &capabilityId,
+                                                            const QString &familyId) const
+{
+    QVariantMap out;
+    if (!m_selectionRepository) {
+        return out;
+    }
+
+    const StudioConfiguration selection = m_selectionRepository->selectionFor(capabilityId);
+    if (!selection.isValid() || selection.familyId != familyId) {
+        return out;
+    }
+
+    const QVariantList reqFiles = family.value(QStringLiteral("requiredFiles")).toList();
+    for (const QVariant &reqVal : reqFiles) {
+        const QVariantMap req = reqVal.toMap();
+        const QString role = req.value(QStringLiteral("role")).toString();
+        const QString reqFile = req.value(QStringLiteral("file")).toString();
+        if (!role.isEmpty() && !reqFile.isEmpty() && selection.selectedFiles.contains(role)) {
+            out.insert(reqFile, selection.selectedFiles.value(role));
+        }
+    }
+    return out;
 }
 
 QVariantMap CapabilityFamilyModel::toVariantMap(const FamilyItem &item) const
@@ -997,8 +1046,13 @@ void CapabilityFamilyModel::updateItems()
         QVariantList requiredFileOptions;
         QVariantMap selectedFiles;
 
-        QString activeCap = m_capabilityId == QStringLiteral("all") ? (capabilities.contains(QStringLiteral("stt")) ? QStringLiteral("stt") : QStringLiteral("tts")) : m_capabilityId;
+        QString activeCap = capabilityForFamily(family);
         QString sourceModelId = family.value(QStringLiteral("modelId")).toString();
+        const StudioConfiguration storedSelection = m_selectionRepository
+            ? m_selectionRepository->selectionFor(activeCap)
+            : StudioConfiguration{};
+        const bool useStoredSelection = storedSelection.isValid() && storedSelection.familyId == item.id;
+        const QVariantMap storedReqSelections = storedFilesByRequirement(family, activeCap, item.id);
 
         for (const QVariant &reqVal : reqFiles) {
             QVariantMap req = reqVal.toMap();
@@ -1016,6 +1070,10 @@ void CapabilityFamilyModel::updateItems()
                     selectedFile = familySel.value(reqFile).toString();
                     hasUserSel = true;
                 }
+            }
+            if (!hasUserSel && storedReqSelections.contains(reqFile)) {
+                selectedFile = storedReqSelections.value(reqFile).toString();
+                hasUserSel = true;
             }
 
             bool foundInstalled = false;
@@ -1097,12 +1155,16 @@ void CapabilityFamilyModel::updateItems()
             runtimesById[runtimeId].append(rt);
         }
 
-        const QString savedRuntimeId = activeCap == QStringLiteral("stt")
+        const QString savedRuntimeId = useStoredSelection
+            ? storedSelection.runtimeId
+            : (activeCap == QStringLiteral("stt")
             ? (m_settings ? m_settings->selectedSttRuntime() : QString())
-            : (m_settings ? m_settings->selectedTtsRuntime() : QString());
-        const QString savedRuntimeVersion = activeCap == QStringLiteral("stt")
+            : (m_settings ? m_settings->selectedTtsRuntime() : QString()));
+        const QString savedRuntimeVersion = useStoredSelection
+            ? storedSelection.runtimeVersion
+            : (activeCap == QStringLiteral("stt")
             ? (m_settings ? m_settings->selectedSttRuntimeVersion() : QString())
-            : (m_settings ? m_settings->selectedTtsRuntimeVersion() : QString());
+            : (m_settings ? m_settings->selectedTtsRuntimeVersion() : QString()));
 
         for (const QString &runtimeId : runtimeIdOrder) {
             const QVariantList runtimeEntries = runtimesById.value(runtimeId);
@@ -1250,8 +1312,22 @@ void CapabilityFamilyModel::updateItems()
         const auto preferred = preferredRuntime(options);
         item.preferredRuntimeId = preferred.first;
         item.preferredRuntimeVersion = preferred.second;
-        item.selectedRuntimeId = preferred.first;
-        item.selectedRuntimeVersion = preferred.second;
+        if (useStoredSelection && !storedSelection.runtimeId.isEmpty()) {
+            for (const QVariant &optionValue : options) {
+                const QVariantMap option = optionValue.toMap();
+                if (option.value(QStringLiteral("id")).toString() == storedSelection.runtimeId &&
+                    option.value(QStringLiteral("installed")).toBool()) {
+                    const QString optionVersion = option.value(QStringLiteral("version")).toString();
+                    if (storedSelection.runtimeVersion.isEmpty() || storedSelection.runtimeVersion == optionVersion) {
+                        item.preferredRuntimeId = storedSelection.runtimeId;
+                        item.preferredRuntimeVersion = optionVersion;
+                        break;
+                    }
+                }
+            }
+        }
+        item.selectedRuntimeId = item.preferredRuntimeId;
+        item.selectedRuntimeVersion = item.preferredRuntimeVersion;
 
         item.installed = !missingAnyFiles && hasInstalledCompatibleRuntime;
 
@@ -1473,6 +1549,65 @@ void CapabilityFamilyModel::setInitialSelectedFiles(const QString &familyId, con
         }
     }
     refresh();
+}
+
+void CapabilityFamilyModel::saveSelectionForFamily(const QString &familyId,
+                                                   const QString &runtimeId,
+                                                   const QString &runtimeVersion,
+                                                   const QVariantMap &selectedFiles)
+{
+    if (!m_selectionRepository || familyId.isEmpty()) {
+        return;
+    }
+
+    QVariantMap family;
+    for (const FamilyItem &item : std::as_const(m_items)) {
+        if (item.id == familyId) {
+            family = item.rawMap;
+            break;
+        }
+    }
+    if (family.isEmpty() && m_registry) {
+        const QVariantList all = m_registry->ttsFamilies() + m_registry->sttFamilies();
+        for (const QVariant &itemVal : all) {
+            const QVariantMap candidate = itemVal.toMap();
+            if (candidate.value(QStringLiteral("id")).toString() == familyId) {
+                family = candidate;
+                break;
+            }
+        }
+    }
+    if (family.isEmpty()) {
+        return;
+    }
+
+    StudioConfiguration selection;
+    selection.capabilityId = capabilityForFamily(family);
+    selection.familyId = familyId;
+    selection.runtimeId = runtimeId;
+    selection.runtimeVersion = runtimeVersion;
+    selection.selectedFiles = selectedFiles;
+    m_selectionRepository->saveActiveSelection(selection);
+
+    if (m_settings) {
+        if (selection.capabilityId == QStringLiteral("stt")) {
+            m_settings->setSelectedSttFamily(familyId);
+            m_settings->setSelectedSttRuntime(runtimeId);
+            m_settings->setSelectedSttRuntimeVersion(runtimeVersion);
+            const QString modelFile = selectedFiles.value(QStringLiteral("model")).toString();
+            if (!modelFile.isEmpty()) {
+                m_settings->setSelectedSttModelFile(modelFile);
+            }
+        } else {
+            if (selection.capabilityId == QStringLiteral("voice-cloning")) {
+                m_settings->setSelectedVoiceCloneFamily(familyId);
+            } else {
+                m_settings->setSelectedTtsFamily(familyId);
+            }
+            m_settings->setSelectedTtsRuntime(runtimeId);
+            m_settings->setSelectedTtsRuntimeVersion(runtimeVersion);
+        }
+    }
 }
 
 } // namespace LAStudio

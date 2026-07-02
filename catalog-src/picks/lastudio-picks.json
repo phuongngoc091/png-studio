@@ -51,7 +51,7 @@
     {
       "familyId": "voxcpm2",
       "modelId": "openbmb/VoxCPM2",
-      "reason": "30-language VoxCPM2 TTS, voice design, and zero-shot voice cloning through CrispASR v0.8.4."
+      "reason": "30-language VoxCPM2 TTS, voice design, and zero-shot voice cloning through CrispASR v0.8.6."
     },
     {
       "familyId": "whisper.cpp",

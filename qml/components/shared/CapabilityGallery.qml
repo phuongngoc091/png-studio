@@ -131,6 +131,18 @@ Rectangle {
         if (!runtime || !runtime.compatible || !runtime.installed) return
         pendingRuntimeId = runtime.id || ""
         pendingRuntimeVersion = runtime.version || ""
+        var item = selectedFamilyItem()
+        if (item && activeModel && activeModel.saveSelectionForFamily) {
+            activeModel.saveSelectionForFamily(item.familyId, pendingRuntimeId, pendingRuntimeVersion, selectedFilesForFamily(item))
+        }
+    }
+
+    function selectedFilesWithOverride(familyItem, role, fileName) {
+        var source = selectedFilesForFamily(familyItem)
+        var out = {}
+        for (var key in source) out[key] = source[key]
+        if (role) out[role] = fileName
+        return out
     }
 
     function runtimeInstalled(runtimeId) {
@@ -1152,7 +1164,17 @@ Rectangle {
 
                                         onActivated: (index) => {
                                             if (root.activeModel && family) {
-                                                root.activeModel.selectFileForRequirement(family.familyId, modelData.file, model[index])
+                                                var selected = model[index]
+                                                root.activeModel.selectFileForRequirement(family.familyId, modelData.file, selected)
+                                                if (root.activeModel.saveSelectionForFamily) {
+                                                    var runtimeId = root.pendingRuntimeId !== "" ? root.pendingRuntimeId : family.preferredRuntimeId
+                                                    var runtimeVersion = root.pendingRuntimeVersion !== "" ? root.pendingRuntimeVersion : family.preferredRuntimeVersion
+                                                    root.activeModel.saveSelectionForFamily(
+                                                        family.familyId,
+                                                        runtimeId,
+                                                        runtimeVersion,
+                                                        root.selectedFilesWithOverride(family, modelData.role, selected))
+                                                }
                                             }
                                         }
                                     }
@@ -1529,6 +1551,10 @@ Rectangle {
         onVersionSelected: function(runtimeId, version) {
             root.pendingRuntimeId = runtimeId
             root.pendingRuntimeVersion = version
+            var item = root.selectedFamilyItem()
+            if (item && root.activeModel && root.activeModel.saveSelectionForFamily) {
+                root.activeModel.saveSelectionForFamily(item.familyId, runtimeId, version, root.selectedFilesForFamily(item))
+            }
             if (root.activeModel) root.activeModel.refresh()
         }
     }

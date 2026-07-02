@@ -10,6 +10,7 @@ class ModelManager;
 class RuntimeManager;
 class RegistryManager;
 class Settings;
+class StudioSelectionRepository;
 
 class CapabilityFamilyModel : public QAbstractListModel {
     Q_OBJECT
@@ -72,6 +73,10 @@ public:
     Q_INVOKABLE QString estimateSize(const QString &filename, const QString &defaultFile, const QString &defaultSizeStr) const;
     Q_INVOKABLE void selectFileForRequirement(const QString &familyId, const QString &reqFile, const QString &selectedFile);
     Q_INVOKABLE void setInitialSelectedFiles(const QString &familyId, const QVariantMap &initialSelected);
+    Q_INVOKABLE void saveSelectionForFamily(const QString &familyId,
+                                            const QString &runtimeId,
+                                            const QString &runtimeVersion,
+                                            const QVariantMap &selectedFiles);
 
     int revision() const { return m_revision; }
     QVariantList availableLanguages() const { return m_availableLanguages; }
@@ -122,6 +127,10 @@ private:
     void updateItems();
     bool hasFamilyFile(const QVariantMap &family, const QString &modelId, const QString &fileName) const;
     bool requirementRequiredForCapability(const QVariantMap &req, const QString &capability) const;
+    QString capabilityForFamily(const QVariantMap &family) const;
+    QVariantMap storedFilesByRequirement(const QVariantMap &family,
+                                         const QString &capabilityId,
+                                         const QString &familyId) const;
 
     QString m_capabilityId;
     QString m_searchText;
@@ -137,6 +146,7 @@ private:
     RuntimeManager *m_runtimes = nullptr;
     RegistryManager *m_registry = nullptr;
     Settings *m_settings = nullptr;
+    StudioSelectionRepository *m_selectionRepository = nullptr;
 };
 
 } // namespace LAStudio
