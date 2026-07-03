@@ -20,7 +20,7 @@ Dialog {
             title: qsTr("Facebook Group"),
             description: qsTr("Join the LA Studio and Amatow Coder community."),
             iconName: "users",
-            url: "https://www.facebook.com/groups/amatowcoder.community",
+            url: "https://www.facebook.com/groups/amatowcoder.community/announcements",
             highlighted: true
         },
         {

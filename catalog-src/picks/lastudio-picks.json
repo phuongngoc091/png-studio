@@ -49,6 +49,11 @@
       "reason": "Small multilingual preset-voice TTS with practical CPU runtime options."
     },
     {
+      "familyId": "kokoro-vietnamese",
+      "modelId": "contextboxai/Kokoro-Vietnamese",
+      "reason": "Vietnamese Kokoro TTS through the dedicated native ONNX runtime with bundled vig2p phonemization."
+    },
+    {
       "familyId": "voxcpm2",
       "modelId": "openbmb/VoxCPM2",
       "reason": "30-language VoxCPM2 TTS, voice design, and zero-shot voice cloning through CrispASR v0.8.6."

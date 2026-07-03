@@ -1,5 +1,6 @@
 #include "TtsBackendFactory.h"
 #include "KokoroBackend.h"
+#include "KokoroVietnameseBackend.h"
 #include "Qwen3Backend.h"
 #include "VoxCpm2Backend.h"
 #include "VibevoiceBackend.h"
@@ -23,6 +24,9 @@ std::unique_ptr<TtsBackend> TtsBackendFactory::create(const QVariantMap &config)
             return std::make_unique<Qwen3Backend>();
         if (backend.contains(QStringLiteral("voxcpm2")))
             return std::make_unique<VoxCpm2Backend>();
+        if (backend.contains(QStringLiteral("kokoro-vietnamese")) ||
+            backend.contains(QStringLiteral("kokoro_vi")))
+            return std::make_unique<KokoroVietnameseBackend>();
         if (backend.contains(QStringLiteral("kokoro")))
             return std::make_unique<KokoroBackend>();
         if (backend.contains(QStringLiteral("vibevoice")))
@@ -43,10 +47,16 @@ std::unique_ptr<TtsBackend> TtsBackendFactory::create(const QVariantMap &config)
     bool isVoxCpm2 = modelPath.contains("voxcpm2", Qt::CaseInsensitive) ||
                      familyId.contains("voxcpm2", Qt::CaseInsensitive);
 
+    bool isKokoroVietnamese = runtimePath.contains("kokoro-vietnamese", Qt::CaseInsensitive) ||
+                              runtimePath.contains("kokoro_vi", Qt::CaseInsensitive) ||
+                              modelPath.contains("kokoro_vi", Qt::CaseInsensitive) ||
+                              familyId.contains("kokoro-vietnamese", Qt::CaseInsensitive);
+
     bool isKokoro = (runtimePath.contains("crispasr", Qt::CaseInsensitive) ||
                      runtimePath.contains("kokoro", Qt::CaseInsensitive)) &&
                     !isQwen3 &&
-                    !isVoxCpm2;
+                    !isVoxCpm2 &&
+                    !isKokoroVietnamese;
 
     bool isVibe = runtimePath.contains("vibevoice", Qt::CaseInsensitive);
     bool isOmni = runtimePath.contains("omnivoice", Qt::CaseInsensitive) ||
@@ -61,6 +71,9 @@ std::unique_ptr<TtsBackend> TtsBackendFactory::create(const QVariantMap &config)
     }
     if (isVoxCpm2) {
         return std::make_unique<VoxCpm2Backend>();
+    }
+    if (isKokoroVietnamese) {
+        return std::make_unique<KokoroVietnameseBackend>();
     }
     if (isKokoro) {
         return std::make_unique<KokoroBackend>();

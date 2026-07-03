@@ -79,6 +79,7 @@ set(LASTUDIO_SOURCES
     src/tts/TtsRequestValidator.cpp
     src/tts/backends/TtsBackendFactory.cpp
     src/tts/backends/KokoroBackend.cpp
+    src/tts/backends/KokoroVietnameseBackend.cpp
     src/tts/backends/Qwen3Backend.cpp
     src/tts/backends/VoxCpm2Backend.cpp
     src/tts/backends/VibevoiceBackend.cpp
@@ -120,6 +121,7 @@ set(LASTUDIO_HEADERS
     src/core/CatalogManager.h
     src/core/RegistryManager.h
     include/runtimes/CrispKokoroInterface.h
+    include/runtimes/KokoroVietnameseInterface.h
     include/runtimes/CrispVoxCpm2Interface.h
     include/runtimes/CrispVibeVoiceInterface.h
     include/runtimes/VieneuTtsInterface.h
@@ -154,6 +156,7 @@ set(LASTUDIO_HEADERS
     src/tts/backends/TtsBackend.h
     src/tts/backends/TtsBackendFactory.h
     src/tts/backends/KokoroBackend.h
+    src/tts/backends/KokoroVietnameseBackend.h
     src/tts/backends/Qwen3Backend.h
     src/tts/backends/VoxCpm2Backend.h
     src/tts/backends/VibevoiceBackend.h

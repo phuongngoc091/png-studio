@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include <runtimes/WhisperInterface.h>
 #include <runtimes/CrispKokoroInterface.h>
+#include <runtimes/KokoroVietnameseInterface.h>
 #include <runtimes/CrispQwen3TtsInterface.h>
 #include <runtimes/VibevoiceInterface.h>
 #include "core/CatalogManager.h"
@@ -209,6 +210,8 @@ void RuntimeManager::scanRuntimes()
                       << QStringLiteral("bin/omnivoice.dll")
                       << QStringLiteral("vibevoice.dll")
                       << QStringLiteral("bin/vibevoice.dll")
+                      << QStringLiteral("kokoro-vietnamese.dll")
+                      << QStringLiteral("bin/kokoro-vietnamese.dll")
                       << QStringLiteral("crispasr.dll")
                       << QStringLiteral("bin/crispasr.dll");
     catalogCandidates.removeDuplicates();
@@ -473,6 +476,9 @@ bool RuntimeManager::loadTtsRuntime(const QString &id)
 {
     for (const auto &info : m_runtimes) {
         if (info.id == id) {
+            if (info.libraryPath.contains(QStringLiteral("kokoro-vietnamese"), Qt::CaseInsensitive)) {
+                return KokoroVietnameseInterface::instance().load(info.libraryPath);
+            }
             // Prefer a dedicated Vibevoice interface when the library looks like vibevoice
             if (info.libraryPath.contains(QStringLiteral("vibevoice"), Qt::CaseInsensitive)) {
                 return VibevoiceInterface::instance().load(info.libraryPath);

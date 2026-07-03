@@ -53,6 +53,11 @@
           "reason": "Small multilingual preset-voice TTS with practical CPU runtime options."
         },
         {
+          "familyId": "kokoro-vietnamese",
+          "modelId": "contextboxai/Kokoro-Vietnamese",
+          "reason": "Vietnamese Kokoro TTS through the dedicated native ONNX runtime with bundled vig2p phonemization."
+        },
+        {
           "familyId": "voxcpm2",
           "modelId": "openbmb/VoxCPM2",
           "reason": "30-language VoxCPM2 TTS, voice design, and zero-shot voice cloning through CrispASR v0.8.6."
@@ -1295,6 +1300,341 @@
     }
   ],
   "ttsFamilies": [
+    {
+      "id": "kokoro-vietnamese",
+      "localDir": "kokoro-vietnamese",
+      "shortName": "KOVI",
+      "title": "Kokoro Vietnamese",
+      "subtitle": "Vietnamese Kokoro TTS via native ONNX runtime",
+      "description": "Fine-tuned Vietnamese Kokoro TTS packaged for LA Studio with a native Windows CPU runtime, ONNX Runtime inference, and bundled vig2p sidecar phonemization.",
+      "accent": "#2f9e8f",
+      "capabilities": [
+        "tts"
+      ],
+      "supportsTts": true,
+      "supportsCloning": false,
+      "tags": [
+        "ONNX",
+        "Native",
+        "Vietnamese",
+        "Preset Voices",
+        "CPU"
+      ],
+      "strengths": [
+        "Native C ABI runtime for LA Studio",
+        "Vietnamese G2P handled inside the runtime package",
+        "Preset Vietnamese voicepacks bundled as runtime assets",
+        "24 kHz mono float PCM output"
+      ],
+      "weaknesses": [
+        "Windows x64 CPU only in v0.1.0",
+        "Preset voices only"
+      ],
+      "supportedLanguages": [
+        {
+          "text": "Vietnamese (vi)",
+          "value": "vi"
+        }
+      ],
+      "parameterDefinitions": {
+        "voice": {
+          "name": "Voice",
+          "type": "choice",
+          "description": "Select a bundled Kokoro-Vietnamese preset voice."
+        },
+        "crossfade_ms": {
+          "name": "Crossfade",
+          "type": "int",
+          "min": 0,
+          "max": 250,
+          "default": 50,
+          "description": "Crossfade in milliseconds between generated sentence chunks.",
+          "advanced": true
+        },
+        "max_phonemes": {
+          "name": "Max Phonemes",
+          "type": "int",
+          "min": 64,
+          "max": 510,
+          "default": 510,
+          "description": "Maximum phonemes per chunk before runtime splitting.",
+          "advanced": true
+        }
+      },
+      "runtimes": [
+        {
+          "id": "kokoro-vietnamese-win-x86_64-cpu",
+          "engineFamily": "kokoro-vietnamese",
+          "backend": "kokoro-vietnamese",
+          "pipelineProfile": "kokoro-vietnamese-native-onnx",
+          "label": "CPU",
+          "name": "CPU Kokoro-Vietnamese Runtime (x64)",
+          "asset": "kokoro-vietnamese-win-x86_64-cpu.zip",
+          "library": "bin/kokoro-vietnamese.dll",
+          "version": "v0.1.0",
+          "source": "https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/download/",
+          "modelVersion": "v0.1.0",
+          "metadata": {
+            "runtimeRepository": "https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp",
+            "upstreamRepository": "https://github.com/iamdinhthuan/Kokoro-Vietnamese",
+            "releaseUrl": "https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/tag/v0.1.0"
+          }
+        }
+      ],
+      "studio": {
+        "tts": {
+          "layout": "tts",
+          "action": "synthesize",
+          "inputs": [
+            "text"
+          ],
+          "parameters": [
+            "voice",
+            "crossfade_ms",
+            "max_phonemes"
+          ]
+        }
+      },
+      "modelId": "contextboxai/Kokoro-Vietnamese",
+      "requiredFiles": [
+        {
+          "role": "model",
+          "name": "Kokoro Vietnamese ONNX",
+          "purpose": "ONNX acoustic model for Vietnamese Kokoro TTS",
+          "file": "kokoro_vi.onnx",
+          "candidates": [
+            "kokoro_vi.onnx"
+          ],
+          "modelKey": "contextboxai/kokoro-vietnamese-onnx",
+          "size": "326 MB",
+          "variants": [
+            {
+              "name": "kokoro_vi.onnx",
+              "size": "326 MB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "contextboxai",
+              "repo": "Kokoro-Vietnamese",
+              "files": [
+                {
+                  "name": "kokoro_vi.onnx",
+                  "size": "326 MB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "config",
+          "name": "Kokoro Vietnamese Config",
+          "purpose": "Kokoro vocab and model configuration",
+          "file": "config.json",
+          "candidates": [
+            "config.json"
+          ],
+          "modelKey": "contextboxai/kokoro-vietnamese-config",
+          "size": "3 KB",
+          "variants": [
+            {
+              "name": "config.json",
+              "size": "3 KB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "contextboxai",
+              "repo": "Kokoro-Vietnamese",
+              "files": [
+                {
+                  "name": "config.json",
+                  "size": "3 KB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "voices",
+          "name": "Kokoro Vietnamese Voices Metadata",
+          "purpose": "Upstream preset voice list. The native runtime uses converted .bin voicepacks packaged with the runtime.",
+          "file": "voices.json",
+          "candidates": [
+            "voices.json"
+          ],
+          "modelKey": "contextboxai/kokoro-vietnamese-voices",
+          "size": "2 KB",
+          "variants": [
+            {
+              "name": "voices.json",
+              "size": "2 KB"
+            }
+          ],
+          "sources": [
+            {
+              "type": "huggingface",
+              "user": "contextboxai",
+              "repo": "Kokoro-Vietnamese",
+              "files": [
+                {
+                  "name": "voices.json",
+                  "size": "2 KB"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metadataOverrides": {
+        "domain": "tts",
+        "architectures": [
+          "kokoro",
+          "styletts2"
+        ],
+        "compatibilityTypes": [
+          "onnx",
+          "native-runtime"
+        ],
+        "paramsStrings": [
+          "82M"
+        ],
+        "capabilities": [
+          "tts"
+        ],
+        "vision": false
+      },
+      "modelYaml": {
+        "model": "contextboxai/Kokoro-Vietnamese",
+        "base": [
+          {
+            "key": "contextboxai/kokoro-vietnamese-onnx",
+            "role": "model",
+            "name": "Kokoro Vietnamese ONNX",
+            "purpose": "ONNX acoustic model for Vietnamese Kokoro TTS",
+            "defaultFile": "kokoro_vi.onnx",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "contextboxai",
+                "repo": "Kokoro-Vietnamese",
+                "files": [
+                  {
+                    "name": "kokoro_vi.onnx",
+                    "size": "326 MB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "contextboxai/kokoro-vietnamese-config",
+            "role": "config",
+            "name": "Kokoro Vietnamese Config",
+            "purpose": "Kokoro vocab and model configuration",
+            "defaultFile": "config.json",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "contextboxai",
+                "repo": "Kokoro-Vietnamese",
+                "files": [
+                  {
+                    "name": "config.json",
+                    "size": "3 KB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "contextboxai/kokoro-vietnamese-voices",
+            "role": "voices",
+            "name": "Kokoro Vietnamese Voices Metadata",
+            "purpose": "Upstream preset voice list. The native runtime uses converted .bin voicepacks packaged with the runtime.",
+            "defaultFile": "voices.json",
+            "sources": [
+              {
+                "type": "huggingface",
+                "user": "contextboxai",
+                "repo": "Kokoro-Vietnamese",
+                "files": [
+                  {
+                    "name": "voices.json",
+                    "size": "2 KB"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metadataOverrides": {
+          "domain": "tts",
+          "architectures": [
+            "kokoro",
+            "styletts2"
+          ],
+          "compatibilityTypes": [
+            "onnx",
+            "native-runtime"
+          ],
+          "paramsStrings": [
+            "82M"
+          ],
+          "capabilities": [
+            "tts"
+          ],
+          "vision": false
+        },
+        "config": {
+          "operation": {
+            "fields": [
+              {
+                "key": "tts.language",
+                "value": "vi"
+              }
+            ]
+          }
+        }
+      },
+      "stats": {
+        "upstreamModelId": "contextboxai/Kokoro-Vietnamese",
+        "likesModelId": "contextboxai/Kokoro-Vietnamese",
+        "downloadModelIds": [
+          "contextboxai/Kokoro-Vietnamese"
+        ],
+        "policy": {
+          "downloads": "upstream-hf-model",
+          "likes": "upstream-hf-model"
+        }
+      },
+      "hubFiles": {
+        "manifest": {
+          "id": "kokoro-vietnamese",
+          "name": "Kokoro Vietnamese",
+          "type": "tts",
+          "runtimeFormat": "onnx+bin+sidecar",
+          "upstream": "https://github.com/iamdinhthuan/Kokoro-Vietnamese",
+          "model": "https://huggingface.co/contextboxai/Kokoro-Vietnamese",
+          "runtime": "https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/tag/v0.1.0",
+          "sampleRate": 24000,
+          "channels": 1,
+          "notes": "LA Studio passes text and voice settings to kokoro-vietnamese.dll. Phonemization is handled by the bundled kokoro_vi_g2p.exe sidecar."
+        },
+        "readme": {
+          "filename": "README.md",
+          "content": "# Kokoro Vietnamese\n\nNative LA Studio integration for Vietnamese Kokoro TTS.\n\n- Model source: https://huggingface.co/contextboxai/Kokoro-Vietnamese\n- Upstream code: https://github.com/iamdinhthuan/Kokoro-Vietnamese\n- Runtime: https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/tag/v0.1.0\n\nThe selected runtime package includes `kokoro-vietnamese.dll`, `kokoro_vi_g2p.exe`,\nONNX Runtime, `kokoro_vi.onnx`, `config.json`, and converted `.bin` preset\nvoicepacks. LA Studio should pass text directly to the runtime; Vietnamese G2P\nis handled inside the runtime package.\n"
+        },
+        "thumbnail": {
+          "filename": "thumbnail.webp",
+          "mimeType": "image/webp",
+          "base64": "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"
+        }
+      },
+      "modelPath": "contextboxai/Kokoro-Vietnamese"
+    },
     {
       "id": "kokoro",
       "localDir": "kokoro",

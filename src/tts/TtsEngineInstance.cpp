@@ -298,7 +298,11 @@ QVariantList TtsEngineInstance::buildSchemaForRuntime(const QString &runtimePath
 {
     bool isVibe = runtimePath.contains("vibevoice", Qt::CaseInsensitive) || runtimePath.contains("vibe", Qt::CaseInsensitive);
     bool isOmni = runtimePath.contains("omnivoice", Qt::CaseInsensitive) || runtimePath.contains("omni", Qt::CaseInsensitive);
-    bool isKokoro = runtimePath.contains("crispasr", Qt::CaseInsensitive) || runtimePath.contains("kokoro", Qt::CaseInsensitive);
+    bool isKokoroVietnamese = runtimePath.contains("kokoro-vietnamese", Qt::CaseInsensitive) ||
+                              runtimePath.contains("kokoro_vi", Qt::CaseInsensitive);
+    bool isKokoro = !isKokoroVietnamese &&
+                    (runtimePath.contains("crispasr", Qt::CaseInsensitive) ||
+                     runtimePath.contains("kokoro", Qt::CaseInsensitive));
     bool isSpeechLmTts = runtimePath.contains("speech-lm", Qt::CaseInsensitive) ||
                          runtimePath.contains("speechlm", Qt::CaseInsensitive) ||
                          runtimePath.contains("vieneu", Qt::CaseInsensitive) ||
@@ -306,7 +310,25 @@ QVariantList TtsEngineInstance::buildSchemaForRuntime(const QString &runtimePath
 
     QVariantList schema;
 
-    if (isKokoro) {
+    if (isKokoroVietnamese) {
+        QVariantMap voice;
+        voice["id"] = "voice";
+        voice["name"] = "Voice";
+        voice["type"] = "choice";
+        QVariantList choices;
+        QVariantMap diem;
+        diem["text"] = "Diem Trinh";
+        diem["value"] = "diem_trinh";
+        choices.append(diem);
+        QVariantMap hung;
+        hung["text"] = "Hung Thinh";
+        hung["value"] = "hung_thinh";
+        choices.append(hung);
+        voice["choices"] = choices;
+        voice["default"] = "diem_trinh";
+        voice["description"] = "Selects the Kokoro-Vietnamese preset voice.";
+        schema.append(voice);
+    } else if (isKokoro) {
         QVariantMap lengthScale;
         lengthScale["id"] = "length_scale";
         lengthScale["name"] = "Length Scale";
