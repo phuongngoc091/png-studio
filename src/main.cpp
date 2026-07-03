@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     app.setFont(QFont(QStringLiteral("Segoe UI"), 10));
 
     app.setOrganizationName(QStringLiteral(""));
-    app.setApplicationName(QStringLiteral("LA Studio"));
+    app.setApplicationName(QStringLiteral("PNG Studio"));
     app.setApplicationVersion(QString::fromLatin1(LASTUDIO_VERSION));
     // Set application window icon from the embedded .ico resource.
     app.setWindowIcon(QIcon(QStringLiteral(":/LAStudio/icons/app_icon.ico")));

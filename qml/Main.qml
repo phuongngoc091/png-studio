@@ -12,7 +12,7 @@ ApplicationWindow {
     minimumHeight: 600
     visibility: ApplicationWindow.Maximized
     flags: Qt.Window | Qt.FramelessWindowHint
-    readonly property string appName: Qt.application.name && Qt.application.name.length > 0 ? Qt.application.name : "LA Studio"
+    readonly property string appName: Qt.application.name && Qt.application.name.length > 0 ? Qt.application.name : "PNG Studio"
     readonly property string appVersion: Qt.application.version
     property string dismissedUpdateVersion: ""
     title: appName + " - " + appVersion

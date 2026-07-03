@@ -37,10 +37,8 @@ AppController::AppController(QObject *parent)
     m_downloads = new DownloadManager(m_hub, this);
     m_models    = new ModelManager(this);
     m_models->setModelsRoot(m_settings->modelsPath());
-    m_models->scanLocalModels();
     m_catalog   = new CatalogManager(this);
     m_registry  = new RegistryManager(this);
-    m_registry->initializeFromCatalog(m_catalog);
     m_logs      = new LogViewService(this);
     m_stt       = new SttEngine(this);
     m_tts       = new TtsEngine(this);
@@ -86,6 +84,12 @@ AppController::AppController(QObject *parent)
         if (m_updates) {
             m_updates->checkForUpdates(QStringLiteral("stable"));
         }
+    });
+
+    // Defer heavy initialization to prevent blocking UI at startup
+    QTimer::singleShot(50, this, [this]() {
+        m_models->scanLocalModels();
+        m_registry->initializeFromCatalog(m_catalog);
     });
 }
 

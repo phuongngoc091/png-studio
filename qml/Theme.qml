@@ -4,16 +4,17 @@ import QtQuick
 QtObject {
     signal requestShowDownloads()
 
-    readonly property color background:  "#1e1e2e"
-    readonly property color surface:     "#2a2a3e"
-    readonly property color surfaceAlt:  "#35354a"
-    readonly property color accent:      "#7c4dff"
-    readonly property color accentLight: "#a27eff"
-    readonly property color textPrimary: "#e0e0f0"
-    readonly property color textSecondary: "#9090b0"
-    readonly property color danger:      "#ef5350"
-    readonly property color success:     "#66bb6a"
-    readonly property color warning:     "#ffa726"
+    // Light theme for PNG Studio
+    readonly property color background:  "#f5f5f7"
+    readonly property color surface:     "#ffffff"
+    readonly property color surfaceAlt:  "#e5e5ea"
+    readonly property color accent:      "#007aff"
+    readonly property color accentLight: "#47a1ff"
+    readonly property color textPrimary: "#1d1d1f"
+    readonly property color textSecondary: "#86868b"
+    readonly property color danger:      "#ff3b30"
+    readonly property color success:     "#34c759"
+    readonly property color warning:     "#ff9500"
 
     readonly property int radiusSmall:  8
     readonly property int radiusMedium: 12
