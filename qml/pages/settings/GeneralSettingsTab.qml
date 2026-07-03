@@ -326,7 +326,7 @@ ScrollView {
                 actionText: qsTr("Open in browser")
                 actionIcon: "external-link"
                 actionWidth: 146
-                onActivated: Qt.openUrlExternally("https://github.com/dduongtrandai/LA-Studio/issues")
+                onActivated: Qt.openUrlExternally("https://github.com/dduongtrandai/PNG-Studio/issues")
             }
         }
 
@@ -366,7 +366,7 @@ ScrollView {
     ConfirmationDialog {
         id: installUpdateDialog
         titleText: qsTr("Install update")
-        messageText: qsTr("LA Studio will close and start the installer. Your app data and downloaded models will stay in the app home directory.")
+        messageText: qsTr("PNG Studio will close and start the installer. Your app data and downloaded models will stay in the app home directory.")
         confirmText: qsTr("Install")
         cancelText: qsTr("Cancel")
         onConfirmed: AppController.updates.installDownloadedUpdate()

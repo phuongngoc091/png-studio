@@ -76,7 +76,7 @@ void LocalizationManager::loadLanguage(const QString &lang)
         return;
     }
 
-    if (m_translator.load(QStringLiteral("lastudio_%1").arg(lang), QStringLiteral(":/i18n"))) {
+    if (m_translator.load(QStringLiteral("pngstudio_%1").arg(lang), QStringLiteral(":/i18n"))) {
         QCoreApplication::installTranslator(&m_translator);
         m_currentLanguage = lang;
         Logger::info(QStringLiteral("Localization"), QStringLiteral("Loaded translation for %1").arg(lang));

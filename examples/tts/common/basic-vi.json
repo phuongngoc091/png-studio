@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "tts-basic-vi",
   "title": "Basic Vietnamese TTS smoke test",
   "task": "tts",
@@ -9,7 +9,7 @@
   },
   "capabilities": ["tts", "vi"],
   "inputs": {
-    "text": "Xin chào, đây là một đoạn kiểm tra giọng đọc tiếng Việt trong LA Studio."
+    "text": "Xin chào, đây là một đoạn kiểm tra giọng đọc tiếng Việt trong PNG Studio."
   },
   "settings": {
     "lang": "vi",

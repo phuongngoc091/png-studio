@@ -1,12 +1,12 @@
 # VieNeu-TTS v3 Turbo
 
-VieNeu-TTS v3 Turbo is a 48 kHz Vietnamese-English text-to-speech model from Pham Nguyen Ngoc Bao. LA Studio uses the native `VieNeu-TTS.cpp` runtime packages with the `vieneu-v3-native` pipeline for local synthesis and runtime-reported inference progress.
+VieNeu-TTS v3 Turbo is a 48 kHz Vietnamese-English text-to-speech model from Pham Nguyen Ngoc Bao. PNG Studio uses the native `VieNeu-TTS.cpp` runtime packages with the `vieneu-v3-native` pipeline for local synthesis and runtime-reported inference progress.
 
-## LA Studio Notes
+## PNG Studio Notes
 
-LA Studio targets `VieNeu-TTS.cpp` v0.1.2 with `pipelineProfile: vieneu-v3-native`. The runtime exposes a C ABI-compatible progress callback, so LA Studio can show exact inference progress while generating audio.
+PNG Studio targets `VieNeu-TTS.cpp` v0.1.2 with `pipelineProfile: vieneu-v3-native`. The runtime exposes a C ABI-compatible progress callback, so PNG Studio can show exact inference progress while generating audio.
 
-Required components are packaged in `lastudio-community/VieNeu-TTS-v3-Turbo-CPP` for LA Studio:
+Required components are packaged in `pngstudio-community/VieNeu-TTS-v3-Turbo-CPP` for PNG Studio:
 
 - VieNeu v3 config/tokenizer
 - Native assets: `backbone.gguf`, `vieneu_v3_heads.npz`, and `acoustic/vieneu_acoustic_weights.npz`

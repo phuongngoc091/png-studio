@@ -16,12 +16,12 @@
 namespace LAStudio {
 
 // Define modular logging categories
-Q_LOGGING_CATEGORY(logCore, "lastudio.core")
-Q_LOGGING_CATEGORY(logSTT, "lastudio.stt")
-Q_LOGGING_CATEGORY(logTTS, "lastudio.tts")
-Q_LOGGING_CATEGORY(logDownload, "lastudio.download")
-Q_LOGGING_CATEGORY(logHardware, "lastudio.hardware")
-Q_LOGGING_CATEGORY(logUI, "lastudio.ui")
+Q_LOGGING_CATEGORY(logCore, "pngstudio.core")
+Q_LOGGING_CATEGORY(logSTT, "pngstudio.stt")
+Q_LOGGING_CATEGORY(logTTS, "pngstudio.tts")
+Q_LOGGING_CATEGORY(logDownload, "pngstudio.download")
+Q_LOGGING_CATEGORY(logHardware, "pngstudio.hardware")
+Q_LOGGING_CATEGORY(logUI, "pngstudio.ui")
 
 static QFile *s_logFile = nullptr;
 static QMutex s_logMutex;
@@ -69,7 +69,7 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
         int closeBracket = msg.indexOf(']');
         if (closeBracket > 1) {
             QString extractedCat = msg.mid(1, closeBracket - 1).trimmed();
-            catStr = QStringLiteral("lastudio.%1").arg(extractedCat.toLower());
+            catStr = QStringLiteral("pngstudio.%1").arg(extractedCat.toLower());
             finalMsg = msg.mid(closeBracket + 1).trimmed();
         }
     }
@@ -165,7 +165,7 @@ void Logger::init()
     locker.unlock(); // Unlock mutex before invoking QLoggingCategory to prevent recursive locks
     
     qCInfo(logCore) << "==================================================";
-    qCInfo(logCore) << "LA Studio Starting...";
+    qCInfo(logCore) << "PNG Studio Starting...";
     qCInfo(logCore) << "App Version:   " << QCoreApplication::applicationVersion();
     qCInfo(logCore) << "OS Version:    " << QSysInfo::prettyProductName();
     qCInfo(logCore) << "Architecture:  " << QSysInfo::currentCpuArchitecture();

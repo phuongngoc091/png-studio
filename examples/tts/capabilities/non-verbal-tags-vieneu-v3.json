@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "tts-non-verbal-tags-vieneu-v3",
   "title": "VieNeu-TTS v3 non-verbal tag smoke test",
   "task": "tts",

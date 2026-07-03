@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "voice-cloning-vieneu-v3-turbo",
   "title": "VieNeu-TTS v3 Turbo reference voice cloning",
   "task": "voice-cloning",

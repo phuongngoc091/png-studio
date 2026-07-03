@@ -8,7 +8,7 @@ Rectangle {
     id: root
 
     property var window
-    property string appName: "LA Studio"
+    property string appName: "PNG Studio"
     property string appVersion: Qt.application.version
     readonly property bool maximized: window && window.visibility === Window.Maximized
 

@@ -14,8 +14,8 @@ VieNeu-TTS v2 Turbo is an advanced, lightweight bilingual Vietnamese-English tex
 - **License:** Apache-2.0
 - **Architecture:** VieNeu-TTS (GGUF)
 
-## LA Studio Notes
+## PNG Studio Notes
 
-VieNeu-TTS v2 Turbo in LA Studio is optimized for fast CPU execution and instant 3-5 seconds zero-shot voice cloning. It downloads files from conversion repositories:
+VieNeu-TTS v2 Turbo in PNG Studio is optimized for fast CPU execution and instant 3-5 seconds zero-shot voice cloning. It downloads files from conversion repositories:
 - `pnnbao-ump/VieNeu-TTS-v2-Turbo-GGUF` for the GGUF backbone and preset voices configuration.
 - `pnnbao-ump/VieNeu-Codec` for the speaker encoder and neural decoder ONNX models.

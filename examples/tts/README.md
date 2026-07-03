@@ -1,6 +1,6 @@
 # Text-to-Speech Examples
 
-Use these examples to test TTS behavior from the LA Studio UI or from a future
+Use these examples to test TTS behavior from the PNG Studio UI or from a future
 example runner.
 
 Recommended manual order:

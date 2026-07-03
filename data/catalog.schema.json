@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lastudio.local/schemas/catalog.schema.json",
-  "title": "LA Studio Catalog",
+  "$id": "https://pngstudio.local/schemas/catalog.schema.json",
+  "title": "PNG Studio Catalog",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "version", "modelCategories", "ttsFamilies", "sttFamilies"],

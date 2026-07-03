@@ -1,6 +1,6 @@
-# LA Studio Documentation
+# PNG Studio Documentation
 
-This directory contains public-facing documentation for LA Studio.
+This directory contains public-facing documentation for PNG Studio.
 
 ## Available Documents
 

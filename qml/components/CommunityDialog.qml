@@ -18,7 +18,7 @@ Dialog {
     readonly property var links: [
         {
             title: qsTr("Facebook Group"),
-            description: qsTr("Join the LA Studio and Amatow Coder community."),
+            description: qsTr("Join the PNG Studio and Amatow Coder community."),
             iconName: "users",
             url: "https://www.facebook.com/groups/amatowcoder.community/announcements",
             highlighted: true
@@ -41,14 +41,14 @@ Dialog {
             title: qsTr("Report Bugs"),
             description: qsTr("Open a GitHub issue for bugs or feature requests."),
             iconName: "external-link",
-            url: "https://github.com/dduongtrandai/LA-Studio/issues",
+            url: "https://github.com/dduongtrandai/PNG-Studio/issues",
             highlighted: false
         },
         {
             title: qsTr("GitHub Repository"),
             description: qsTr("View source code, releases, and project updates."),
             iconName: "file",
-            url: "https://github.com/dduongtrandai/LA-Studio",
+            url: "https://github.com/dduongtrandai/PNG-Studio",
             highlighted: false
         },
         {

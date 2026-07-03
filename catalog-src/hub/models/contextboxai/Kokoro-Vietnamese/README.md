@@ -1,6 +1,6 @@
 # Kokoro Vietnamese
 
-Native LA Studio integration for Vietnamese Kokoro TTS.
+Native PNG Studio integration for Vietnamese Kokoro TTS.
 
 - Model source: https://huggingface.co/contextboxai/Kokoro-Vietnamese
 - Upstream code: https://github.com/iamdinhthuan/Kokoro-Vietnamese
@@ -8,5 +8,5 @@ Native LA Studio integration for Vietnamese Kokoro TTS.
 
 The selected runtime package includes `kokoro-vietnamese.dll`, `kokoro_vi_g2p.exe`,
 ONNX Runtime, `kokoro_vi.onnx`, `config.json`, and converted `.bin` preset
-voicepacks. LA Studio should pass text directly to the runtime; Vietnamese G2P
+voicepacks. PNG Studio should pass text directly to the runtime; Vietnamese G2P
 is handled inside the runtime package.

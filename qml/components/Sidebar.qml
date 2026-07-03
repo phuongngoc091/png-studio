@@ -44,7 +44,7 @@ Rectangle {
             }
 
             AppToolTip {
-                text: "LA Studio"
+                text: "PNG Studio"
                 visible: logoHover.hovered
             }
 

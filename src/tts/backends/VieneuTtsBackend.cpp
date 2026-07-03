@@ -121,7 +121,7 @@ static QString writeVieneuV3FallbackVoicesJson(const QString &modelDir)
         return QString();
     }
 
-    const QString fallbackPath = QDir(modelDir).absoluteFilePath(QStringLiteral(".lastudio_vieneu_v3_voices.json"));
+    const QString fallbackPath = QDir(modelDir).absoluteFilePath(QStringLiteral(".pngstudio_vieneu_v3_voices.json"));
 
     QJsonObject presets;
     presets.insert(QStringLiteral("Ng\u1ecdc Lan"), QJsonObject::fromVariantMap(vieneuV3Preset(QStringLiteral("Ng\u1ecdc Lan"), 13)));
@@ -136,7 +136,7 @@ static QString writeVieneuV3FallbackVoicesJson(const QString &modelDir)
     presets.insert(QStringLiteral("Ng\u1ecdc Linh"), QJsonObject::fromVariantMap(vieneuV3Preset(QStringLiteral("Ng\u1ecdc Linh"), 41)));
 
     QJsonObject meta;
-    meta.insert(QStringLiteral("spec"), QStringLiteral("lastudio.vieneu-v3.fallback-voices"));
+    meta.insert(QStringLiteral("spec"), QStringLiteral("pngstudio.vieneu-v3.fallback-voices"));
     meta.insert(QStringLiteral("spec_version"), 2);
     meta.insert(QStringLiteral("source"), QStringLiteral("VieNeu-TTS src/vieneu/assets/voices_v3_turbo.json reserved_id map"));
 
@@ -892,8 +892,8 @@ static bool normalizeStoredNpzForRuntime(const QString &path, QString &error)
         return true;
     }
 
-    const QString tempPath = path + QStringLiteral(".lastudio.tmp");
-    const QString backupPath = path + QStringLiteral(".lastudio.bak");
+    const QString tempPath = path + QStringLiteral(".pngstudio.tmp");
+    const QString backupPath = path + QStringLiteral(".pngstudio.bak");
     QFile::remove(tempPath);
     QFile::remove(backupPath);
 
@@ -1203,7 +1203,7 @@ bool VieneuTtsBackend::load(const QVariantMap &config, QString &error, QVariantL
         if (!runtimePath.isEmpty()) {
             if (!s_sessionVieneuRuntimePath.isEmpty() &&
                 s_sessionVieneuRuntimePath != runtimePath) {
-                error = QStringLiteral("Switching VieNeu TTS runtime backend (CPU/CUDA/Vulkan) in one running session is unstable. Please restart LA Studio after changing runtime.");
+                error = QStringLiteral("Switching VieNeu TTS runtime backend (CPU/CUDA/Vulkan) in one running session is unstable. Please restart PNG Studio after changing runtime.");
                 Logger::error(QStringLiteral("VieneuTtsBackend"), error + QStringLiteral(" Previous: %1 | Requested: %2")
                               .arg(s_sessionVieneuRuntimePath, runtimePath));
                 return false;
@@ -1313,7 +1313,7 @@ bool VieneuTtsBackend::synthesize(const QString &text, float speed, const QVaria
                                QVector<float> &samples, int &sampleRate, QString &error)
 {
     Q_UNUSED(speed);
-    const bool internalChunk = settings.value(QStringLiteral("__lastudio_internal_chunk"), false).toBool();
+    const bool internalChunk = settings.value(QStringLiteral("__pngstudio_internal_chunk"), false).toBool();
     if (!internalChunk) {
         m_cancelRequested = false;
     }
@@ -1340,7 +1340,7 @@ bool VieneuTtsBackend::synthesize(const QString &text, float speed, const QVaria
                 }
 
                 QVariantMap chunkSettings = settings;
-                chunkSettings.insert(QStringLiteral("__lastudio_internal_chunk"), true);
+                chunkSettings.insert(QStringLiteral("__pngstudio_internal_chunk"), true);
                 chunkSettings.insert(QStringLiteral("max_chars"), vieneuV3SafeChunkCharLimit(settings));
 
                 QVector<float> chunkSamples;
@@ -1470,7 +1470,7 @@ bool VieneuTtsBackend::synthesize(const QString &text, float speed, const QVaria
 bool VieneuTtsBackend::cloneVoice(const QString &text, const QString &referencePath, const QVariantMap &settings,
                                QVector<float> &samples, int &sampleRate, QString &error)
 {
-    const bool internalChunk = settings.value(QStringLiteral("__lastudio_internal_chunk"), false).toBool();
+    const bool internalChunk = settings.value(QStringLiteral("__pngstudio_internal_chunk"), false).toBool();
     if (!internalChunk) {
         m_cancelRequested = false;
     }
@@ -1497,7 +1497,7 @@ bool VieneuTtsBackend::cloneVoice(const QString &text, const QString &referenceP
                 }
 
                 QVariantMap chunkSettings = settings;
-                chunkSettings.insert(QStringLiteral("__lastudio_internal_chunk"), true);
+                chunkSettings.insert(QStringLiteral("__pngstudio_internal_chunk"), true);
                 chunkSettings.insert(QStringLiteral("max_chars"), vieneuV3SafeChunkCharLimit(settings));
 
                 QVector<float> chunkSamples;

@@ -1,6 +1,6 @@
 # VibeVoice
 
-VibeVoice Realtime 0.5B is Microsoft's low-latency text-to-speech model. LA Studio installs the CrispASR GGUF build for local synthesis through the shared CrispASR runtime.
+VibeVoice Realtime 0.5B is Microsoft's low-latency text-to-speech model. PNG Studio installs the CrispASR GGUF build for local synthesis through the shared CrispASR runtime.
 
 ## Links
 
@@ -16,9 +16,9 @@ VibeVoice Realtime 0.5B is Microsoft's low-latency text-to-speech model. LA Stud
 - **Architecture:** VibeVoice Realtime GGUF
 - **CrispASR backend:** `vibevoice-tts`
 
-## LA Studio Notes
+## PNG Studio Notes
 
-LA Studio downloads the recommended Q4_K talker and a required voice prompt GGUF from `cstr/vibevoice-realtime-0.5b-GGUF`:
+PNG Studio downloads the recommended Q4_K talker and a required voice prompt GGUF from `cstr/vibevoice-realtime-0.5b-GGUF`:
 
 - Talker: `vibevoice-realtime-0.5b-q4_k.gguf`
 - Default voice: `vibevoice-voice-emma.gguf`

@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    Configure and build LA Studio using CMake presets.
+    Configure and build PNG Studio using CMake presets.
 
 .DESCRIPTION
     Portable build entrypoint for local development and CI.
@@ -121,9 +121,9 @@ function Get-QtKitName {
 
 function Get-SourceAppVersion {
     $cmakePath = Join-Path $RepoRoot "CMakeLists.txt"
-    $match = Select-String -LiteralPath $cmakePath -Pattern 'set\(LASTUDIO_VERSION\s+"([^"]+)"' | Select-Object -First 1
+    $match = Select-String -LiteralPath $cmakePath -Pattern 'set\(PNGSTUDIO_VERSION\s+"([^"]+)"' | Select-Object -First 1
     if ($null -eq $match) {
-        throw "Could not find LASTUDIO_VERSION in $cmakePath."
+        throw "Could not find PNGSTUDIO_VERSION in $cmakePath."
     }
     return $match.Matches[0].Groups[1].Value
 }
@@ -283,7 +283,7 @@ $env:VCPKG_DEFAULT_TRIPLET = ""
 
 $cmakeArgs += "-DCMAKE_TOOLCHAIN_FILE=$($toolchainFile.Replace('\', '/'))"
 $cmakeArgs += "-DVCPKG_ROOT=$($VcpkgRoot.Replace('\', '/'))"
-$cmakeArgs += "-DLASTUDIO_VERSION=$Version"
+$cmakeArgs += "-DPNGSTUDIO_VERSION=$Version"
 
 if ($Preset -like "*mingw*") {
     $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic"
@@ -309,7 +309,7 @@ Write-Host ">> Building CMake preset: $Preset" -ForegroundColor Cyan
 cmake --build --preset $Preset --parallel
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$exePath = Join-Path $buildDir "LA Studio.exe"
+$exePath = Join-Path $buildDir "PNG Studio.exe"
 if (-not (Test-Path -LiteralPath $exePath)) {
     throw "Build completed but executable was not found: $exePath"
 }

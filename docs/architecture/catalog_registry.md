@@ -2,7 +2,7 @@
 
 ## Problem
 
-LA Studio catalog data is not a flat model list. A usable studio configuration is a graph:
+PNG Studio catalog data is not a flat model list. A usable studio configuration is a graph:
 
 - a model family such as OmniVoice, Kokoro, VibeVoice, or Whisper;
 - one or more required model files for roles such as `model`, `tokenizer`, `reference`, or `voice`;
@@ -18,8 +18,8 @@ The bundled catalog should stay easy to review in Git. SQLite should manage loca
 Use split catalog source files for authored product metadata:
 
 - `catalog-src/hub/models/<owner>/<model>/model.yaml`: Preferred model family definitions. This mirrors LM Studio's virtual model layout. `model` names the virtual model, `base` lists concrete downloadable components and variants, `metadataOverrides` describes model capabilities, and `config` / `customFields` can bake in defaults.
-- `catalog-src/hub/models/<owner>/<model>/model.json`: Legacy LA Studio family definitions kept under the same hub layout while each model is migrated to `model.yaml`.
-- `catalog-src/picks/*.json`: Curated LA Studio pick collections. Use names such as `lastudio-picks`; do not use LM Studio's `staff picks` label for project-owned curation.
+- `catalog-src/hub/models/<owner>/<model>/model.json`: Legacy PNG Studio family definitions kept under the same hub layout while each model is migrated to `model.yaml`.
+- `catalog-src/picks/*.json`: Curated PNG Studio pick collections. Use names such as `pngstudio-picks`; do not use LM Studio's `staff picks` label for project-owned curation.
 - `catalog-src/language-sets/*.json`: Shared or large language lists referenced by families.
 - `catalog-src/categories.json`: Model categories and UI groupings.
 
@@ -29,12 +29,12 @@ These source files are the **source of truth for developers**. The consolidated 
 python scripts/generate_catalog.py
 ```
 
-### LA Studio Local Hub Layout
+### PNG Studio Local Hub Layout
 
-LA Studio uses the same two-folder idea as LM Studio, but it does **not** write to LM Studio's own cache path by default. LM Studio staff-pick metadata lives under a path such as `C:\Users\<user>\.lmstudio\hub\models`. LA Studio writes virtual model metadata to its own app home, `C:\Users\<user>\.lastudio\hub\models`, and writes concrete weights to the configured `modelsPath`.
+PNG Studio uses the same two-folder idea as LM Studio, but it does **not** write to LM Studio's own cache path by default. LM Studio staff-pick metadata lives under a path such as `C:\Users\<user>\.lmstudio\hub\models`. PNG Studio writes virtual model metadata to its own app home, `C:\Users\<user>\.pngstudio\hub\models`, and writes concrete weights to the configured `modelsPath`.
 
 ```text
-C:\Users\<user>\.lastudio/
+C:\Users\<user>\.pngstudio/
   hub/
     models/
       <owner>/
@@ -55,19 +55,19 @@ C:\Users\<user>\.lastudio/
 Example:
 
 ```text
-C:\Users\<user>\.lastudio\hub\models\hexgrad\Kokoro-82M\model.yaml
-C:\Users\<user>\.lastudio\hub\models\hexgrad\Kokoro-82M\manifest.json
-C:\Users\<user>\.lastudio\hub\models\hexgrad\Kokoro-82M\README.md
-C:\Users\<user>\.lastudio\hub\models\hexgrad\Kokoro-82M\thumbnail.png
+C:\Users\<user>\.pngstudio\hub\models\hexgrad\Kokoro-82M\model.yaml
+C:\Users\<user>\.pngstudio\hub\models\hexgrad\Kokoro-82M\manifest.json
+C:\Users\<user>\.pngstudio\hub\models\hexgrad\Kokoro-82M\README.md
+C:\Users\<user>\.pngstudio\hub\models\hexgrad\Kokoro-82M\thumbnail.png
 <modelsPath>/models/cstr/kokoro-82m-GGUF/kokoro-82m-f16.gguf
 <modelsPath>/models/cstr/kokoro-voices-GGUF/kokoro-voice-af_heart.gguf
 ```
 
-The app still scans the older flat LA Studio layout for backward compatibility, but new downloads should target `models/<publisher>/<repo>`. When a catalog download includes `modelYaml` and `hubFiles`, LA Studio writes the corresponding virtual `hub/models/.../model.yaml`, `manifest.json`, `README.md`, and `thumbnail.<ext>` under `.lastudio`, not under LM Studio's `.lmstudio` directory.
+The app still scans the older flat PNG Studio layout for backward compatibility, but new downloads should target `models/<publisher>/<repo>`. When a catalog download includes `modelYaml` and `hubFiles`, PNG Studio writes the corresponding virtual `hub/models/.../model.yaml`, `manifest.json`, `README.md`, and `thumbnail.<ext>` under `.pngstudio`, not under LM Studio's `.lmstudio` directory.
 
 ### Family YAML Shape
 
-LA Studio family YAML intentionally separates portable model identity from app-specific UI/runtime metadata:
+PNG Studio family YAML intentionally separates portable model identity from app-specific UI/runtime metadata:
 
 ```yaml
 model: hexgrad/Kokoro-82M
@@ -113,22 +113,22 @@ The generator normalizes this into the existing runtime catalog shape:
 - `model` becomes `modelId` unless `laStudio.modelId` overrides it.
 - `base[*]` becomes `requiredFiles`, with `role`, `defaultFile`, `sources`, and file variants preserved.
 - `metadataOverrides`, `config`, `customFields`, and `suggestions` are stored under `modelYaml` for future loaders and richer UI.
-- Sidecar files next to the authored `model.yaml` (`manifest.json`, `README.md`, `thumbnail.<ext>`) are stored under `hubFiles` so installs can recreate an LM Studio-like virtual model folder in `.lastudio`.
+- Sidecar files next to the authored `model.yaml` (`manifest.json`, `README.md`, `thumbnail.<ext>`) are stored under `hubFiles` so installs can recreate an LM Studio-like virtual model folder in `.pngstudio`.
 - `laStudio` remains the home for product-specific fields such as runtimes, studio layouts, display names, supported languages, and app capability flags.
 
-### LA Studio Picks
+### PNG Studio Picks
 
 Curated recommendations are authored separately from model families:
 
 ```json
 {
-  "id": "lastudio-picks",
-  "title": "LA Studio Picks",
+  "id": "pngstudio-picks",
+  "title": "PNG Studio Picks",
   "items": []
 }
 ```
 
-For now, every model family used by the project is part of `lastudio-picks`. These picks are LA Studio catalog metadata; they should not be confused with LM Studio's `staff picks`.
+For now, every model family used by the project is part of `pngstudio-picks`. These picks are PNG Studio catalog metadata; they should not be confused with LM Studio's `staff picks`.
 
 Publisher thumbnails for model picks are stored as `thumbnail.<ext>` sidecar files next to each family definition. To pull the Hugging Face publisher avatar for one model:
 

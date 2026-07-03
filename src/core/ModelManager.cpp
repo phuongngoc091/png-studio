@@ -491,7 +491,7 @@ void ModelManager::scanLocalModels()
 
     QDir rootDir(m_modelsRoot);
 
-    // Current LA Studio concrete weights:
+    // Current PNG Studio concrete weights:
     // <modelsRoot>/<publisher>/<repo>/*
     scanConcreteModelTree(rootDir, scanModelDir);
 
@@ -499,7 +499,7 @@ void ModelManager::scanLocalModels()
     // <modelsRoot>/models/<publisher>/<repo>/*
     scanConcreteModelTree(QDir(rootDir.absoluteFilePath(QStringLiteral("models"))), scanModelDir);
 
-    // Legacy LA Studio layout: <modelsRoot>/<localDir>/*
+    // Legacy PNG Studio layout: <modelsRoot>/<localDir>/*
     QStringList subDirs = rootDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     for (const QString &subDirName : subDirs) {
         if (subDirName == QStringLiteral("models") ||

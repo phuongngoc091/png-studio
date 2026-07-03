@@ -1,4 +1,4 @@
-# LA Studio Examples
+# PNG Studio Examples
 
 This directory contains ready-to-run prompt and settings examples for manual QA,
 model validation, and future automated smoke tests.
@@ -19,7 +19,7 @@ Each JSON file uses this lightweight shape:
 
 ```json
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "tts-basic-vi",
   "task": "tts",
   "model": {

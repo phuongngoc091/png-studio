@@ -377,7 +377,7 @@ private:
             LocalFree(message);
         }
         if (errorCode == ERROR_PROC_NOT_FOUND) {
-            detail += QStringLiteral(" This usually means a dependent DLL with the same name was found but does not export the procedure required by this VieNeu runtime. Restart LA Studio and reinstall the matching VieNeu runtime package if the problem persists.");
+            detail += QStringLiteral(" This usually means a dependent DLL with the same name was found but does not export the procedure required by this VieNeu runtime. Restart PNG Studio and reinstall the matching VieNeu runtime package if the problem persists.");
         }
         return QStringLiteral("Cannot load library %1: %2").arg(libPath, detail);
     }

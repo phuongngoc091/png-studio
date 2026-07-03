@@ -121,7 +121,7 @@ ApplicationWindow {
     ConfirmationDialog {
         id: installUpdateDialog
         titleText: qsTr("Install update")
-        messageText: qsTr("LA Studio will close and start the installer. Your app data and downloaded models will stay in the app home directory.")
+        messageText: qsTr("PNG Studio will close and start the installer. Your app data and downloaded models will stay in the app home directory.")
         confirmText: qsTr("Install")
         cancelText: qsTr("Cancel")
         onConfirmed: AppController.updates.installDownloadedUpdate()
@@ -170,8 +170,8 @@ ApplicationWindow {
                     Text {
                         Layout.fillWidth: true
                         text: AppController.updates.downloaded
-                              ? qsTr("LA Studio v%1 is ready to install").arg(AppController.updates.latestVersion)
-                              : qsTr("LA Studio v%1 is available").arg(AppController.updates.latestVersion)
+                              ? qsTr("PNG Studio v%1 is ready to install").arg(AppController.updates.latestVersion)
+                              : qsTr("PNG Studio v%1 is available").arg(AppController.updates.latestVersion)
                         color: Theme.textPrimary
                         font.pixelSize: Theme.fontMedium
                         font.bold: true

@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    One-command bootstrap for building LA Studio on Windows.
+    One-command bootstrap for building PNG Studio on Windows.
 
 .DESCRIPTION
     Validates required tools, resolves Qt/vcpkg paths, and calls scripts/build.ps1.

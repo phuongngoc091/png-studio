@@ -1,7 +1,7 @@
 {
-  "id": "lastudio-picks",
-  "title": "LA Studio Picks",
-  "description": "All model families currently curated and used by LA Studio workflows.",
+  "id": "pngstudio-picks",
+  "title": "PNG Studio Picks",
+  "description": "All model families currently curated and used by PNG Studio workflows.",
   "items": [
     {
       "familyId": "qwen3-tts-0.6b-base",
@@ -31,7 +31,7 @@
     {
       "familyId": "vieneu-tts-v2-turbo",
       "modelId": "pnnbao-ump/VieNeu-TTS-v2-Turbo",
-      "reason": "Vietnamese-focused TTS model for LA Studio speech workflows."
+      "reason": "Vietnamese-focused TTS model for PNG Studio speech workflows."
     },
     {
       "familyId": "vieneu-tts-v3-turbo",

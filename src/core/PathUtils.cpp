@@ -7,7 +7,7 @@ namespace LAStudio {
 
 QString PathUtils::dataDir()
 {
-    return QDir::homePath() + QStringLiteral("/.lastudio");
+    return QDir::homePath() + QStringLiteral("/.pngstudio");
 }
 
 QString PathUtils::modelsDir()

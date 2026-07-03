@@ -33,7 +33,7 @@
 namespace LAStudio {
 namespace {
 
-constexpr auto ReleasesApiUrl = "https://api.github.com/repos/dduongtrandai/LA-Studio/releases?per_page=30";
+constexpr auto ReleasesApiUrl = "https://api.github.com/repos/dduongtrandai/PNG-Studio/releases?per_page=30";
 constexpr auto UpdateMetadataType = "app-update";
 
 QString cleanVersion(QString version)
@@ -140,7 +140,7 @@ void AppUpdateService::checkForUpdates(const QString &channel)
     setStatusMessage(tr("Checking GitHub releases..."));
 
     QNetworkRequest request(QUrl(QString::fromLatin1(ReleasesApiUrl)));
-    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("LA-Studio-Updater"));
+    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("PNG-Studio-Updater"));
     request.setRawHeader("Accept", "application/vnd.github+json");
 
     QNetworkReply *reply = m_network->get(request);
@@ -170,7 +170,7 @@ void AppUpdateService::downloadUpdate()
     emit downloadStateChanged();
 
     QDir().mkpath(installerDownloadDir());
-    setStatusMessage(tr("Downloading LA Studio v%1...").arg(m_latestVersion));
+    setStatusMessage(tr("Downloading PNG Studio v%1...").arg(m_latestVersion));
     m_downloads->enqueueUrl(m_installerUrl.toString(), m_installerFileName, installerDownloadDir(), metadata);
 }
 
@@ -205,7 +205,7 @@ void AppUpdateService::installDownloadedUpdate()
         return;
     }
 
-    setStatusMessage(tr("Installer started. LA Studio will close now."));
+    setStatusMessage(tr("Installer started. PNG Studio will close now."));
     QTimer::singleShot(250, qApp, &QCoreApplication::quit);
 }
 
@@ -225,7 +225,7 @@ void AppUpdateService::onDownloadFinished(const QString &identifier, const QStri
     m_downloading = false;
     m_downloadProgress = 1.0;
     m_downloadedInstallerPath = localPath;
-    setStatusMessage(tr("LA Studio v%1 is ready to install.").arg(m_latestVersion));
+    setStatusMessage(tr("PNG Studio v%1 is ready to install.").arg(m_latestVersion));
     emit downloadStateChanged();
 }
 
@@ -333,7 +333,7 @@ void AppUpdateService::handleReleaseReply(QNetworkReply *reply, const QString &c
     if (bestRelease.isEmpty()) {
         Logger::info(QStringLiteral("Updater"),
                      QStringLiteral("No app update found. Current version: %1").arg(currentVersion()));
-        setStatusMessage(tr("LA Studio is up to date."));
+        setStatusMessage(tr("PNG Studio is up to date."));
         emit updateInfoChanged();
         return;
     }
@@ -350,10 +350,10 @@ void AppUpdateService::handleReleaseReply(QNetworkReply *reply, const QString &c
     if (!existingInstaller.isEmpty()) {
         m_downloadedInstallerPath = existingInstaller;
         m_downloadProgress = 1.0;
-        setStatusMessage(tr("LA Studio v%1 is ready to install.").arg(m_latestVersion));
+        setStatusMessage(tr("PNG Studio v%1 is ready to install.").arg(m_latestVersion));
         emit downloadStateChanged();
     } else {
-        setStatusMessage(tr("LA Studio v%1 is available.").arg(m_latestVersion));
+        setStatusMessage(tr("PNG Studio v%1 is available.").arg(m_latestVersion));
     }
     emit updateInfoChanged();
 }

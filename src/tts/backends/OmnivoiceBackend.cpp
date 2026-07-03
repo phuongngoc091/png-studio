@@ -87,7 +87,7 @@ bool OmnivoiceBackend::load(const QVariantMap &config, QString &error, QVariantL
     if (!runtimePath.isEmpty()) {
         if (!s_sessionOmniRuntimePath.isEmpty() &&
             s_sessionOmniRuntimePath != runtimePath) {
-            error = QStringLiteral("Switching OmniVoice runtime backend (CPU/CUDA/Vulkan) in one running session is unstable. Please restart LA Studio after changing runtime.");
+            error = QStringLiteral("Switching OmniVoice runtime backend (CPU/CUDA/Vulkan) in one running session is unstable. Please restart PNG Studio after changing runtime.");
             Logger::error("OmnivoiceBackend", error + QStringLiteral(" Previous: %1 | Requested: %2")
                           .arg(s_sessionOmniRuntimePath, runtimePath));
             return false;

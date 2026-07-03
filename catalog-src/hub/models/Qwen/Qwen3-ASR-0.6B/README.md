@@ -14,9 +14,9 @@ Qwen3-ASR 0.6B is a lightweight speech-to-text and audio Q&A model from the Alib
 - **License:** Apache-2.0
 - **Architecture:** Qwen3-ASR GGUF
 
-## LA Studio Notes
+## PNG Studio Notes
 
-Qwen3-ASR 0.6B in LA Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-0.6b-GGUF`. It needs:
+Qwen3-ASR 0.6B in PNG Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-0.6b-GGUF`. It needs:
 - Model: `qwen3-asr-0.6b-q4_k.gguf`
 
 It supports standard multilingual speech transcription as well as free-form audio Q&A instructions via the `Audio Q&A Prompt` configuration setting.

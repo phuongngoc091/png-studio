@@ -702,7 +702,7 @@ Rectangle {
 
                                             AppToolTip {
                                                 visible: listPickHover.hovered
-                                                text: model.pickReason || qsTr("LA Studio Pick")
+                                                text: model.pickReason || qsTr("PNG Studio Pick")
                                             }
                                         }
                                     }
@@ -882,7 +882,7 @@ Rectangle {
 
                                     AppToolTip {
                                         visible: detailPickHover.hovered
-                                        text: detailPanel.f ? (detailPanel.f.pickReason || qsTr("LA Studio Pick")) : ""
+                                        text: detailPanel.f ? (detailPanel.f.pickReason || qsTr("PNG Studio Pick")) : ""
                                     }
                                 }
                             }
@@ -943,7 +943,7 @@ Rectangle {
                         }
 
                         PrimaryButton {
-                            text: detailPanel.f && detailPanel.f.isLastudioPick ? qsTr("LA Studio Pick") : qsTr("Model Card")
+                            text: detailPanel.f && detailPanel.f.isLastudioPick ? qsTr("PNG Studio Pick") : qsTr("Model Card")
                             iconName: detailPanel.f && detailPanel.f.isLastudioPick ? "external-link" : "file"
                             quiet: true
                             implicitWidth: detailPanel.f && detailPanel.f.isLastudioPick ? 148 : 122

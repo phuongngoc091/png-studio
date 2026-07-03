@@ -13,9 +13,9 @@ Whisper is a state-of-the-art automatic speech recognition (ASR) and speech tran
 - **License:** MIT
 - **Architecture:** Whisper (GGML)
 
-## LA Studio Notes
+## PNG Studio Notes
 
-Whisper.cpp in LA Studio runs inference locally using CPU and GPU options. It downloads GGML-converted models from conversion repository `ggerganov/whisper.cpp`. It needs:
+Whisper.cpp in PNG Studio runs inference locally using CPU and GPU options. It downloads GGML-converted models from conversion repository `ggerganov/whisper.cpp`. It needs:
 - Backbone: `ggml-base.bin` (or other supported GGML files).
 
 It supports 100 languages, automatic language detection, translation to English, token timestamps, and speaker diarization workflows.

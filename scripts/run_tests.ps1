@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    Build and run unit tests for LA Studio.
+    Build and run unit tests for PNG Studio.
 
 .DESCRIPTION
     Resolves dependencies (Qt, vcpkg), compiles the unit tests target, and runs the tests.

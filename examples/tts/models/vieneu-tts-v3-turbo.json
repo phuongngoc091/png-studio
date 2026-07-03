@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "tts-vieneu-v3-turbo-full",
   "title": "VieNeu-TTS v3 Turbo capability showcase",
   "task": "tts",

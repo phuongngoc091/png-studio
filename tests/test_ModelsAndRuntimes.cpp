@@ -197,7 +197,7 @@ void TestModelsAndRuntimes::testVieNeuV3CatalogIncludesMossExternalData()
 
     QVERIFY2(!vieneuV3.isEmpty(), "VieNeu-TTS v3 Turbo should be present in the catalog");
     QCOMPARE(vieneuV3.value(QStringLiteral("modelId")).toString(),
-             QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP"));
+             QStringLiteral("pngstudio-community/VieNeu-TTS-v3-Turbo-CPP"));
 
     QSet<QString> requiredFiles;
     QMap<QString, QVariantMap> requirementsByFile;
@@ -235,7 +235,7 @@ void TestModelsAndRuntimes::testVieNeuV3CatalogIncludesMossExternalData()
     QCOMPARE(cloneDefaults.value(QStringLiteral("top_p")).toDouble(), 0.95);
     QCOMPARE(cloneDefaults.value(QStringLiteral("max_new_frames")).toInt(), 180);
 
-    const QString cppRepo = QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP");
+    const QString cppRepo = QStringLiteral("pngstudio-community/VieNeu-TTS-v3-Turbo-CPP");
     for (const QString &file : requiredFiles) {
         const QVariantMap req = requirementsByFile.value(file);
         const QString reqModelId = req.value(QStringLiteral("modelId")).toString();
@@ -262,7 +262,7 @@ void TestModelsAndRuntimes::testCapabilityFamilyModelRejectsIncompleteModelFiles
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
 
-    const QString modelId = QStringLiteral("lastudio-community/VieNeu-TTS-v3-Turbo-CPP");
+    const QString modelId = QStringLiteral("pngstudio-community/VieNeu-TTS-v3-Turbo-CPP");
     const QString fileName = QStringLiteral("vieneu_v3_heads.npz");
     ModelManager models;
     models.setModelsRoot(tempDir.path());

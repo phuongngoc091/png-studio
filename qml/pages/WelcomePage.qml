@@ -119,7 +119,7 @@ Rectangle {
                     spacing: 2
 
                     Text {
-                        text: qsTr("LA Studio")
+                        text: qsTr("PNG Studio")
                         color: Theme.textPrimary
                         font.pixelSize: 18
                         font.bold: true

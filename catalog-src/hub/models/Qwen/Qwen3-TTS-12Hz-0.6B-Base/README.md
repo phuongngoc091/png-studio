@@ -14,9 +14,9 @@ Qwen3-TTS Base 0.6B is a lightweight zero-shot voice cloning text-to-speech mode
 - **License:** Apache-2.0
 - **Architecture:** Qwen2.5-TTS GGUF
 
-## LA Studio Notes
+## PNG Studio Notes
 
-Qwen3-TTS Base 0.6B in LA Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-0.6b-base-GGUF`. It needs:
+Qwen3-TTS Base 0.6B in PNG Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-0.6b-base-GGUF`. It needs:
 - Backbone: `qwen3-tts-12hz-0.6b-base-q4_k.gguf`, `qwen3-tts-12hz-0.6b-base-q8_0.gguf`, or `qwen3-tts-12hz-0.6b-base.gguf`
 - Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`
 

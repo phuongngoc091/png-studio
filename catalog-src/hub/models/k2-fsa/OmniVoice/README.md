@@ -14,9 +14,9 @@ OmniVoice is a massively multilingual zero-shot text-to-speech, voice cloning, a
 - **License:** Apache-2.0
 - **Architecture:** OmniVoice (GGUF)
 
-## LA Studio Notes
+## PNG Studio Notes
 
-OmniVoice in LA Studio is a high-fidelity speech synthesis workflow. It downloads GGUF models from conversion repository `Serveurperso/OmniVoice-GGUF`. It needs:
+OmniVoice in PNG Studio is a high-fidelity speech synthesis workflow. It downloads GGUF models from conversion repository `Serveurperso/OmniVoice-GGUF`. It needs:
 - Backbone: `omnivoice-base-Q8_0.gguf`
 - Tokenizer: `omnivoice-tokenizer-F32.gguf`
 

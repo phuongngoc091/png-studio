@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "tts-mixed-language-vi-en",
   "title": "Vietnamese-English mixed-language TTS",
   "task": "tts",
@@ -10,7 +10,7 @@
   },
   "capabilities": ["tts", "vi", "en", "mixed-language"],
   "inputs": {
-    "text": "Hôm nay chúng ta sẽ test LA Studio với một câu có cả tiếng Việt và English words trong cùng một đoạn."
+    "text": "Hôm nay chúng ta sẽ test PNG Studio với một câu có cả tiếng Việt và English words trong cùng một đoạn."
   },
   "settings": {
     "lang": "vi",

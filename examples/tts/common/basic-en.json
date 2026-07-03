@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "lastudio.example.v1",
+  "schemaVersion": "pngstudio.example.v1",
   "id": "tts-basic-en",
   "title": "Basic English TTS smoke test",
   "task": "tts",
@@ -9,7 +9,7 @@
   },
   "capabilities": ["tts", "en"],
   "inputs": {
-    "text": "Hello, this is a short English text-to-speech test in LA Studio."
+    "text": "Hello, this is a short English text-to-speech test in PNG Studio."
   },
   "settings": {
     "lang": "en",

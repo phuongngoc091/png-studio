@@ -14,9 +14,9 @@ Qwen3-ASR 1.7B is a medium speech-to-text and audio Q&A model from the Alibaba Q
 - **License:** Apache-2.0
 - **Architecture:** Qwen3-ASR GGUF
 
-## LA Studio Notes
+## PNG Studio Notes
 
-Qwen3-ASR 1.7B in LA Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-1.7b-GGUF`. It needs one of the following model files:
+Qwen3-ASR 1.7B in PNG Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-1.7b-GGUF`. It needs one of the following model files:
 - `qwen3-asr-1.7b-q4_k.gguf` (Recommended, 1.3 GB)
 - `qwen3-asr-1.7b-q8_0.gguf` (2.5 GB)
 - `qwen3-asr-1.7b-f16.gguf` (4.7 GB)

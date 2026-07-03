@@ -16,8 +16,8 @@ namespace {
 
 QString sourceDir()
 {
-#ifdef LASTUDIO_SOURCE_DIR
-    return QStringLiteral(LASTUDIO_SOURCE_DIR);
+#ifdef PNGSTUDIO_SOURCE_DIR
+    return QStringLiteral(PNGSTUDIO_SOURCE_DIR);
 #else
     return QString();
 #endif

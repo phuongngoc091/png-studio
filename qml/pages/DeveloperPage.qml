@@ -275,7 +275,7 @@ Rectangle {
         var auth = AppController.apiServer.apiKey !== "" ? " \\\n  -H \"Authorization: Bearer " + AppController.apiServer.apiKey + "\"" : ""
         var model = root.firstLoadedModelId(ttsPickerController)
         if (model === "") model = "your-loaded-model-id"
-        return "curl " + activeBaseUrl + "/v1/audio/speech \\\n  -H \"Content-Type: application/json\"" + auth + " \\\n  -d \"{\\\"model\\\":\\\"" + model + "\\\",\\\"input\\\":\\\"Xin chao LA Studio\\\",\\\"response_format\\\":\\\"wav\\\"}\" \\\n  --output speech.wav"
+        return "curl " + activeBaseUrl + "/v1/audio/speech \\\n  -H \"Content-Type: application/json\"" + auth + " \\\n  -d \"{\\\"model\\\":\\\"" + model + "\\\",\\\"input\\\":\\\"Xin chao PNG Studio\\\",\\\"response_format\\\":\\\"wav\\\"}\" \\\n  --output speech.wav"
     }
 
     function curlSttExample() {
@@ -333,7 +333,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: qsTr("Run LA Studio as a local audio API for tools, scripts, and client apps.")
+                        text: qsTr("Run PNG Studio as a local audio API for tools, scripts, and client apps.")
                         color: Theme.textSecondary
                         font.pixelSize: Theme.fontSmall
                         wrapMode: Text.WordWrap
@@ -374,7 +374,7 @@ Rectangle {
 
             Panel {
                 title: qsTr("Local Server")
-                subtitle: qsTr("OpenAI-compatible audio endpoints backed by the models already loaded in LA Studio.")
+                subtitle: qsTr("OpenAI-compatible audio endpoints backed by the models already loaded in PNG Studio.")
                 Layout.fillWidth: true
 
                 RowLayout {

@@ -10,14 +10,14 @@ This project is standardized around a single primary build flow on Windows:
 ## Quick Start
 
 ```powershell
-git clone https://github.com/dduongtrandai/LA-Studio.git
-cd LA-Studio
+git clone https://github.com/dduongtrandai/PNG-Studio.git
+cd PNG-Studio
 .\scripts\bootstrap.bat
 ```
 
 After a successful build, executable output is:
 
-`out/build/windows-msvc-release/LA Studio.exe`
+`out/build/windows-msvc-release/PNG Studio.exe`
 
 ## Prerequisites
 
@@ -80,7 +80,7 @@ Primary presets:
 
 Legacy aliases (`x64-release`, `x64-debug`, `mingw-release`) are retained for compatibility only.
 
-`Debug` builds keep the console attached for developer logging. All non-Debug Windows builds are packaged as GUI apps, so the terminal is hidden when `LA Studio.exe` opens.
+`Debug` builds keep the console attached for developer logging. All non-Debug Windows builds are packaged as GUI apps, so the terminal is hidden when `PNG Studio.exe` opens.
 
 ## Incremental Build and Build Speed
 

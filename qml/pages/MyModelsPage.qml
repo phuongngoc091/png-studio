@@ -1039,7 +1039,7 @@ Rectangle {
         }
     }
 
-    // Modal Dependencies Dialog for LA Studio Picks
+    // Modal Dependencies Dialog for PNG Studio Picks
     ModelDependenciesDialog {
         id: dependenciesDialog
     }

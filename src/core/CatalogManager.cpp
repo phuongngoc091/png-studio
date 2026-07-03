@@ -105,7 +105,7 @@ bool isBundledNewer(const QString &bundledVersion, const QString &candidateVersi
     return bundledVersion > candidateVersion;
 }
 
-QVariantMap lastudioPickForFamily(const QVariantList &modelPicks, const QVariantMap &family)
+QVariantMap pngstudioPickForFamily(const QVariantList &modelPicks, const QVariantMap &family)
 {
     const QString familyId = family.value(QStringLiteral("id")).toString();
     const QString modelId = family.value(QStringLiteral("modelId")).toString();
@@ -113,7 +113,7 @@ QVariantMap lastudioPickForFamily(const QVariantList &modelPicks, const QVariant
 
     for (const QVariant &collectionValue : modelPicks) {
         const QVariantMap collection = collectionValue.toMap();
-        if (collection.value(QStringLiteral("id")).toString() != QStringLiteral("lastudio-picks")) {
+        if (collection.value(QStringLiteral("id")).toString() != QStringLiteral("pngstudio-picks")) {
             continue;
         }
 
@@ -128,7 +128,7 @@ QVariantMap lastudioPickForFamily(const QVariantList &modelPicks, const QVariant
                 QVariantMap marker = pick;
                 marker.insert(QStringLiteral("collectionId"), collection.value(QStringLiteral("id")));
                 marker.insert(QStringLiteral("collectionTitle"), collection.value(QStringLiteral("title")));
-                marker.insert(QStringLiteral("label"), QStringLiteral("LA Studio Pick"));
+                marker.insert(QStringLiteral("label"), QStringLiteral("PNG Studio Pick"));
                 return marker;
             }
         }
@@ -141,7 +141,7 @@ void applyLastudioPickMetadata(QVariantList &families, const QVariantList &model
 {
     for (int i = 0; i < families.size(); ++i) {
         QVariantMap family = families.at(i).toMap();
-        const QVariantMap pick = lastudioPickForFamily(modelPicks, family);
+        const QVariantMap pick = pngstudioPickForFamily(modelPicks, family);
         if (pick.isEmpty()) {
             continue;
         }

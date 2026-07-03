@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    Build, stage, and package LA Studio into a Windows installer.
+    Build, stage, and package PNG Studio into a Windows installer.
 .DESCRIPTION
     Compiles the project, installs files to out/stage, deploys Qt dependencies,
     and runs Inno Setup to generate a single-file EXE installer.
@@ -87,9 +87,9 @@ function Ensure-MsvcEnvironment {
 
 function Get-SourceAppVersion {
     $cmakePath = Join-Path $RepoRoot "CMakeLists.txt"
-    $match = Select-String -LiteralPath $cmakePath -Pattern 'set\(LASTUDIO_VERSION\s+"([^"]+)"' | Select-Object -First 1
+    $match = Select-String -LiteralPath $cmakePath -Pattern 'set\(PNGSTUDIO_VERSION\s+"([^"]+)"' | Select-Object -First 1
     if ($null -eq $match) {
-        throw "Could not find LASTUDIO_VERSION in $cmakePath."
+        throw "Could not find PNGSTUDIO_VERSION in $cmakePath."
     }
     return $match.Matches[0].Groups[1].Value
 }
@@ -293,7 +293,7 @@ if ($Preset -like "*mingw*") {
     $vcpkgTriplet = "x64-windows"
 }
 $cmakeArgs += "-DVCPKG_TARGET_TRIPLET=$vcpkgTriplet"
-$cmakeArgs += "-DLASTUDIO_VERSION=$Version"
+$cmakeArgs += "-DPNGSTUDIO_VERSION=$Version"
 
 $env:VCPKG_ROOT = $VcpkgRoot
 & cmake @cmakeArgs
@@ -308,7 +308,7 @@ Write-Host ">> Installing to staging folder..." -ForegroundColor Cyan
 if ($LASTEXITCODE -ne 0) { throw "CMake install failed." }
 
 # 4. Deploy Qt libraries and DLLs
-$stagedExe = Join-Path $stageDir "bin\LA Studio.exe"
+$stagedExe = Join-Path $stageDir "bin\PNG Studio.exe"
 if (-not (Test-Path $stagedExe)) {
     throw "Staged executable not found at: $stagedExe"
 }
@@ -342,5 +342,5 @@ if (-not (Test-Path $installerScript)) {
 & $isccPath $installerScript
 if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed." }
 
-$installerPath = Join-Path $RepoRoot "out\LA-Studio-Setup.exe"
+$installerPath = Join-Path $RepoRoot "out\PNG-Studio-Setup.exe"
 Write-Host "[SUCCESS] Installer generated at: $installerPath" -ForegroundColor Green

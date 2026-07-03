@@ -86,7 +86,7 @@ add_executable(LAStudioUnitTests ${TEST_SOURCES})
 target_compile_definitions(LAStudioUnitTests PRIVATE
     NOMINMAX
     WIN32_LEAN_AND_MEAN
-    LASTUDIO_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    PNGSTUDIO_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 
 target_include_directories(LAStudioUnitTests PRIVATE

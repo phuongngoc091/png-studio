@@ -3,9 +3,9 @@
   "version": "0.1.9",
   "modelPicks": [
     {
-      "id": "lastudio-picks",
-      "title": "LA Studio Picks",
-      "description": "All model families currently curated and used by LA Studio workflows.",
+      "id": "pngstudio-picks",
+      "title": "PNG Studio Picks",
+      "description": "All model families currently curated and used by PNG Studio workflows.",
       "items": [
         {
           "familyId": "qwen3-tts-0.6b-base",
@@ -35,7 +35,7 @@
         {
           "familyId": "vieneu-tts-v2-turbo",
           "modelId": "pnnbao-ump/VieNeu-TTS-v2-Turbo",
-          "reason": "Vietnamese-focused TTS model for LA Studio speech workflows."
+          "reason": "Vietnamese-focused TTS model for PNG Studio speech workflows."
         },
         {
           "familyId": "vieneu-tts-v3-turbo",
@@ -105,7 +105,7 @@
           "readme": {
             "filename": "README.md",
             "source": "https://huggingface.co/openbmb/VoxCPM2/raw/main/README.md",
-            "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+            "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
           },
           "localDir": "voxcpm2",
           "task": "tts",
@@ -161,7 +161,7 @@
             },
             "readme": {
               "filename": "README.md",
-              "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+              "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
             },
             "thumbnail": {
               "filename": "thumbnail.webp",
@@ -331,7 +331,7 @@
             },
             "readme": {
               "filename": "README.md",
-              "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+              "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
             },
             "thumbnail": {
               "filename": "thumbnail.webp",
@@ -341,7 +341,7 @@
           },
           "readme": {
             "filename": "README.md",
-            "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+            "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
           }
         },
         {
@@ -812,7 +812,7 @@
           "readme": {
             "filename": "README.md",
             "source": "https://huggingface.co/hexgrad/Kokoro-82M/raw/main/README.md",
-            "content": "# Kokoro-82M\n\nKokoro is an open-weight text-to-speech model published by `hexgrad` on Hugging Face. The upstream card presents it as an 82M-parameter model focused on lightweight, fast, cost-efficient speech generation while still being practical for local and production use.\n\nLA Studio installs Kokoro as a virtual model under `hexgrad/Kokoro-82M`. The downloadable GGUF artifacts are hosted in conversion repositories:\n\n- `cstr/kokoro-82m-GGUF` for the Kokoro backbone GGUF.\n- `cstr/kokoro-voices-GGUF` for preset speaker voice packs.\n\n## Links\n\n- Upstream model card: https://huggingface.co/hexgrad/Kokoro-82M\n- Upstream GitHub: https://github.com/hexgrad/kokoro\n- Upstream demo: https://hf.co/spaces/hexgrad/Kokoro-TTS\n- Samples: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/SAMPLES.md\n- Voices: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md\n\n## Model Facts\n\n- Task: Text-to-Speech\n- Parameters: 82M\n- License: Apache-2.0\n- Current upstream release noted by the model card: v1.0, published 2025-01-27\n- Languages and voices noted for v1.0: 8 languages and 54 voices\n- Architecture: StyleTTS 2 with an iSTFTNet-derived, decoder-only TTS stack\n- Upstream SHA256 for v1.0: `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`\n\n## Training Notes\n\nThe upstream card states that Kokoro was trained on permissive or non-copyrighted audio data with IPA phoneme labels. It lists public-domain audio, permissively licensed audio, and synthetic audio generated by closed-source TTS models as examples of training data sources. The card estimates the total training set at a few hundred hours and reports roughly 1000 A100 80GB GPU-hours across v0.19 and v1.0.\n\n## LA Studio Notes\n\nKokoro in LA Studio is a preset-voice TTS workflow. It needs one backbone model file and one installed voice pack:\n\n- Default backbone: `kokoro-82m-f16.gguf`\n- Default voice pack: `kokoro-voice-af_heart.gguf`\n\nThe CrispASR Kokoro runtime depends on `espeak-ng` for phonemizer support. Kokoro voice cloning from reference audio is not enabled in LA Studio; use the packaged voice GGUF files instead.\n"
+            "content": "# Kokoro-82M\n\nKokoro is an open-weight text-to-speech model published by `hexgrad` on Hugging Face. The upstream card presents it as an 82M-parameter model focused on lightweight, fast, cost-efficient speech generation while still being practical for local and production use.\n\nPNG Studio installs Kokoro as a virtual model under `hexgrad/Kokoro-82M`. The downloadable GGUF artifacts are hosted in conversion repositories:\n\n- `cstr/kokoro-82m-GGUF` for the Kokoro backbone GGUF.\n- `cstr/kokoro-voices-GGUF` for preset speaker voice packs.\n\n## Links\n\n- Upstream model card: https://huggingface.co/hexgrad/Kokoro-82M\n- Upstream GitHub: https://github.com/hexgrad/kokoro\n- Upstream demo: https://hf.co/spaces/hexgrad/Kokoro-TTS\n- Samples: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/SAMPLES.md\n- Voices: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md\n\n## Model Facts\n\n- Task: Text-to-Speech\n- Parameters: 82M\n- License: Apache-2.0\n- Current upstream release noted by the model card: v1.0, published 2025-01-27\n- Languages and voices noted for v1.0: 8 languages and 54 voices\n- Architecture: StyleTTS 2 with an iSTFTNet-derived, decoder-only TTS stack\n- Upstream SHA256 for v1.0: `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`\n\n## Training Notes\n\nThe upstream card states that Kokoro was trained on permissive or non-copyrighted audio data with IPA phoneme labels. It lists public-domain audio, permissively licensed audio, and synthetic audio generated by closed-source TTS models as examples of training data sources. The card estimates the total training set at a few hundred hours and reports roughly 1000 A100 80GB GPU-hours across v0.19 and v1.0.\n\n## PNG Studio Notes\n\nKokoro in PNG Studio is a preset-voice TTS workflow. It needs one backbone model file and one installed voice pack:\n\n- Default backbone: `kokoro-82m-f16.gguf`\n- Default voice pack: `kokoro-voice-af_heart.gguf`\n\nThe CrispASR Kokoro runtime depends on `espeak-ng` for phonemizer support. Kokoro voice cloning from reference audio is not enabled in PNG Studio; use the packaged voice GGUF files instead.\n"
           },
           "localDir": "kokoro",
           "task": "tts",
@@ -884,7 +884,7 @@
             },
             "readme": {
               "filename": "README.md",
-              "content": "# Kokoro-82M\n\nKokoro is an open-weight text-to-speech model published by `hexgrad` on Hugging Face. The upstream card presents it as an 82M-parameter model focused on lightweight, fast, cost-efficient speech generation while still being practical for local and production use.\n\nLA Studio installs Kokoro as a virtual model under `hexgrad/Kokoro-82M`. The downloadable GGUF artifacts are hosted in conversion repositories:\n\n- `cstr/kokoro-82m-GGUF` for the Kokoro backbone GGUF.\n- `cstr/kokoro-voices-GGUF` for preset speaker voice packs.\n\n## Links\n\n- Upstream model card: https://huggingface.co/hexgrad/Kokoro-82M\n- Upstream GitHub: https://github.com/hexgrad/kokoro\n- Upstream demo: https://hf.co/spaces/hexgrad/Kokoro-TTS\n- Samples: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/SAMPLES.md\n- Voices: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md\n\n## Model Facts\n\n- Task: Text-to-Speech\n- Parameters: 82M\n- License: Apache-2.0\n- Current upstream release noted by the model card: v1.0, published 2025-01-27\n- Languages and voices noted for v1.0: 8 languages and 54 voices\n- Architecture: StyleTTS 2 with an iSTFTNet-derived, decoder-only TTS stack\n- Upstream SHA256 for v1.0: `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`\n\n## Training Notes\n\nThe upstream card states that Kokoro was trained on permissive or non-copyrighted audio data with IPA phoneme labels. It lists public-domain audio, permissively licensed audio, and synthetic audio generated by closed-source TTS models as examples of training data sources. The card estimates the total training set at a few hundred hours and reports roughly 1000 A100 80GB GPU-hours across v0.19 and v1.0.\n\n## LA Studio Notes\n\nKokoro in LA Studio is a preset-voice TTS workflow. It needs one backbone model file and one installed voice pack:\n\n- Default backbone: `kokoro-82m-f16.gguf`\n- Default voice pack: `kokoro-voice-af_heart.gguf`\n\nThe CrispASR Kokoro runtime depends on `espeak-ng` for phonemizer support. Kokoro voice cloning from reference audio is not enabled in LA Studio; use the packaged voice GGUF files instead.\n"
+              "content": "# Kokoro-82M\n\nKokoro is an open-weight text-to-speech model published by `hexgrad` on Hugging Face. The upstream card presents it as an 82M-parameter model focused on lightweight, fast, cost-efficient speech generation while still being practical for local and production use.\n\nPNG Studio installs Kokoro as a virtual model under `hexgrad/Kokoro-82M`. The downloadable GGUF artifacts are hosted in conversion repositories:\n\n- `cstr/kokoro-82m-GGUF` for the Kokoro backbone GGUF.\n- `cstr/kokoro-voices-GGUF` for preset speaker voice packs.\n\n## Links\n\n- Upstream model card: https://huggingface.co/hexgrad/Kokoro-82M\n- Upstream GitHub: https://github.com/hexgrad/kokoro\n- Upstream demo: https://hf.co/spaces/hexgrad/Kokoro-TTS\n- Samples: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/SAMPLES.md\n- Voices: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md\n\n## Model Facts\n\n- Task: Text-to-Speech\n- Parameters: 82M\n- License: Apache-2.0\n- Current upstream release noted by the model card: v1.0, published 2025-01-27\n- Languages and voices noted for v1.0: 8 languages and 54 voices\n- Architecture: StyleTTS 2 with an iSTFTNet-derived, decoder-only TTS stack\n- Upstream SHA256 for v1.0: `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`\n\n## Training Notes\n\nThe upstream card states that Kokoro was trained on permissive or non-copyrighted audio data with IPA phoneme labels. It lists public-domain audio, permissively licensed audio, and synthetic audio generated by closed-source TTS models as examples of training data sources. The card estimates the total training set at a few hundred hours and reports roughly 1000 A100 80GB GPU-hours across v0.19 and v1.0.\n\n## PNG Studio Notes\n\nKokoro in PNG Studio is a preset-voice TTS workflow. It needs one backbone model file and one installed voice pack:\n\n- Default backbone: `kokoro-82m-f16.gguf`\n- Default voice pack: `kokoro-voice-af_heart.gguf`\n\nThe CrispASR Kokoro runtime depends on `espeak-ng` for phonemizer support. Kokoro voice cloning from reference audio is not enabled in PNG Studio; use the packaged voice GGUF files instead.\n"
             },
             "thumbnail": {
               "filename": "thumbnail.webp",
@@ -964,7 +964,7 @@
             },
             "readme": {
               "filename": "README.md",
-              "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+              "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
             },
             "thumbnail": {
               "filename": "thumbnail.webp",
@@ -974,7 +974,7 @@
           },
           "readme": {
             "filename": "README.md",
-            "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+            "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
           }
         },
         {
@@ -1306,7 +1306,7 @@
       "shortName": "KOVI",
       "title": "Kokoro Vietnamese",
       "subtitle": "Vietnamese Kokoro TTS via native ONNX runtime",
-      "description": "Fine-tuned Vietnamese Kokoro TTS packaged for LA Studio with a native Windows CPU runtime, ONNX Runtime inference, and bundled vig2p sidecar phonemization.",
+      "description": "Fine-tuned Vietnamese Kokoro TTS packaged for PNG Studio with a native Windows CPU runtime, ONNX Runtime inference, and bundled vig2p sidecar phonemization.",
       "accent": "#2f9e8f",
       "capabilities": [
         "tts"
@@ -1321,7 +1321,7 @@
         "CPU"
       ],
       "strengths": [
-        "Native C ABI runtime for LA Studio",
+        "Native C ABI runtime for PNG Studio",
         "Vietnamese G2P handled inside the runtime package",
         "Preset Vietnamese voicepacks bundled as runtime assets",
         "24 kHz mono float PCM output"
@@ -1621,11 +1621,11 @@
           "runtime": "https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/tag/v0.1.0",
           "sampleRate": 24000,
           "channels": 1,
-          "notes": "LA Studio passes text and voice settings to kokoro-vietnamese.dll. Phonemization is handled by the bundled kokoro_vi_g2p.exe sidecar."
+          "notes": "PNG Studio passes text and voice settings to kokoro-vietnamese.dll. Phonemization is handled by the bundled kokoro_vi_g2p.exe sidecar."
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Kokoro Vietnamese\n\nNative LA Studio integration for Vietnamese Kokoro TTS.\n\n- Model source: https://huggingface.co/contextboxai/Kokoro-Vietnamese\n- Upstream code: https://github.com/iamdinhthuan/Kokoro-Vietnamese\n- Runtime: https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/tag/v0.1.0\n\nThe selected runtime package includes `kokoro-vietnamese.dll`, `kokoro_vi_g2p.exe`,\nONNX Runtime, `kokoro_vi.onnx`, `config.json`, and converted `.bin` preset\nvoicepacks. LA Studio should pass text directly to the runtime; Vietnamese G2P\nis handled inside the runtime package.\n"
+          "content": "# Kokoro Vietnamese\n\nNative PNG Studio integration for Vietnamese Kokoro TTS.\n\n- Model source: https://huggingface.co/contextboxai/Kokoro-Vietnamese\n- Upstream code: https://github.com/iamdinhthuan/Kokoro-Vietnamese\n- Runtime: https://github.com/dduongtrandai/Kokoro-Vietnamese.cpp/releases/tag/v0.1.0\n\nThe selected runtime package includes `kokoro-vietnamese.dll`, `kokoro_vi_g2p.exe`,\nONNX Runtime, `kokoro_vi.onnx`, `config.json`, and converted `.bin` preset\nvoicepacks. PNG Studio should pass text directly to the runtime; Vietnamese G2P\nis handled inside the runtime package.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -1641,7 +1641,7 @@
       "shortName": "KO",
       "title": "Kokoro",
       "subtitle": "Small multilingual preset-voice TTS",
-      "description": "A compact open-weight TTS model with 82M parameters, installed in LA Studio through a Kokoro backbone GGUF plus a per-voice GGUF pack.",
+      "description": "A compact open-weight TTS model with 82M parameters, installed in PNG Studio through a Kokoro backbone GGUF plus a per-voice GGUF pack.",
       "accent": "#4f9d69",
       "capabilities": [
         "tts"
@@ -2040,7 +2040,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Kokoro-82M\n\nKokoro is an open-weight text-to-speech model published by `hexgrad` on Hugging Face. The upstream card presents it as an 82M-parameter model focused on lightweight, fast, cost-efficient speech generation while still being practical for local and production use.\n\nLA Studio installs Kokoro as a virtual model under `hexgrad/Kokoro-82M`. The downloadable GGUF artifacts are hosted in conversion repositories:\n\n- `cstr/kokoro-82m-GGUF` for the Kokoro backbone GGUF.\n- `cstr/kokoro-voices-GGUF` for preset speaker voice packs.\n\n## Links\n\n- Upstream model card: https://huggingface.co/hexgrad/Kokoro-82M\n- Upstream GitHub: https://github.com/hexgrad/kokoro\n- Upstream demo: https://hf.co/spaces/hexgrad/Kokoro-TTS\n- Samples: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/SAMPLES.md\n- Voices: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md\n\n## Model Facts\n\n- Task: Text-to-Speech\n- Parameters: 82M\n- License: Apache-2.0\n- Current upstream release noted by the model card: v1.0, published 2025-01-27\n- Languages and voices noted for v1.0: 8 languages and 54 voices\n- Architecture: StyleTTS 2 with an iSTFTNet-derived, decoder-only TTS stack\n- Upstream SHA256 for v1.0: `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`\n\n## Training Notes\n\nThe upstream card states that Kokoro was trained on permissive or non-copyrighted audio data with IPA phoneme labels. It lists public-domain audio, permissively licensed audio, and synthetic audio generated by closed-source TTS models as examples of training data sources. The card estimates the total training set at a few hundred hours and reports roughly 1000 A100 80GB GPU-hours across v0.19 and v1.0.\n\n## LA Studio Notes\n\nKokoro in LA Studio is a preset-voice TTS workflow. It needs one backbone model file and one installed voice pack:\n\n- Default backbone: `kokoro-82m-f16.gguf`\n- Default voice pack: `kokoro-voice-af_heart.gguf`\n\nThe CrispASR Kokoro runtime depends on `espeak-ng` for phonemizer support. Kokoro voice cloning from reference audio is not enabled in LA Studio; use the packaged voice GGUF files instead.\n"
+          "content": "# Kokoro-82M\n\nKokoro is an open-weight text-to-speech model published by `hexgrad` on Hugging Face. The upstream card presents it as an 82M-parameter model focused on lightweight, fast, cost-efficient speech generation while still being practical for local and production use.\n\nPNG Studio installs Kokoro as a virtual model under `hexgrad/Kokoro-82M`. The downloadable GGUF artifacts are hosted in conversion repositories:\n\n- `cstr/kokoro-82m-GGUF` for the Kokoro backbone GGUF.\n- `cstr/kokoro-voices-GGUF` for preset speaker voice packs.\n\n## Links\n\n- Upstream model card: https://huggingface.co/hexgrad/Kokoro-82M\n- Upstream GitHub: https://github.com/hexgrad/kokoro\n- Upstream demo: https://hf.co/spaces/hexgrad/Kokoro-TTS\n- Samples: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/SAMPLES.md\n- Voices: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md\n\n## Model Facts\n\n- Task: Text-to-Speech\n- Parameters: 82M\n- License: Apache-2.0\n- Current upstream release noted by the model card: v1.0, published 2025-01-27\n- Languages and voices noted for v1.0: 8 languages and 54 voices\n- Architecture: StyleTTS 2 with an iSTFTNet-derived, decoder-only TTS stack\n- Upstream SHA256 for v1.0: `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`\n\n## Training Notes\n\nThe upstream card states that Kokoro was trained on permissive or non-copyrighted audio data with IPA phoneme labels. It lists public-domain audio, permissively licensed audio, and synthetic audio generated by closed-source TTS models as examples of training data sources. The card estimates the total training set at a few hundred hours and reports roughly 1000 A100 80GB GPU-hours across v0.19 and v1.0.\n\n## PNG Studio Notes\n\nKokoro in PNG Studio is a preset-voice TTS workflow. It needs one backbone model file and one installed voice pack:\n\n- Default backbone: `kokoro-82m-f16.gguf`\n- Default voice pack: `kokoro-voice-af_heart.gguf`\n\nThe CrispASR Kokoro runtime depends on `espeak-ng` for phonemizer support. Kokoro voice cloning from reference audio is not enabled in PNG Studio; use the packaged voice GGUF files instead.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -2972,7 +2972,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# OmniVoice\n\nOmniVoice is a massively multilingual zero-shot text-to-speech, voice cloning, and voice design model family developed by `k2-fsa` on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/k2-fsa/OmniVoice\n- Upstream GitHub: https://github.com/k2-fsa/sherpa-onnx\n\n## Model Facts\n\n- **Task:** Text-to-Speech, Zero-Shot Voice Cloning & Voice Design\n- **Parameters:** ~1B\n- **License:** Apache-2.0\n- **Architecture:** OmniVoice (GGUF)\n\n## LA Studio Notes\n\nOmniVoice in LA Studio is a high-fidelity speech synthesis workflow. It downloads GGUF models from conversion repository `Serveurperso/OmniVoice-GGUF`. It needs:\n- Backbone: `omnivoice-base-Q8_0.gguf`\n- Tokenizer: `omnivoice-tokenizer-F32.gguf`\n\nIt supports over 600 languages, zero-shot voice cloning, and description-based voice design. It also supports non-verbal tags like `[laughter]`, `[sigh]`, etc.\n"
+          "content": "# OmniVoice\n\nOmniVoice is a massively multilingual zero-shot text-to-speech, voice cloning, and voice design model family developed by `k2-fsa` on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/k2-fsa/OmniVoice\n- Upstream GitHub: https://github.com/k2-fsa/sherpa-onnx\n\n## Model Facts\n\n- **Task:** Text-to-Speech, Zero-Shot Voice Cloning & Voice Design\n- **Parameters:** ~1B\n- **License:** Apache-2.0\n- **Architecture:** OmniVoice (GGUF)\n\n## PNG Studio Notes\n\nOmniVoice in PNG Studio is a high-fidelity speech synthesis workflow. It downloads GGUF models from conversion repository `Serveurperso/OmniVoice-GGUF`. It needs:\n- Backbone: `omnivoice-base-Q8_0.gguf`\n- Tokenizer: `omnivoice-tokenizer-F32.gguf`\n\nIt supports over 600 languages, zero-shot voice cloning, and description-based voice design. It also supports non-verbal tags like `[laughter]`, `[sigh]`, etc.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -3744,7 +3744,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# VibeVoice\n\nVibeVoice Realtime 0.5B is Microsoft's low-latency text-to-speech model. LA Studio installs the CrispASR GGUF build for local synthesis through the shared CrispASR runtime.\n\n## Links\n\n- Upstream model card: https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B\n- CrispASR GGUF artifacts: https://huggingface.co/cstr/vibevoice-realtime-0.5b-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Model Facts\n\n- **Task:** Text-to-Speech\n- **Parameters:** 500M (0.5B)\n- **License:** MIT\n- **Architecture:** VibeVoice Realtime GGUF\n- **CrispASR backend:** `vibevoice-tts`\n\n## LA Studio Notes\n\nLA Studio downloads the recommended Q4_K talker and a required voice prompt GGUF from `cstr/vibevoice-realtime-0.5b-GGUF`:\n\n- Talker: `vibevoice-realtime-0.5b-q4_k.gguf`\n- Default voice: `vibevoice-voice-emma.gguf`\n- Optional voices: `vibevoice-voice-en-Carter_man.gguf`, `vibevoice-voice-en-Emma_woman.gguf`, and other language voice packs\n\nThe realtime 0.5B model uses preset GGUF voice packs. It does not support dynamic WAV reference cloning in CrispASR; use a larger VibeVoice variant when runtime WAV cloning is required.\n"
+          "content": "# VibeVoice\n\nVibeVoice Realtime 0.5B is Microsoft's low-latency text-to-speech model. PNG Studio installs the CrispASR GGUF build for local synthesis through the shared CrispASR runtime.\n\n## Links\n\n- Upstream model card: https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B\n- CrispASR GGUF artifacts: https://huggingface.co/cstr/vibevoice-realtime-0.5b-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Model Facts\n\n- **Task:** Text-to-Speech\n- **Parameters:** 500M (0.5B)\n- **License:** MIT\n- **Architecture:** VibeVoice Realtime GGUF\n- **CrispASR backend:** `vibevoice-tts`\n\n## PNG Studio Notes\n\nPNG Studio downloads the recommended Q4_K talker and a required voice prompt GGUF from `cstr/vibevoice-realtime-0.5b-GGUF`:\n\n- Talker: `vibevoice-realtime-0.5b-q4_k.gguf`\n- Default voice: `vibevoice-voice-emma.gguf`\n- Optional voices: `vibevoice-voice-en-Carter_man.gguf`, `vibevoice-voice-en-Emma_woman.gguf`, and other language voice packs\n\nThe realtime 0.5B model uses preset GGUF voice packs. It does not support dynamic WAV reference cloning in CrispASR; use a larger VibeVoice variant when runtime WAV cloning is required.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -4179,7 +4179,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nLA Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## LA Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. LA Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; LA Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
+          "content": "# VoxCPM2\n\nVoxCPM2 is an open-weight multilingual text-to-speech model from OpenBMB. The upstream model card describes it as a tokenizer-free, diffusion-autoregressive 2B parameter TTS model with 48 kHz audio output, natural-language voice design, and reference-audio voice cloning.\n\nPNG Studio installs VoxCPM2 through the CrispASR GGUF conversion repository:\n\n- Upstream model: https://huggingface.co/openbmb/VoxCPM2\n- GGUF artifacts: https://huggingface.co/cstr/voxcpm2-GGUF\n- Runtime: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Supported Languages\n\nArabic, Burmese, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Khmer, Korean, Lao, Malay, Norwegian, Polish, Portuguese, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese.\n\n## PNG Studio Notes\n\nVoxCPM2 requires a CrispASR runtime with the `voxcpm2-tts` backend. PNG Studio uses CrispASR v0.8.6 or newer for this model.\n\nVoice design is applied by prepending the voice description to the synthesis text in the upstream VoxCPM2 parenthesized prompt style, for example `(A warm, clear voice)Hello.`. CrispASR's current session API does not expose a separate VoxCPM2 `set_instruct` call; PNG Studio encodes the instruction in the text passed to `voxcpm2_synthesize`. Voice cloning uses a reference WAV through CrispASR's unified `crispasr_session_set_voice` API.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -4615,7 +4615,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# VieNeu-TTS v2 Turbo\n\nVieNeu-TTS v2 Turbo is an advanced, lightweight bilingual Vietnamese-English text-to-speech and voice cloning model, published by `pnnbao-ump` on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2\n- Runtime GitHub: https://github.com/dduongtrandai/VieNeu-TTS.cpp\n\n## Model Facts\n\n- **Task:** Text-to-Speech & Voice Cloning\n- **Parameters:** ~300M\n- **License:** Apache-2.0\n- **Architecture:** VieNeu-TTS (GGUF)\n\n## LA Studio Notes\n\nVieNeu-TTS v2 Turbo in LA Studio is optimized for fast CPU execution and instant 3-5 seconds zero-shot voice cloning. It downloads files from conversion repositories:\n- `pnnbao-ump/VieNeu-TTS-v2-Turbo-GGUF` for the GGUF backbone and preset voices configuration.\n- `pnnbao-ump/VieNeu-Codec` for the speaker encoder and neural decoder ONNX models.\n"
+          "content": "# VieNeu-TTS v2 Turbo\n\nVieNeu-TTS v2 Turbo is an advanced, lightweight bilingual Vietnamese-English text-to-speech and voice cloning model, published by `pnnbao-ump` on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2\n- Runtime GitHub: https://github.com/dduongtrandai/VieNeu-TTS.cpp\n\n## Model Facts\n\n- **Task:** Text-to-Speech & Voice Cloning\n- **Parameters:** ~300M\n- **License:** Apache-2.0\n- **Architecture:** VieNeu-TTS (GGUF)\n\n## PNG Studio Notes\n\nVieNeu-TTS v2 Turbo in PNG Studio is optimized for fast CPU execution and instant 3-5 seconds zero-shot voice cloning. It downloads files from conversion repositories:\n- `pnnbao-ump/VieNeu-TTS-v2-Turbo-GGUF` for the GGUF backbone and preset voices configuration.\n- `pnnbao-ump/VieNeu-Codec` for the speaker encoder and neural decoder ONNX models.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -4846,7 +4846,7 @@
           ]
         }
       },
-      "modelId": "lastudio-community/VieNeu-TTS-v3-Turbo-CPP",
+      "modelId": "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP",
       "requiredFiles": [
         {
           "role": "config",
@@ -4856,7 +4856,7 @@
           "candidates": [
             "config.json"
           ],
-          "modelKey": "lastudio-community/vieneu-v3-config",
+          "modelKey": "pngstudio-community/vieneu-v3-config",
           "size": "1.6 KB",
           "variants": [
             {
@@ -4867,7 +4867,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -4886,7 +4886,7 @@
           "candidates": [
             "tokenizer.json"
           ],
-          "modelKey": "lastudio-community/vieneu-v3-tokenizer",
+          "modelKey": "pngstudio-community/vieneu-v3-tokenizer",
           "size": "22 KB",
           "variants": [
             {
@@ -4897,7 +4897,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -4916,7 +4916,7 @@
           "candidates": [
             "backbone.gguf"
           ],
-          "modelKey": "lastudio-community/vieneu-v3-native-backbone",
+          "modelKey": "pngstudio-community/vieneu-v3-native-backbone",
           "size": "398 MB",
           "variants": [
             {
@@ -4927,7 +4927,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -4946,7 +4946,7 @@
           "candidates": [
             "vieneu_v3_heads.npz"
           ],
-          "modelKey": "lastudio-community/vieneu-v3-heads",
+          "modelKey": "pngstudio-community/vieneu-v3-heads",
           "size": "49 MB",
           "variants": [
             {
@@ -4957,7 +4957,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -4976,7 +4976,7 @@
           "candidates": [
             "acoustic/vieneu_acoustic_weights.npz"
           ],
-          "modelKey": "lastudio-community/vieneu-v3-native-acoustic",
+          "modelKey": "pngstudio-community/vieneu-v3-native-acoustic",
           "size": "54 MB",
           "variants": [
             {
@@ -4987,7 +4987,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -5006,7 +5006,7 @@
           "candidates": [
             "codec/moss_audio_tokenizer_decode_full.onnx"
           ],
-          "modelKey": "lastudio-community/moss-codec-decode",
+          "modelKey": "pngstudio-community/moss-codec-decode",
           "size": "666 KB",
           "variants": [
             {
@@ -5017,7 +5017,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -5036,7 +5036,7 @@
           "candidates": [
             "codec/moss_audio_tokenizer_decode_shared.data"
           ],
-          "modelKey": "lastudio-community/moss-codec-decode-data",
+          "modelKey": "pngstudio-community/moss-codec-decode-data",
           "size": "44.2 MB",
           "variants": [
             {
@@ -5047,7 +5047,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -5066,7 +5066,7 @@
           "candidates": [
             "codec/moss_audio_tokenizer_encode.onnx"
           ],
-          "modelKey": "lastudio-community/moss-codec-encode",
+          "modelKey": "pngstudio-community/moss-codec-encode",
           "size": "797 KB",
           "variants": [
             {
@@ -5077,7 +5077,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -5096,7 +5096,7 @@
           "candidates": [
             "codec/moss_audio_tokenizer_encode.data"
           ],
-          "modelKey": "lastudio-community/moss-codec-encode-data",
+          "modelKey": "pngstudio-community/moss-codec-encode-data",
           "size": "44.5 MB",
           "variants": [
             {
@@ -5107,7 +5107,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -5126,7 +5126,7 @@
           "candidates": [
             "voices_v3_turbo.json"
           ],
-          "modelKey": "lastudio-community/vieneu-v3-voices",
+          "modelKey": "pngstudio-community/vieneu-v3-voices",
           "size": "115 KB",
           "variants": [
             {
@@ -5137,7 +5137,7 @@
           "sources": [
             {
               "type": "huggingface",
-              "user": "lastudio-community",
+              "user": "pngstudio-community",
               "repo": "VieNeu-TTS-v3-Turbo-CPP",
               "files": [
                 {
@@ -5169,10 +5169,10 @@
         "vision": false
       },
       "modelYaml": {
-        "model": "lastudio-community/VieNeu-TTS-v3-Turbo-CPP",
+        "model": "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP",
         "base": [
           {
-            "key": "lastudio-community/vieneu-v3-config",
+            "key": "pngstudio-community/vieneu-v3-config",
             "role": "config",
             "name": "VieNeu v3 Config",
             "purpose": "Model architecture and token id configuration",
@@ -5180,7 +5180,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5192,7 +5192,7 @@
             ]
           },
           {
-            "key": "lastudio-community/vieneu-v3-tokenizer",
+            "key": "pngstudio-community/vieneu-v3-tokenizer",
             "role": "tokenizer",
             "name": "VieNeu v3 Tokenizer",
             "purpose": "Byte-level BPE phoneme tokenizer",
@@ -5200,7 +5200,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5212,7 +5212,7 @@
             ]
           },
           {
-            "key": "lastudio-community/vieneu-v3-native-backbone",
+            "key": "pngstudio-community/vieneu-v3-native-backbone",
             "role": "model",
             "name": "VieNeu v3 Native Backbone GGUF",
             "purpose": "Native semantic backbone for the v3_native pipeline",
@@ -5220,7 +5220,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5232,7 +5232,7 @@
             ]
           },
           {
-            "key": "lastudio-community/vieneu-v3-heads",
+            "key": "pngstudio-community/vieneu-v3-heads",
             "role": "heads",
             "name": "VieNeu v3 Native Heads NPZ",
             "purpose": "Text/audio embeddings and tied output heads for the v3_native pipeline",
@@ -5240,7 +5240,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5252,7 +5252,7 @@
             ]
           },
           {
-            "key": "lastudio-community/vieneu-v3-native-acoustic",
+            "key": "pngstudio-community/vieneu-v3-native-acoustic",
             "role": "acoustic",
             "name": "VieNeu v3 Native Acoustic NPZ",
             "purpose": "Local acoustic decoder weights for the v3_native pipeline",
@@ -5260,7 +5260,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5272,7 +5272,7 @@
             ]
           },
           {
-            "key": "lastudio-community/moss-codec-decode",
+            "key": "pngstudio-community/moss-codec-decode",
             "role": "codec_decode",
             "name": "MOSS Audio Tokenizer Decoder ONNX",
             "purpose": "Decode generated MOSS audio codes into 48 kHz waveform",
@@ -5280,7 +5280,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5292,7 +5292,7 @@
             ]
           },
           {
-            "key": "lastudio-community/moss-codec-decode-data",
+            "key": "pngstudio-community/moss-codec-decode-data",
             "role": "codec_decode_data",
             "name": "MOSS Audio Tokenizer Decoder Shared Data",
             "purpose": "External ONNX tensor data required by the MOSS decoder graph",
@@ -5300,7 +5300,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5312,7 +5312,7 @@
             ]
           },
           {
-            "key": "lastudio-community/moss-codec-encode",
+            "key": "pngstudio-community/moss-codec-encode",
             "role": "codec_encode",
             "name": "MOSS Audio Tokenizer Encoder ONNX",
             "purpose": "Encode reference audio into MOSS audio codes for voice cloning",
@@ -5320,7 +5320,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5332,7 +5332,7 @@
             ]
           },
           {
-            "key": "lastudio-community/moss-codec-encode-data",
+            "key": "pngstudio-community/moss-codec-encode-data",
             "role": "codec_encode_data",
             "name": "MOSS Audio Tokenizer Encoder Data",
             "purpose": "External ONNX tensor data required by the MOSS encoder graph",
@@ -5340,7 +5340,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5352,7 +5352,7 @@
             ]
           },
           {
-            "key": "lastudio-community/vieneu-v3-voices",
+            "key": "pngstudio-community/vieneu-v3-voices",
             "role": "voices",
             "name": "VieNeu v3 Preset Voices",
             "purpose": "Preset voice definitions for the v3_native pipeline",
@@ -5360,7 +5360,7 @@
             "sources": [
               {
                 "type": "huggingface",
-                "user": "lastudio-community",
+                "user": "pngstudio-community",
                 "repo": "VieNeu-TTS-v3-Turbo-CPP",
                 "files": [
                   {
@@ -5393,10 +5393,10 @@
         }
       },
       "stats": {
-        "upstreamModelId": "lastudio-community/VieNeu-TTS-v3-Turbo-CPP",
-        "likesModelId": "lastudio-community/VieNeu-TTS-v3-Turbo-CPP",
+        "upstreamModelId": "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP",
+        "likesModelId": "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP",
         "downloadModelIds": [
-          "lastudio-community/VieNeu-TTS-v3-Turbo-CPP"
+          "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP"
         ],
         "policy": {
           "downloads": "upstream-hf-model",
@@ -5406,21 +5406,21 @@
       "hubFiles": {
         "manifest": {
           "schemaVersion": "1.0.0",
-          "id": "lastudio-community/VieNeu-TTS-v3-Turbo-CPP",
-          "publisher": "lastudio-community",
+          "id": "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP",
+          "publisher": "pngstudio-community",
           "name": "VieNeu-TTS-v3-Turbo-CPP",
           "title": "VieNeu-TTS v3 Turbo",
           "task": "text-to-speech",
-          "source": "https://huggingface.co/lastudio-community/VieNeu-TTS-v3-Turbo-CPP",
+          "source": "https://huggingface.co/pngstudio-community/VieNeu-TTS-v3-Turbo-CPP",
           "license": "apache-2.0",
           "runtimeFormat": "gguf+npz+onnx-codec",
           "downloadSources": [
-            "lastudio-community/VieNeu-TTS-v3-Turbo-CPP"
+            "pngstudio-community/VieNeu-TTS-v3-Turbo-CPP"
           ]
         },
         "readme": {
           "filename": "README.md",
-          "content": "# VieNeu-TTS v3 Turbo\n\nVieNeu-TTS v3 Turbo is a 48 kHz Vietnamese-English text-to-speech model from Pham Nguyen Ngoc Bao. LA Studio uses the native `VieNeu-TTS.cpp` runtime packages with the `vieneu-v3-native` pipeline for local synthesis and runtime-reported inference progress.\n\n## LA Studio Notes\n\nLA Studio targets `VieNeu-TTS.cpp` v0.1.2 with `pipelineProfile: vieneu-v3-native`. The runtime exposes a C ABI-compatible progress callback, so LA Studio can show exact inference progress while generating audio.\n\nRequired components are packaged in `lastudio-community/VieNeu-TTS-v3-Turbo-CPP` for LA Studio:\n\n- VieNeu v3 config/tokenizer\n- Native assets: `backbone.gguf`, `vieneu_v3_heads.npz`, and `acoustic/vieneu_acoustic_weights.npz`\n- Preset voices: `voices_v3_turbo.json`\n- MOSS Audio Tokenizer Nano ONNX codec files under `codec/`\n- Runtime archives from https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases\n\nThe native C++ runtime consumes local files only. It does not download model files at runtime.\n"
+          "content": "# VieNeu-TTS v3 Turbo\n\nVieNeu-TTS v3 Turbo is a 48 kHz Vietnamese-English text-to-speech model from Pham Nguyen Ngoc Bao. PNG Studio uses the native `VieNeu-TTS.cpp` runtime packages with the `vieneu-v3-native` pipeline for local synthesis and runtime-reported inference progress.\n\n## PNG Studio Notes\n\nPNG Studio targets `VieNeu-TTS.cpp` v0.1.2 with `pipelineProfile: vieneu-v3-native`. The runtime exposes a C ABI-compatible progress callback, so PNG Studio can show exact inference progress while generating audio.\n\nRequired components are packaged in `pngstudio-community/VieNeu-TTS-v3-Turbo-CPP` for PNG Studio:\n\n- VieNeu v3 config/tokenizer\n- Native assets: `backbone.gguf`, `vieneu_v3_heads.npz`, and `acoustic/vieneu_acoustic_weights.npz`\n- Preset voices: `voices_v3_turbo.json`\n- MOSS Audio Tokenizer Nano ONNX codec files under `codec/`\n- Runtime archives from https://github.com/dduongtrandai/VieNeu-TTS.cpp/releases\n\nThe native C++ runtime consumes local files only. It does not download model files at runtime.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -5757,7 +5757,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Qwen3-TTS Base 0.6B\n\nQwen3-TTS Base 0.6B is a lightweight zero-shot voice cloning text-to-speech model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-Base\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech (Zero-Shot Voice Cloning)\n- **Parameters:** 600M (0.6B)\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## LA Studio Notes\n\nQwen3-TTS Base 0.6B in LA Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-0.6b-base-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-0.6b-base-q4_k.gguf`, `qwen3-tts-12hz-0.6b-base-q8_0.gguf`, or `qwen3-tts-12hz-0.6b-base.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt requires a 24kHz reference WAV file and a reference transcript to clone a voice.\n"
+          "content": "# Qwen3-TTS Base 0.6B\n\nQwen3-TTS Base 0.6B is a lightweight zero-shot voice cloning text-to-speech model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-Base\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech (Zero-Shot Voice Cloning)\n- **Parameters:** 600M (0.6B)\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## PNG Studio Notes\n\nQwen3-TTS Base 0.6B in PNG Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-0.6b-base-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-0.6b-base-q4_k.gguf`, `qwen3-tts-12hz-0.6b-base-q8_0.gguf`, or `qwen3-tts-12hz-0.6b-base.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt requires a 24kHz reference WAV file and a reference transcript to clone a voice.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -6084,7 +6084,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Qwen3-TTS Base 1.7B\n\nQwen3-TTS Base 1.7B is a high-fidelity zero-shot voice cloning text-to-speech model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech (Zero-Shot Voice Cloning)\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## LA Studio Notes\n\nQwen3-TTS Base 1.7B in LA Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-base-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-1.7b-base-q8_0.gguf` or `qwen3-tts-12hz-1.7b-base-f16.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt requires a 24kHz reference WAV file and a reference transcript to clone a voice.\n"
+          "content": "# Qwen3-TTS Base 1.7B\n\nQwen3-TTS Base 1.7B is a high-fidelity zero-shot voice cloning text-to-speech model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech (Zero-Shot Voice Cloning)\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## PNG Studio Notes\n\nQwen3-TTS Base 1.7B in PNG Studio is a zero-shot voice cloning workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-base-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-1.7b-base-q8_0.gguf` or `qwen3-tts-12hz-1.7b-base-f16.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt requires a 24kHz reference WAV file and a reference transcript to clone a voice.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -6462,7 +6462,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Qwen3-TTS CustomVoice 1.7B\n\nQwen3-TTS CustomVoice 1.7B is a text-to-speech model from the Alibaba Qwen team specialized for preset speakers and style instructions, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## LA Studio Notes\n\nQwen3-TTS CustomVoice 1.7B in LA Studio is a preset speaker TTS workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-customvoice-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-1.7b-customvoice-q8_0.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt comes with 9 default preset speakers: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, and vivian. You can also supply text instructions to control the style of the generated speech.\n"
+          "content": "# Qwen3-TTS CustomVoice 1.7B\n\nQwen3-TTS CustomVoice 1.7B is a text-to-speech model from the Alibaba Qwen team specialized for preset speakers and style instructions, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## PNG Studio Notes\n\nQwen3-TTS CustomVoice 1.7B in PNG Studio is a preset speaker TTS workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-customvoice-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-1.7b-customvoice-q8_0.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt comes with 9 default preset speakers: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, and vivian. You can also supply text instructions to control the style of the generated speech.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -6785,7 +6785,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Qwen3-TTS 1.7B VoiceDesign\n\nQwen3-TTS 1.7B VoiceDesign is a text-to-speech model from the Alibaba Qwen team specialized in zero-shot voice design from text instructions, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech (Voice Design)\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## LA Studio Notes\n\nQwen3-TTS 1.7B VoiceDesign in LA Studio is a voice design workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-voicedesign-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-1.7b-voicedesign-q8_0.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt allows designing unique synthetic voices on the fly by specifying a text style instruction/description alongside the text prompt to synthesize.\n"
+          "content": "# Qwen3-TTS 1.7B VoiceDesign\n\nQwen3-TTS 1.7B VoiceDesign is a text-to-speech model from the Alibaba Qwen team specialized in zero-shot voice design from text instructions, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-TTS\n\n## Model Facts\n\n- **Task:** Text-to-Speech (Voice Design)\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen2.5-TTS GGUF\n\n## PNG Studio Notes\n\nQwen3-TTS 1.7B VoiceDesign in PNG Studio is a voice design workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-voicedesign-GGUF`. It needs:\n- Backbone: `qwen3-tts-12hz-1.7b-voicedesign-q8_0.gguf`\n- Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`\n\nIt allows designing unique synthetic voices on the fly by specifying a text style instruction/description alongside the text prompt to synthesize.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -7016,7 +7016,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Nemotron-3.5 ASR Streaming 0.6B\n\nNemotron-3.5 ASR Streaming 0.6B is NVIDIA's multilingual, cache-aware streaming automatic-speech-recognition model. It uses a FastConformer encoder and RNN-T decoder.\n\n## Links\n\n- Upstream model card: https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b\n- CrispASR backend: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Model Facts\n\n- **Task:** Speech-to-Text\n- **Parameters:** 0.6B\n- **License:** OpenMDW-1.1\n- **Languages:** 35 languages, including Vietnamese\n- **Architecture:** Cache-aware FastConformer RNN-T\n\n## LA Studio Notes\n\nLA Studio runs this model locally with the `nemotron` backend in CrispASR v0.8.6 or later. The app downloads GGUF artifacts from `cstr/nemotron-3.5-asr-streaming-0.6b-GGUF`:\n\n- `nemotron-3.5-asr-streaming-0.6b-q4_k.gguf` (recommended, 479 MB)\n- `nemotron-3.5-asr-streaming-0.6b-f16.gguf` (1.3 GB)\n\nThe model is streaming-native. LA Studio's current STT workflow transcribes selected or recorded audio as a completed job; live incremental transcript delivery requires a future CrispASR session-stream API for Nemotron.\n"
+          "content": "# Nemotron-3.5 ASR Streaming 0.6B\n\nNemotron-3.5 ASR Streaming 0.6B is NVIDIA's multilingual, cache-aware streaming automatic-speech-recognition model. It uses a FastConformer encoder and RNN-T decoder.\n\n## Links\n\n- Upstream model card: https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b\n- CrispASR backend: https://github.com/CrispStrobe/CrispASR/releases/tag/v0.8.6\n\n## Model Facts\n\n- **Task:** Speech-to-Text\n- **Parameters:** 0.6B\n- **License:** OpenMDW-1.1\n- **Languages:** 35 languages, including Vietnamese\n- **Architecture:** Cache-aware FastConformer RNN-T\n\n## PNG Studio Notes\n\nPNG Studio runs this model locally with the `nemotron` backend in CrispASR v0.8.6 or later. The app downloads GGUF artifacts from `cstr/nemotron-3.5-asr-streaming-0.6b-GGUF`:\n\n- `nemotron-3.5-asr-streaming-0.6b-q4_k.gguf` (recommended, 479 MB)\n- `nemotron-3.5-asr-streaming-0.6b-f16.gguf` (1.3 GB)\n\nThe model is streaming-native. PNG Studio's current STT workflow transcribes selected or recorded audio as a completed job; live incremental transcript delivery requires a future CrispASR session-stream API for Nemotron.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -7054,7 +7054,7 @@
       "weaknesses": [
         "Large models require substantial download size and memory",
         "TinyDiarize requires a dedicated model ending in -tdrz",
-        "LA Studio currently exposes only language, threads and translation controls from the upstream setting set"
+        "PNG Studio currently exposes only language, threads and translation controls from the upstream setting set"
       ],
       "supportedLanguageSetId": "whisper-v1",
       "supportedLanguageCount": 100,
@@ -7119,7 +7119,7 @@
           "name": "Language",
           "type": "string",
           "default": "en",
-          "description": "Language code used for transcription. Upstream defaults to English; LA Studio accepts auto to enable automatic detection."
+          "description": "Language code used for transcription. Upstream defaults to English; PNG Studio accepts auto to enable automatic detection."
         },
         "detect_language": {
           "name": "Detect Language",
@@ -8051,7 +8051,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Whisper\n\nWhisper is a state-of-the-art automatic speech recognition (ASR) and speech translation model family developed by OpenAI, published under the `openai` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/openai/whisper-large-v3\n- Upstream GitHub: https://github.com/openai/whisper\n\n## Model Facts\n\n- **Task:** Speech-to-Text (ASR) & Speech Translation\n- **License:** MIT\n- **Architecture:** Whisper (GGML)\n\n## LA Studio Notes\n\nWhisper.cpp in LA Studio runs inference locally using CPU and GPU options. It downloads GGML-converted models from conversion repository `ggerganov/whisper.cpp`. It needs:\n- Backbone: `ggml-base.bin` (or other supported GGML files).\n\nIt supports 100 languages, automatic language detection, translation to English, token timestamps, and speaker diarization workflows.\n"
+          "content": "# Whisper\n\nWhisper is a state-of-the-art automatic speech recognition (ASR) and speech translation model family developed by OpenAI, published under the `openai` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/openai/whisper-large-v3\n- Upstream GitHub: https://github.com/openai/whisper\n\n## Model Facts\n\n- **Task:** Speech-to-Text (ASR) & Speech Translation\n- **License:** MIT\n- **Architecture:** Whisper (GGML)\n\n## PNG Studio Notes\n\nWhisper.cpp in PNG Studio runs inference locally using CPU and GPU options. It downloads GGML-converted models from conversion repository `ggerganov/whisper.cpp`. It needs:\n- Backbone: `ggml-base.bin` (or other supported GGML files).\n\nIt supports 100 languages, automatic language detection, translation to English, token timestamps, and speaker diarization workflows.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -8305,7 +8305,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Qwen3-ASR 0.6B\n\nQwen3-ASR 0.6B is a lightweight speech-to-text and audio Q&A model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-ASR-0.6B\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-ASR\n\n## Model Facts\n\n- **Task:** Speech-to-Text (Transcription and Audio Q&A)\n- **Parameters:** 600M (0.6B)\n- **License:** Apache-2.0\n- **Architecture:** Qwen3-ASR GGUF\n\n## LA Studio Notes\n\nQwen3-ASR 0.6B in LA Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-0.6b-GGUF`. It needs:\n- Model: `qwen3-asr-0.6b-q4_k.gguf`\n\nIt supports standard multilingual speech transcription as well as free-form audio Q&A instructions via the `Audio Q&A Prompt` configuration setting.\n"
+          "content": "# Qwen3-ASR 0.6B\n\nQwen3-ASR 0.6B is a lightweight speech-to-text and audio Q&A model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-ASR-0.6B\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-ASR\n\n## Model Facts\n\n- **Task:** Speech-to-Text (Transcription and Audio Q&A)\n- **Parameters:** 600M (0.6B)\n- **License:** Apache-2.0\n- **Architecture:** Qwen3-ASR GGUF\n\n## PNG Studio Notes\n\nQwen3-ASR 0.6B in PNG Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-0.6b-GGUF`. It needs:\n- Model: `qwen3-asr-0.6b-q4_k.gguf`\n\nIt supports standard multilingual speech transcription as well as free-form audio Q&A instructions via the `Audio Q&A Prompt` configuration setting.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",
@@ -8594,7 +8594,7 @@
         },
         "readme": {
           "filename": "README.md",
-          "content": "# Qwen3-ASR 1.7B\n\nQwen3-ASR 1.7B is a medium speech-to-text and audio Q&A model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-ASR-1.7B\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-ASR\n\n## Model Facts\n\n- **Task:** Speech-to-Text (Transcription and Audio Q&A)\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen3-ASR GGUF\n\n## LA Studio Notes\n\nQwen3-ASR 1.7B in LA Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-1.7b-GGUF`. It needs one of the following model files:\n- `qwen3-asr-1.7b-q4_k.gguf` (Recommended, 1.3 GB)\n- `qwen3-asr-1.7b-q8_0.gguf` (2.5 GB)\n- `qwen3-asr-1.7b-f16.gguf` (4.7 GB)\n\nIt supports standard multilingual speech transcription as well as free-form audio Q&A instructions via the `Audio Q&A Prompt` configuration setting.\n"
+          "content": "# Qwen3-ASR 1.7B\n\nQwen3-ASR 1.7B is a medium speech-to-text and audio Q&A model from the Alibaba Qwen team, published under the `Qwen` organization on Hugging Face.\n\n## Links\n\n- Upstream model card: https://huggingface.co/Qwen/Qwen3-ASR-1.7B\n- Upstream GitHub: https://github.com/QwenLM/Qwen2.5-ASR\n\n## Model Facts\n\n- **Task:** Speech-to-Text (Transcription and Audio Q&A)\n- **Parameters:** 1.7B\n- **License:** Apache-2.0\n- **Architecture:** Qwen3-ASR GGUF\n\n## PNG Studio Notes\n\nQwen3-ASR 1.7B in PNG Studio runs offline using the CrispASR runtime. It downloads GGUF models from conversion repository `cstr/qwen3-asr-1.7b-GGUF`. It needs one of the following model files:\n- `qwen3-asr-1.7b-q4_k.gguf` (Recommended, 1.3 GB)\n- `qwen3-asr-1.7b-q8_0.gguf` (2.5 GB)\n- `qwen3-asr-1.7b-f16.gguf` (4.7 GB)\n\nIt supports standard multilingual speech transcription as well as free-form audio Q&A instructions via the `Audio Q&A Prompt` configuration setting.\n"
         },
         "thumbnail": {
           "filename": "thumbnail.webp",

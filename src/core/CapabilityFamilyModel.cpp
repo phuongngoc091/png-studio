@@ -1015,7 +1015,7 @@ void CapabilityFamilyModel::updateItems()
         item.isLastudioPick = family.value(QStringLiteral("isLastudioPick")).toBool();
         item.pickLabel = family.value(QStringLiteral("pickLabel")).toString();
         if (item.isLastudioPick && item.pickLabel.isEmpty())
-            item.pickLabel = QStringLiteral("LA Studio Pick");
+            item.pickLabel = QStringLiteral("PNG Studio Pick");
         item.pickReason = family.value(QStringLiteral("pickReason")).toString();
         item.supported = true;
         item.selected = (item.id == m_selectedFamilyId);

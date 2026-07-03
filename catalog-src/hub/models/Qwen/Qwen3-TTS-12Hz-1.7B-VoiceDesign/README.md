@@ -14,9 +14,9 @@ Qwen3-TTS 1.7B VoiceDesign is a text-to-speech model from the Alibaba Qwen team 
 - **License:** Apache-2.0
 - **Architecture:** Qwen2.5-TTS GGUF
 
-## LA Studio Notes
+## PNG Studio Notes
 
-Qwen3-TTS 1.7B VoiceDesign in LA Studio is a voice design workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-voicedesign-GGUF`. It needs:
+Qwen3-TTS 1.7B VoiceDesign in PNG Studio is a voice design workflow. It downloads GGUF models from conversion repository `cstr/qwen3-tts-1.7b-voicedesign-GGUF`. It needs:
 - Backbone: `qwen3-tts-12hz-1.7b-voicedesign-q8_0.gguf`
 - Tokenizer: `qwen3-tts-tokenizer-12hz.gguf`
 

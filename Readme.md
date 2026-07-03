@@ -1,8 +1,8 @@
 ﻿<div align="center">
 
-<img src="icons/app_icon_256.png" alt="LA Studio app logo" width="128" height="128">
+<img src="icons/app_icon_256.png" alt="PNG Studio app logo" width="128" height="128">
 
-<h1>LA Studio</h1>
+<h1>PNG Studio</h1>
 
 <p><strong>Offline AI Audio Studio for Speech-to-Text, Text-to-Speech, Voice Cloning, and Voice Design</strong></p>
 
@@ -34,7 +34,7 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 <br>
 <br>
 
-![LA Studio Overview](docs/screenshots/la-studio-home.PNG)
+![PNG Studio Overview](docs/screenshots/png-studio-home.PNG)
 
 </div>
 
@@ -44,19 +44,19 @@ Run private AI audio workflows locally: speech recognition, voice generation, vo
 
 ### 2026-07-03 - Version 0.1.7: Kokoro Vietnamese Support
 
-LA Studio version 0.1.7 now supports Vietnamese text-to-speech using the fine-tuned Kokoro-82M model. Special thanks to the author **iamdinhthuan** for the original **[Kokoro-Vietnamese](https://github.com/iamdinhthuan/Kokoro-Vietnamese)** repository and model training.
+PNG Studio version 0.1.7 now supports Vietnamese text-to-speech using the fine-tuned Kokoro-82M model. Special thanks to the author **iamdinhthuan** for the original **[Kokoro-Vietnamese](https://github.com/iamdinhthuan/Kokoro-Vietnamese)** repository and model training.
 
 ### 2026-07-01 - VieNeu-TTS-v3-Turbo Support
 
-LA Studio now supports **[VieNeu-TTS-v3-Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo)**, a high-fidelity 48 kHz Vietnamese-English text-to-speech model by Pham Nguyen Ngoc Bao. Integrated via the native `VieNeu-TTS.cpp` runtime, it offers hardware acceleration (CPU, CUDA, Vulkan) and real-time progress tracking. The entire pipeline runs completely offline on your hardware to ensure data privacy.
+PNG Studio now supports **[VieNeu-TTS-v3-Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo)**, a high-fidelity 48 kHz Vietnamese-English text-to-speech model by Pham Nguyen Ngoc Bao. Integrated via the native `VieNeu-TTS.cpp` runtime, it offers hardware acceleration (CPU, CUDA, Vulkan) and real-time progress tracking. The entire pipeline runs completely offline on your hardware to ensure data privacy.
 
 ### 2026-06-23 - Nemotron-3.5 Streaming ASR
 
-LA Studio now supports NVIDIA **Nemotron-3.5 ASR Streaming 0.6B** for local multilingual speech-to-text through CrispASR. The Model Gallery can download the Q4_K or F16 GGUF model and compatible CrispASR v0.8.4 CPU, CUDA, or Vulkan runtime packages.
+PNG Studio now supports NVIDIA **Nemotron-3.5 ASR Streaming 0.6B** for local multilingual speech-to-text through CrispASR. The Model Gallery can download the Q4_K or F16 GGUF model and compatible CrispASR v0.8.4 CPU, CUDA, or Vulkan runtime packages.
 
 ## Overview
 
-LA Studio, short for Local Audio Studio, is an offline AI audio workstation for creators, developers, researchers, and teams that need local speech AI without sending audio files, prompts, or generated voices to cloud APIs.
+PNG Studio, short for Local Audio Studio, is an offline AI audio workstation for creators, developers, researchers, and teams that need local speech AI without sending audio files, prompts, or generated voices to cloud APIs.
 
 The app brings together local speech-to-text, text-to-speech, voice cloning, voice design, model discovery, Hugging Face downloads, runtime installation, hardware checks, and audio preview tools behind a modern desktop interface. It is built with C++17, Qt 6/QML, CMake, and native AI runtime adapters for fast local inference.
 
@@ -77,19 +77,19 @@ The app brings together local speech-to-text, text-to-speech, voice cloning, voi
 
 | Home | Models Gallery |
 | --- | --- |
-| ![LA Studio offline AI audio desktop app home screen](docs/screenshots/la-studio-home.PNG) | ![LA Studio model gallery for local AI audio models](docs/screenshots/la-studio-models-gallery.PNG) |
+| ![PNG Studio offline AI audio desktop app home screen](docs/screenshots/png-studio-home.PNG) | ![PNG Studio model gallery for local AI audio models](docs/screenshots/png-studio-models-gallery.PNG) |
 
 | Speech-to-Text | Text-to-Speech |
 | --- | --- |
-| ![LA Studio local speech-to-text transcription workflow](docs/screenshots/la-studio-speech-to-text.PNG) | ![LA Studio local text-to-speech generation workflow](docs/screenshots/la-studio-text-to-speech.PNG) |
+| ![PNG Studio local speech-to-text transcription workflow](docs/screenshots/png-studio-speech-to-text.PNG) | ![PNG Studio local text-to-speech generation workflow](docs/screenshots/png-studio-text-to-speech.PNG) |
 
 | Voice Cloning | Voice Design |
 | --- | --- |
-| ![LA Studio voice cloning workflow with reference audio](docs/screenshots/la-studio-voice-cloning.PNG) | ![LA Studio voice design workflow for local AI speech models](docs/screenshots/la-studio-voice-design.PNG) |
+| ![PNG Studio voice cloning workflow with reference audio](docs/screenshots/png-studio-voice-cloning.PNG) | ![PNG Studio voice design workflow for local AI speech models](docs/screenshots/png-studio-voice-design.PNG) |
 
 | Runtime Settings | System Logs |
 | --- | --- |
-| ![LA Studio runtime and hardware settings](docs/screenshots/la-studio-runtime-settings.PNG) | ![LA Studio system logs and diagnostics screen](docs/screenshots/la-studio-system-logs.PNG) |
+| ![PNG Studio runtime and hardware settings](docs/screenshots/png-studio-runtime-settings.PNG) | ![PNG Studio system logs and diagnostics screen](docs/screenshots/png-studio-system-logs.PNG) |
 
 ## Use Cases
 
@@ -100,7 +100,7 @@ The app brings together local speech-to-text, text-to-speech, voice cloning, voi
 - Experiment with voice cloning and voice design without relying on external inference APIs.
 - Develop C++/Qt integrations for local AI audio workflows.
 
-## How LA Studio Works
+## How PNG Studio Works
 
 ```mermaid
 flowchart LR
@@ -112,12 +112,12 @@ flowchart LR
 
 1. Open the model gallery and choose an STT, TTS, voice cloning, or voice design model family.
 2. Download the required model files and runtime package from the app.
-3. LA Studio validates local files, runtime compatibility, and available hardware acceleration.
+3. PNG Studio validates local files, runtime compatibility, and available hardware acceleration.
 4. Use the studio pages to transcribe audio, generate speech, clone voices, or design voices offline.
 
 ## Supported Models and Runtimes
 
-LA Studio is catalog-driven, so supported models can evolve without rewriting the core UI. Current catalog families include:
+PNG Studio is catalog-driven, so supported models can evolve without rewriting the core UI. Current catalog families include:
 
 | Category | Example model families |
 | --- | --- |
@@ -126,7 +126,7 @@ LA Studio is catalog-driven, so supported models can evolve without rewriting th
 | Voice Cloning | VoxCPM2, OmniVoice, Qwen3 custom voice packages |
 | Voice Design | VoxCPM2 voice design, Qwen3 voice design packages |
 
-Runtime support is handled through native adapters and dynamic libraries. Depending on model availability and platform support, LA Studio can use CPU, CUDA, Vulkan, and other runtime-specific acceleration paths.
+Runtime support is handled through native adapters and dynamic libraries. Depending on model availability and platform support, PNG Studio can use CPU, CUDA, Vulkan, and other runtime-specific acceleration paths.
 
 ## Technology Stack
 
@@ -141,7 +141,7 @@ Runtime support is handled through native adapters and dynamic libraries. Depend
 ## Project Structure
 
 ```text
-LA-Studio/
+PNG-Studio/
 |-- CMakeLists.txt              # Top-level CMake build configuration
 |-- CMakePresets.json           # Build presets
 |-- vcpkg.json                  # C++ dependency manifest
@@ -183,15 +183,15 @@ The primary development path is Windows with MSVC 2022, Qt 6, CMake, Ninja, and 
 ### Quick Start
 
 ```powershell
-git clone https://github.com/dduongtrandai/LA-Studio.git
-cd LA-Studio
+git clone https://github.com/dduongtrandai/PNG-Studio.git
+cd PNG-Studio
 .\scripts\bootstrap.bat
 ```
 
 After a successful release build, run:
 
 ```powershell
-.\out\build\windows-msvc-release\LA Studio.exe
+.\out\build\windows-msvc-release\PNG Studio.exe
 ```
 
 For a faster development build that skips deployment:
@@ -220,7 +220,7 @@ The `tests/` directory includes focused coverage for model path migration, model
 
 ## Architecture
 
-LA Studio uses a QML front end with C++ controllers and core managers. The app keeps model catalog logic, downloads, runtime discovery, hardware checks, audio services, and studio actions behind clear C++ service boundaries.
+PNG Studio uses a QML front end with C++ controllers and core managers. The app keeps model catalog logic, downloads, runtime discovery, hardware checks, audio services, and studio actions behind clear C++ service boundaries.
 
 ```text
 QML UI
@@ -252,7 +252,7 @@ Key source areas:
 
 ## Privacy and Offline Operation
 
-LA Studio is designed for local inference. Audio recordings, prompts, generated speech, transcriptions, model selections, and runtime activity stay on the local machine unless the user explicitly downloads model files or runtime packages from external sources.
+PNG Studio is designed for local inference. Audio recordings, prompts, generated speech, transcriptions, model selections, and runtime activity stay on the local machine unless the user explicitly downloads model files or runtime packages from external sources.
 
 ## Documentation
 
@@ -288,10 +288,10 @@ Before changing architecture-heavy code, review the public docs in `docs/` and k
 
 ## Acknowledgements
 
-LA Studio exists because of the open-source runtime, tooling, and model ecosystems around local speech AI. Thank you to the maintainers and contributors of these projects:
+PNG Studio exists because of the open-source runtime, tooling, and model ecosystems around local speech AI. Thank you to the maintainers and contributors of these projects:
 
 - [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and [OpenAI Whisper](https://github.com/openai/whisper) for local Whisper speech recognition support.
-- [CrispASR](https://github.com/CrispStrobe/CrispASR) for GGUF runtime packages used by Qwen3-ASR, Qwen3-TTS, Kokoro, VoxCPM2, and VibeVoice workflows in LA Studio.
+- [CrispASR](https://github.com/CrispStrobe/CrispASR) for GGUF runtime packages used by Qwen3-ASR, Qwen3-TTS, Kokoro, VoxCPM2, and VibeVoice workflows in PNG Studio.
 - [omnivoice.cpp](https://github.com/dduongtrandai/omnivoice.cpp) and the [k2-fsa / sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) ecosystem for OmniVoice runtime integration.
 - [VieNeu-TTS.cpp](https://github.com/dduongtrandai/VieNeu-TTS.cpp) for VieNeu-TTS runtime integration.
 - The model authors and communities behind [Kokoro](https://github.com/hexgrad/kokoro), [Kokoro-Vietnamese](https://github.com/iamdinhthuan/Kokoro-Vietnamese), [Qwen speech models](https://github.com/QwenLM), [VoxCPM2](https://huggingface.co/openbmb/VoxCPM2), [VibeVoice](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B), [OmniVoice](https://huggingface.co/k2-fsa/OmniVoice), [VieNeu-TTS v2 Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v2-Turbo), and [VieNeu-TTS-v3-Turbo](https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo).
@@ -300,9 +300,9 @@ Runtime packages and model files may have their own licenses, terms, and attribu
 
 ## License
 
-LA Studio is released under the **GNU General Public License v3.0**. Check out `LICENSE` for more details.
+PNG Studio is released under the **GNU General Public License v3.0**. Check out `LICENSE` for more details.
 
 ---
 
-**LA Studio helps you run private, local AI audio workflows on your own machine.**
+**PNG Studio helps you run private, local AI audio workflows on your own machine.**
 

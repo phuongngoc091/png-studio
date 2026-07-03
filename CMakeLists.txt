@@ -1,24 +1,24 @@
 cmake_minimum_required(VERSION 3.21)
 
 # This is the single source of truth for the application version. Release
-# automation may override it with -DLASTUDIO_VERSION=<major.minor.patch>.
-set(LASTUDIO_VERSION "0.1.7" CACHE STRING "PNG Studio application version")
-if(NOT LASTUDIO_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
-    message(FATAL_ERROR "LASTUDIO_VERSION must use MAJOR.MINOR.PATCH format; got '${LASTUDIO_VERSION}'")
+# automation may override it with -DPNGSTUDIO_VERSION=<major.minor.patch>.
+set(PNGSTUDIO_VERSION "0.1.7" CACHE STRING "PNG Studio application version")
+if(NOT PNGSTUDIO_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+    message(FATAL_ERROR "PNGSTUDIO_VERSION must use MAJOR.MINOR.PATCH format; got '${PNGSTUDIO_VERSION}'")
 endif()
 
-project(LAStudio VERSION ${LASTUDIO_VERSION} LANGUAGES CXX)
+project(LAStudio VERSION ${PNGSTUDIO_VERSION} LANGUAGES CXX)
 
-set(LASTUDIO_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
-file(GLOB_RECURSE LASTUDIO_EXAMPLE_FILES CONFIGURE_DEPENDS
+set(PNGSTUDIO_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+file(GLOB_RECURSE PNGSTUDIO_EXAMPLE_FILES CONFIGURE_DEPENDS
     RELATIVE "${CMAKE_SOURCE_DIR}"
     "examples/*.json"
     "examples/*.md"
 )
-file(MAKE_DIRECTORY "${LASTUDIO_GENERATED_DIR}/lastudio")
+file(MAKE_DIRECTORY "${PNGSTUDIO_GENERATED_DIR}/pngstudio")
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/AppVersion.h.in"
-    "${LASTUDIO_GENERATED_DIR}/lastudio/AppVersion.h"
+    "${PNGSTUDIO_GENERATED_DIR}/pngstudio/AppVersion.h"
     @ONLY
 )
 
@@ -42,7 +42,7 @@ include(cmake/Dependencies.cmake)
 # Require per-directory qmldir handling for Qt QML module sources.
 qt_policy(SET QTP0004 NEW)
 
-set(LASTUDIO_SOURCES
+set(PNGSTUDIO_SOURCES
     src/main.cpp
     src/core/Logger.cpp
     src/core/PathUtils.cpp
@@ -110,7 +110,7 @@ set(LASTUDIO_SOURCES
     src/core/LocalizationManager.cpp
 )
 
-set(LASTUDIO_HEADERS
+set(PNGSTUDIO_HEADERS
     src/core/Logger.h
     src/core/PathUtils.h
     src/core/VoiceCloningUtils.h
@@ -189,12 +189,12 @@ set(LASTUDIO_HEADERS
     src/core/LocalizationManager.h
 )
 
-qt_add_executable(LAStudio ${LASTUDIO_SOURCES} ${LASTUDIO_HEADERS})
+qt_add_executable(LAStudio ${PNGSTUDIO_SOURCES} ${PNGSTUDIO_HEADERS})
 
 qt_add_translations(LAStudio
     TS_FILES
-        i18n/lastudio_en.ts
-        i18n/lastudio_vi.ts
+        i18n/pngstudio_en.ts
+        i18n/pngstudio_vi.ts
 )
 
 set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -291,7 +291,7 @@ qt_add_qml_module(LAStudio
         data/language-sets/nemotron-3.5-v1.json
         data/language-sets/default.json
         data/vieneu/voices_v3_turbo.json
-        ${LASTUDIO_EXAMPLE_FILES}
+        ${PNGSTUDIO_EXAMPLE_FILES}
         icons/app_icon.ico
         icons/app_icon_16.png
         icons/app_icon_32.png
@@ -302,7 +302,7 @@ qt_add_qml_module(LAStudio
 )
 
 target_include_directories(LAStudio PRIVATE
-    ${LASTUDIO_GENERATED_DIR}
+    ${PNGSTUDIO_GENERATED_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/api
@@ -315,7 +315,7 @@ target_include_directories(LAStudio PRIVATE
 )
 
 target_compile_definitions(LAStudio PRIVATE
-    LASTUDIO_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    PNGSTUDIO_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 
 if(ENABLE_OMNIVOICE)
@@ -378,9 +378,9 @@ include(GNUInstallDirs)
 
 if(WIN32)
     # Keep installer metadata synchronized with the executable at configure time.
-    file(TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}" LASTUDIO_INSTALLER_STAGE_DIR)
-    file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/out" LASTUDIO_INSTALLER_OUTPUT_DIR)
-    file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/icons/app_icon.ico" LASTUDIO_INSTALLER_ICON_FILE)
+    file(TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}" PNGSTUDIO_INSTALLER_STAGE_DIR)
+    file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/out" PNGSTUDIO_INSTALLER_OUTPUT_DIR)
+    file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/icons/app_icon.ico" PNGSTUDIO_INSTALLER_ICON_FILE)
     configure_file(
         "${CMAKE_SOURCE_DIR}/scripts/installer.iss.in"
         "${CMAKE_BINARY_DIR}/installer.iss"

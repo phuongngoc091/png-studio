@@ -499,8 +499,8 @@
         <translation>TRẠM CÔNG CỤ ÂM THANH CỤC BỘ</translation>
     </message>
     <message>
-        <source>Welcome to LA Studio</source>
-        <translation>Chào mừng bạn đến với LA Studio</translation>
+        <source>Welcome to PNG Studio</source>
+        <translation>Chào mừng bạn đến với PNG Studio</translation>
     </message>
     <message>
         <source>Private, offline, and high-performance local AI audio processing. All operations run locally on your device.</source>
@@ -1323,8 +1323,8 @@
         <translation>Tìm kiếm ngôn ngữ...</translation>
     </message>
     <message>
-        <source>LA Studio Pick</source>
-        <translation>Gợi ý của LA Studio</translation>
+        <source>PNG Studio Pick</source>
+        <translation>Gợi ý của PNG Studio</translation>
     </message>
     <message>
         <source>Model Card</source>

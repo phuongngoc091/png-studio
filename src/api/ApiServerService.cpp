@@ -533,7 +533,7 @@ QJsonObject ApiServerService::buildModelsDocument() const
             QJsonObject tts;
             tts.insert(QStringLiteral("id"), signature);
             tts.insert(QStringLiteral("object"), QStringLiteral("model"));
-            tts.insert(QStringLiteral("owned_by"), QStringLiteral("la-studio"));
+            tts.insert(QStringLiteral("owned_by"), QStringLiteral("png-studio"));
             tts.insert(QStringLiteral("purpose"), QStringLiteral("tts"));
             tts.insert(QStringLiteral("ready"), true);
             tts.insert(QStringLiteral("active"), signature == active);
@@ -546,7 +546,7 @@ QJsonObject ApiServerService::buildModelsDocument() const
             QJsonObject stt;
             stt.insert(QStringLiteral("id"), signature);
             stt.insert(QStringLiteral("object"), QStringLiteral("model"));
-            stt.insert(QStringLiteral("owned_by"), QStringLiteral("la-studio"));
+            stt.insert(QStringLiteral("owned_by"), QStringLiteral("png-studio"));
             stt.insert(QStringLiteral("purpose"), QStringLiteral("stt"));
             stt.insert(QStringLiteral("ready"), true);
             stt.insert(QStringLiteral("active"), signature == active);
@@ -558,7 +558,7 @@ QJsonObject ApiServerService::buildModelsDocument() const
         QJsonObject tts;
         tts.insert(QStringLiteral("id"), QStringLiteral("tts"));
         tts.insert(QStringLiteral("object"), QStringLiteral("model"));
-        tts.insert(QStringLiteral("owned_by"), QStringLiteral("la-studio"));
+        tts.insert(QStringLiteral("owned_by"), QStringLiteral("png-studio"));
         tts.insert(QStringLiteral("purpose"), QStringLiteral("tts"));
         tts.insert(QStringLiteral("ready"), false);
         tts.insert(QStringLiteral("active"), false);
@@ -567,7 +567,7 @@ QJsonObject ApiServerService::buildModelsDocument() const
         QJsonObject stt;
         stt.insert(QStringLiteral("id"), QStringLiteral("stt"));
         stt.insert(QStringLiteral("object"), QStringLiteral("model"));
-        stt.insert(QStringLiteral("owned_by"), QStringLiteral("la-studio"));
+        stt.insert(QStringLiteral("owned_by"), QStringLiteral("png-studio"));
         stt.insert(QStringLiteral("purpose"), QStringLiteral("stt"));
         stt.insert(QStringLiteral("ready"), false);
         stt.insert(QStringLiteral("active"), false);
@@ -1284,7 +1284,7 @@ ApiServerService::HttpResponse ApiServerService::handleCreateVoiceRequest(const 
     const QString suffix = QFileInfo(fileName).suffix().isEmpty()
         ? QStringLiteral("wav")
         : QFileInfo(fileName).suffix();
-    QTemporaryFile temp(QDir::tempPath() + QStringLiteral("/lastudio-api-voice-XXXXXX.") + suffix);
+    QTemporaryFile temp(QDir::tempPath() + QStringLiteral("/pngstudio-api-voice-XXXXXX.") + suffix);
     temp.setAutoRemove(false);
     if (!temp.open()) {
         return errorResponse(500, QStringLiteral("Failed to store custom voice audio."));
@@ -1408,7 +1408,7 @@ ApiServerService::HttpResponse ApiServerService::handleTranscriptionRequest(cons
         return errorResponse(409, QStringLiteral("Requested STT model is busy: %1").arg(targetModelId));
     }
 
-    QTemporaryFile temp(QDir::tempPath() + QStringLiteral("/lastudio-api-XXXXXX") +
+    QTemporaryFile temp(QDir::tempPath() + QStringLiteral("/pngstudio-api-XXXXXX") +
                         (fileName.isEmpty() ? QStringLiteral(".wav") : QStringLiteral(".") + QFileInfo(fileName).suffix()));
     temp.setAutoRemove(false);
     if (!temp.open()) {
