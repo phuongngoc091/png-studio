@@ -61,7 +61,7 @@ laStudio:
   shortName: KOVI
   title: Kokoro Vietnamese
   subtitle: Vietnamese Kokoro TTS via native ONNX runtime
-  description: Fine-tuned Vietnamese Kokoro TTS packaged for LA Studio with a native Windows CPU runtime, ONNX Runtime inference, and bundled vig2p sidecar phonemization.
+  description: Fine-tuned Vietnamese Kokoro TTS packaged for PNG Studio with a native Windows CPU runtime, ONNX Runtime inference, and bundled vig2p sidecar phonemization.
   accent: "#2f9e8f"
   capabilities:
     - tts
@@ -74,7 +74,7 @@ laStudio:
     - Preset Voices
     - CPU
   strengths:
-    - Native C ABI runtime for LA Studio
+    - Native C ABI runtime for PNG Studio
     - Vietnamese G2P handled inside the runtime package
     - Preset Vietnamese voicepacks bundled as runtime assets
     - 24 kHz mono float PCM output

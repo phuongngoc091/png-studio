@@ -1,121 +1,121 @@
-model: lastudio-community/VieNeu-TTS-v3-Turbo-CPP
+model: pngstudio-community/VieNeu-TTS-v3-Turbo-CPP
 base:
-  - key: lastudio-community/vieneu-v3-config
+  - key: pngstudio-community/vieneu-v3-config
     role: config
     name: VieNeu v3 Config
     purpose: Model architecture and token id configuration
     defaultFile: config.json
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: config.json
             size: 1.6 KB
-  - key: lastudio-community/vieneu-v3-tokenizer
+  - key: pngstudio-community/vieneu-v3-tokenizer
     role: tokenizer
     name: VieNeu v3 Tokenizer
     purpose: Byte-level BPE phoneme tokenizer
     defaultFile: tokenizer.json
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: tokenizer.json
             size: 22 KB
-  - key: lastudio-community/vieneu-v3-native-backbone
+  - key: pngstudio-community/vieneu-v3-native-backbone
     role: model
     name: VieNeu v3 Native Backbone GGUF
     purpose: Native semantic backbone for the v3_native pipeline
     defaultFile: backbone.gguf
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: backbone.gguf
             size: 398 MB
-  - key: lastudio-community/vieneu-v3-heads
+  - key: pngstudio-community/vieneu-v3-heads
     role: heads
     name: VieNeu v3 Native Heads NPZ
     purpose: Text/audio embeddings and tied output heads for the v3_native pipeline
     defaultFile: vieneu_v3_heads.npz
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: vieneu_v3_heads.npz
             size: 49 MB
-  - key: lastudio-community/vieneu-v3-native-acoustic
+  - key: pngstudio-community/vieneu-v3-native-acoustic
     role: acoustic
     name: VieNeu v3 Native Acoustic NPZ
     purpose: Local acoustic decoder weights for the v3_native pipeline
     defaultFile: acoustic/vieneu_acoustic_weights.npz
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: acoustic/vieneu_acoustic_weights.npz
             size: 54 MB
-  - key: lastudio-community/moss-codec-decode
+  - key: pngstudio-community/moss-codec-decode
     role: codec_decode
     name: MOSS Audio Tokenizer Decoder ONNX
     purpose: Decode generated MOSS audio codes into 48 kHz waveform
     defaultFile: codec/moss_audio_tokenizer_decode_full.onnx
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: codec/moss_audio_tokenizer_decode_full.onnx
             size: 666 KB
-  - key: lastudio-community/moss-codec-decode-data
+  - key: pngstudio-community/moss-codec-decode-data
     role: codec_decode_data
     name: MOSS Audio Tokenizer Decoder Shared Data
     purpose: External ONNX tensor data required by the MOSS decoder graph
     defaultFile: codec/moss_audio_tokenizer_decode_shared.data
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: codec/moss_audio_tokenizer_decode_shared.data
             size: 44.2 MB
-  - key: lastudio-community/moss-codec-encode
+  - key: pngstudio-community/moss-codec-encode
     role: codec_encode
     name: MOSS Audio Tokenizer Encoder ONNX
     purpose: Encode reference audio into MOSS audio codes for voice cloning
     defaultFile: codec/moss_audio_tokenizer_encode.onnx
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: codec/moss_audio_tokenizer_encode.onnx
             size: 797 KB
-  - key: lastudio-community/moss-codec-encode-data
+  - key: pngstudio-community/moss-codec-encode-data
     role: codec_encode_data
     name: MOSS Audio Tokenizer Encoder Data
     purpose: External ONNX tensor data required by the MOSS encoder graph
     defaultFile: codec/moss_audio_tokenizer_encode.data
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: codec/moss_audio_tokenizer_encode.data
             size: 44.5 MB
-  - key: lastudio-community/vieneu-v3-voices
+  - key: pngstudio-community/vieneu-v3-voices
     role: voices
     name: VieNeu v3 Preset Voices
     purpose: Preset voice definitions for the v3_native pipeline
     defaultFile: voices_v3_turbo.json
     sources:
       - type: huggingface
-        user: lastudio-community
+        user: pngstudio-community
         repo: VieNeu-TTS-v3-Turbo-CPP
         files:
           - name: voices_v3_turbo.json

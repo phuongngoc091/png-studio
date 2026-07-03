@@ -55,8 +55,8 @@ jobs:
         shell: pwsh
         run: |
           $tag = if ($env:GITHUB_REF_TYPE -eq "tag") { $env:GITHUB_REF_NAME } else { "manual" }
-          $artifact = "LA-Studio-$tag-windows-x64-setup.exe"
-          Move-Item -LiteralPath "out\LA-Studio-Setup.exe" -Destination "out\$artifact" -Force
+          $artifact = "PNG-Studio-$tag-windows-x64-setup.exe"
+          Move-Item -LiteralPath "out\PNG-Studio-Setup.exe" -Destination "out\$artifact" -Force
           "artifact=out/$artifact" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Create GitHub Release

@@ -1,24 +1,24 @@
-; Inno Setup template for LA Studio. CMake generates installer.iss per build.
+; Inno Setup template for PNG Studio. CMake generates installer.iss per build.
 ; See https://jrsoftware.org/isinfo.php for details
 
 [Setup]
-AppName=LA Studio
+AppName=PNG Studio
 AppVersion=@PROJECT_VERSION@
 AppPublisher=Tran Dai Duong
-AppPublisherURL=https://github.com/dduongtrandai/LA-Studio
-AppSupportURL=https://github.com/dduongtrandai/LA-Studio/issues
-AppUpdatesURL=https://github.com/dduongtrandai/LA-Studio/releases
-DefaultDirName={autopf}\LA Studio
-DefaultGroupName=LA Studio
+AppPublisherURL=https://github.com/dduongtrandai/PNG-Studio
+AppSupportURL=https://github.com/dduongtrandai/PNG-Studio/issues
+AppUpdatesURL=https://github.com/dduongtrandai/PNG-Studio/releases
+DefaultDirName={autopf}\PNG Studio
+DefaultGroupName=PNG Studio
 DisableProgramGroupPage=yes
 ; LicenseFile=../LICENSE
-OutputDir=@LASTUDIO_INSTALLER_OUTPUT_DIR@
-OutputBaseFilename=LA-Studio-Setup
+OutputDir=@PNGSTUDIO_INSTALLER_OUTPUT_DIR@
+OutputBaseFilename=PNG-Studio-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-UninstallDisplayIcon={app}\bin\LA Studio.exe
-SetupIconFile=@LASTUDIO_INSTALLER_ICON_FILE@
+UninstallDisplayIcon={app}\bin\PNG Studio.exe
+SetupIconFile=@PNGSTUDIO_INSTALLER_ICON_FILE@
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 
@@ -29,12 +29,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "@LASTUDIO_INSTALLER_STAGE_DIR@\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+Source: "@PNGSTUDIO_INSTALLER_STAGE_DIR@\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\LA Studio"; Filename: "{app}\bin\LA Studio.exe"
-Name: "{autodesktop}\LA Studio"; Filename: "{app}\bin\LA Studio.exe"; Tasks: desktopicon
+Name: "{group}\PNG Studio"; Filename: "{app}\bin\PNG Studio.exe"
+Name: "{autodesktop}\PNG Studio"; Filename: "{app}\bin\PNG Studio.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\bin\LA Studio.exe"; Description: "{cm:LaunchProgram,LA Studio}"; Flags: nowait postinstall skipifsilent
-Filename: "{app}\bin\LA Studio.exe"; Flags: nowait skipifnotsilent
+Filename: "{app}\bin\PNG Studio.exe"; Description: "{cm:LaunchProgram,PNG Studio}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\PNG Studio.exe"; Flags: nowait skipifnotsilent

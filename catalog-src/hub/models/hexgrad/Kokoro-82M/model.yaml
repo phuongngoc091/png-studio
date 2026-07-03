@@ -59,7 +59,7 @@ laStudio:
   shortName: KO
   title: Kokoro
   subtitle: Small multilingual preset-voice TTS
-  description: A compact open-weight TTS model with 82M parameters, installed in LA Studio through a Kokoro backbone GGUF plus a per-voice GGUF pack.
+  description: A compact open-weight TTS model with 82M parameters, installed in PNG Studio through a Kokoro backbone GGUF plus a per-voice GGUF pack.
   accent: "#4f9d69"
   capabilities:
     - tts

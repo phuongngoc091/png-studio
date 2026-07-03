@@ -76,7 +76,7 @@ laStudio:
   weaknesses:
     - Large models require substantial download size and memory
     - TinyDiarize requires a dedicated model ending in -tdrz
-    - LA Studio currently exposes only language, threads and translation controls from the upstream setting set
+    - PNG Studio currently exposes only language, threads and translation controls from the upstream setting set
   supportedLanguageSetId: whisper-v1
   supportedLanguageCount: 100
   featuredLanguages:
@@ -117,7 +117,7 @@ laStudio:
       name: Language
       type: string
       default: en
-      description: Language code used for transcription. Upstream defaults to English; LA Studio accepts auto to enable automatic detection.
+      description: Language code used for transcription. Upstream defaults to English; PNG Studio accepts auto to enable automatic detection.
     detect_language:
       name: Detect Language
       type: bool
