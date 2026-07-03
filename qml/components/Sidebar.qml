@@ -483,6 +483,37 @@ Rectangle {
         }
 
         Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 70
+            
+            Column {
+                anchors.centerIn: parent
+                spacing: 3
+                
+                Text {
+                    text: "TikTok: @phuongngoc091"
+                    color: Theme.textSecondary
+                    font.pixelSize: 11
+                    font.bold: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Text {
+                    text: "SĐT: 0932 468 218"
+                    color: Theme.accentLight
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Text {
+                    text: "Credit: Custom version from LA Studio"
+                    color: Theme.textSecondary
+                    font.pixelSize: 9
+                    font.italic: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+            }
+        }
+        Item {
             id: settingsItem
             Layout.fillWidth: true
             Layout.preferredHeight: 46
