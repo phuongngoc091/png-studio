@@ -383,6 +383,7 @@ Rectangle {
                     PrimaryButton {
                         text: qsTr("Set up OmniVoice")
                         iconName: "settings"
+                        buttonColor: "#ff7043"
                         implicitWidth: 160
                         implicitHeight: 38
                         onClicked: root.pageRequested("models")

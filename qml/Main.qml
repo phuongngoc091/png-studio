@@ -242,6 +242,13 @@ ApplicationWindow {
                 communityActive: communityDialog.opened
                 onNavigated: function(routeId) {
                     stack.currentIndex = StudioRouteRegistry.getIndex(routeId)
+                    if (routeId === "studio-tts") {
+                        ttsLoader.openConfig("k2-fsa/OmniVoice")
+                    } else if (routeId === "studio-voice-cloning") {
+                        voiceCloningLoader.openConfig("k2-fsa/OmniVoice")
+                    } else if (routeId === "studio-voice-design") {
+                        voiceDesignLoader.openConfig("k2-fsa/OmniVoice")
+                    }
                     workflowsPopup.close()
                     downloadsPopup.close()
                     communityDialog.close()
@@ -294,6 +301,13 @@ ApplicationWindow {
                 WelcomePage {
                     onPageRequested: function(routeId) {
                         stack.currentIndex = StudioRouteRegistry.getIndex(routeId)
+                        if (routeId === "studio-tts") {
+                            ttsLoader.openConfig("k2-fsa/OmniVoice")
+                        } else if (routeId === "studio-voice-cloning") {
+                            voiceCloningLoader.openConfig("k2-fsa/OmniVoice")
+                        } else if (routeId === "studio-voice-design") {
+                            voiceDesignLoader.openConfig("k2-fsa/OmniVoice")
+                        }
                     }
                 }
                 Loader {
