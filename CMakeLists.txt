@@ -190,6 +190,7 @@ set(PNGSTUDIO_HEADERS
 )
 
 qt_add_executable(LAStudio ${PNGSTUDIO_SOURCES} ${PNGSTUDIO_HEADERS})
+set_target_properties(LAStudio PROPERTIES OUTPUT_NAME "PNG Studio")
 
 qt_add_translations(LAStudio
     TS_FILES
