@@ -5,6 +5,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import LAStudio
 import "../components/base"
+import "../components"
 
 Rectangle {
     id: root
