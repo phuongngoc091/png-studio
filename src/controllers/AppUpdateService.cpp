@@ -132,22 +132,10 @@ QString AppUpdateService::currentVersion() const
 
 void AppUpdateService::checkForUpdates(const QString &channel)
 {
-    if (m_checking) return;
-
-    resetUpdateInfo();
-    clearError();
-    setChecking(true);
-    setStatusMessage(tr("Checking GitHub releases..."));
-
-    QNetworkRequest request(QUrl(QString::fromLatin1(ReleasesApiUrl)));
-    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("PNG-Studio-Updater"));
-    request.setRawHeader("Accept", "application/vnd.github+json");
-
-    QNetworkReply *reply = m_network->get(request);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, channel]() {
-        handleReleaseReply(reply, channel);
-        reply->deleteLater();
-    });
+    Q_UNUSED(channel);
+    // Silent updates disabled for custom build to prevent network errors
+    setStatusMessage(tr("Updates disabled."));
+    return;
 }
 
 void AppUpdateService::downloadUpdate()

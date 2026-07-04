@@ -20,13 +20,10 @@ QtObject {
     // List of route descriptors for Sidebar / navigation
     readonly property var routes: [
         { id: "welcome", label: qsTr("Home"), iconName: "home" },
-        { id: "studio-stt", label: qsTr("Speech to Text"), iconName: "mic" },
         { id: "studio-tts", label: qsTr("Text to Speech"), iconName: "volume" },
         { id: "studio-voice-cloning", label: qsTr("Voice Cloning"), iconName: "spark" },
         { id: "studio-voice-design", label: qsTr("Voice Design"), iconName: "waves" },
         { id: "models", label: qsTr("Models"), iconName: "gallery" },
-        { id: "my-models", label: qsTr("My Models"), iconName: "folder" },
-        { id: "developer", label: qsTr("Developer"), iconName: "code" },
         { id: "settings", label: qsTr("Settings"), iconName: "settings" }
     ]
 

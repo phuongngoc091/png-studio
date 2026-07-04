@@ -15,15 +15,8 @@ Rectangle {
 
     readonly property bool compact: width < 980
     readonly property int pageMargin: compact ? Theme.paddingLarge : 40
+    readonly property bool omniVoiceSetupCompleted: AppController.models.hasFile("k2-fsa/OmniVoice", "omnivoice-base-Q8_0.gguf") && AppController.models.hasFile("k2-fsa/OmniVoice", "omnivoice-tokenizer-F32.gguf")
     readonly property var toolCards: [
-        {
-            title: qsTr("Speech to Text"),
-            group: qsTr("Transcription"),
-            description: qsTr("Convert audio files or microphone recordings into editable local transcripts."),
-            iconName: "mic",
-            routeId: "studio-stt",
-            accent: "#64b5f6"
-        },
         {
             title: qsTr("Text to Speech"),
             group: qsTr("Generation"),
@@ -116,19 +109,53 @@ Rectangle {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 2
+                    spacing: 4
 
                     Text {
                         text: qsTr("PNG Studio")
                         color: Theme.textPrimary
-                        font.pixelSize: 18
+                        font.pixelSize: 22
                         font.bold: true
                     }
 
                     Text {
-                        text: qsTr("Local AI audio workspace")
+                        text: qsTr("A customized version of LA Studio")
                         color: Theme.textSecondary
                         font.pixelSize: 12
+                    }
+
+                    RowLayout {
+                        spacing: Theme.paddingMedium
+                        
+                        RowLayout {
+                            spacing: 4
+                            LineIcon {
+                                name: "tiktok"
+                                color: Theme.accentLight
+                                Layout.preferredWidth: 14
+                                Layout.preferredHeight: 14
+                            }
+                            Text {
+                                text: "phuongngoc091"
+                                color: Theme.textSecondary
+                                font.pixelSize: 11
+                            }
+                        }
+
+                        RowLayout {
+                            spacing: 4
+                            LineIcon {
+                                name: "phone"
+                                color: Theme.accentLight
+                                Layout.preferredWidth: 14
+                                Layout.preferredHeight: 14
+                            }
+                            Text {
+                                text: "0932 468 218"
+                                color: Theme.textSecondary
+                                font.pixelSize: 11
+                            }
+                        }
                     }
                 }
 
@@ -254,6 +281,7 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: Theme.paddingSmall
+                visible: root.omniVoiceSetupCompleted
 
                 Text {
                     text: qsTr("Studios & Tools")
@@ -273,9 +301,10 @@ Rectangle {
 
             GridLayout {
                 Layout.fillWidth: true
-                columns: root.width > 1420 ? 4 : (root.width > 860 ? 2 : 1)
+                columns: root.width > 1420 ? 3 : (root.width > 860 ? 2 : 1)
                 rowSpacing: Theme.paddingMedium
                 columnSpacing: Theme.paddingMedium
+                visible: root.omniVoiceSetupCompleted
 
                 Repeater {
                     model: root.toolCards
@@ -293,6 +322,69 @@ Rectangle {
                         iconName: modelData.iconName
                         targetRoute: modelData.routeId
                         accent: modelData.accent
+                    }
+                }
+            }
+
+            Rectangle {
+                id: setupBox
+                visible: !root.omniVoiceSetupCompleted
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.compact ? 240 : 160
+                radius: 12
+                color: Qt.rgba(1.0, 0.45, 0.15, 0.06)
+                border.color: Qt.rgba(1.0, 0.45, 0.15, 0.28)
+                border.width: 1
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: Theme.paddingXL
+                    spacing: Theme.paddingXL
+
+                    Rectangle {
+                        Layout.preferredWidth: 54
+                        Layout.preferredHeight: 54
+                        radius: 12
+                        color: Qt.rgba(1.0, 0.45, 0.15, 0.13)
+                        border.color: Qt.rgba(1.0, 0.45, 0.15, 0.3)
+                        border.width: 1
+                        Layout.alignment: Qt.AlignVCenter
+
+                        LineIcon {
+                            anchors.centerIn: parent
+                            name: "download"
+                            color: "#ff9800"
+                            width: 24
+                            height: 24
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+
+                        Text {
+                            text: qsTr("OmniVoice Setup Required")
+                            color: Theme.textPrimary
+                            font.pixelSize: 18
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: qsTr("To begin using PNG Studio, please download and configure the OmniVoice voice engine model files.")
+                            color: Theme.textSecondary
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                    PrimaryButton {
+                        text: qsTr("Set up OmniVoice")
+                        iconName: "settings"
+                        implicitWidth: 160
+                        implicitHeight: 38
+                        onClicked: root.pageRequested("models")
                     }
                 }
             }

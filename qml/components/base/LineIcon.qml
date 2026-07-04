@@ -409,6 +409,17 @@ Canvas {
             ctx.lineTo(cx + 8 * u, cy - 8 * u)
             ctx.lineTo(cx + 8 * u, cy - 3 * u)
             ctx.stroke()
+        } else if (name === "phone") {
+            ctx.beginPath()
+            ctx.rect(cx - 5 * u, cy - 8 * u, 10 * u, 16 * u)
+            ctx.stroke()
+            circle(ctx, cx, cy + 5 * u, 0.8 * u)
+        } else if (name === "tiktok") {
+            ctx.beginPath()
+            ctx.arc(cx - 2 * u, cy + 3 * u, 2.5 * u, 0, Math.PI * 2, false)
+            ctx.stroke()
+            line(ctx, cx + 0.5 * u, cy - 6 * u, cx + 0.5 * u, cy + 3 * u)
+            line(ctx, cx + 0.5 * u, cy - 6 * u, cx + 5 * u, cy - 6 * u)
         } else {
             circle(ctx, cx, cy, 7 * u)
         }
