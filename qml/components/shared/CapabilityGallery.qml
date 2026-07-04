@@ -274,7 +274,8 @@ Rectangle {
         // Left list panel
         Rectangle {
             Layout.fillHeight: true
-            Layout.preferredWidth: root.modalMode ? 280 : 360
+            Layout.preferredWidth: visible ? (root.modalMode ? 280 : 360) : 0
+            visible: familyList.count > 1
             color: Theme.surface
             radius: Theme.radiusSmall
             border.color: Theme.surfaceAlt
